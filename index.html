@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+    <title>Signet Faucet</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="/lib/jquery.min.js"></script>
+    <script>
+        function faucet_err(msg) {
+            let div = document.getElementById('faucet_err');
+            div.className = "notification is-danger is-light";
+            div.innerHTML = msg;
+        }
+        function faucet_fetch() {
+            let address = document.getElementById('address').value;
+            let amount = document.getElementById('amount').value;
+            if (!address) return faucet_err("Enter an address");
+            if (!amount) amount = 0.001;
+            if (amount < 0.001 || amount > 0.1) return faucet_err("Invalid amount");
+            let url = `/claim/${escape(address)}/${escape(amount)}`;
+            
+                let captcha = document.getElementById('captcha').value;
+                if (!captcha) return faucet_err("Solve captcha");
+                url += `/${escape(captcha)}`;
+            
+            const div = document.getElementById('faucet_err');
+            div.className = "";
+            div.innerHTML = "- processing -";
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = true;
+            $.ajax({
+                url,
+                type: 'GET',
+                success: function(data) {
+                    sendButton.disabled = false;
+                    // replace txid with explorer link
+                    let comps = data.split("txid ");
+                    console.log(`comps = ${comps}`);
+                    if (comps.length === 2) {
+                        data = `${comps[0]}txid <a href="https://explorer.bc-2.jp/tx/${comps[1]}">${comps[1].substr(0, 10)}...</a>`;
+                    }
+                    let div = document.getElementById('faucet_err');
+                    div.className = "notification is-success is-light";
+                    div.innerHTML = data;
+                    
+                        document.getElementById('captcha_img').src = `/captcha?${new Date().getTime()}`;
+                        document.getElementById('captcha').value = '';
+                    
+                },
+                error: function(err) {
+                    sendButton.disabled = false;
+                    // {"readyState":4,
+                    //  "responseText":"{\"message\":\"Please slow down\"}",
+                    //  "responseJSON":{"message":"Please slow down"},
+                    //  "status":400,
+                    //  "statusText":"error"}
+                    var msg = "";
+                    if (err.status) {
+                        msg += err.status + ": ";
+                    }
+                    if (err.responseJSON && err.responseJSON.message) {
+                        msg += err.responseJSON.message;
+                        return faucet_err("Error: " + msg);
+                    }
+                    if (err.responseText) {
+                        msg += err.responseText;
+                        return faucet_err("Error: " + msg);
+                    }
+                    faucet_err(msg + JSON.stringify(err));
+                }
+            });
+        }
+        </script>
+</head>
+
+<body>
+    <nav id="myNav" class="navbar is-fixed-top">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/">
+                    <img src="images/logo-signet.svg" alt="Signet Faucet">
+                    Signet Faucet
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="content">
+        <section class="hero is-dark has-padding-top-70">
+            <div class="hero-body">
+                <div class="container">
+                    <div class="columns">
+                        <div class="column is-12-desktop">
+                            <p class="leadText is-size-4-tablet is-size-6 has-text-centered">Signet Faucet!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- body-->
+        <section class="section">
+            <div class="container ">
+                <div class="columns is-centered">
+                    <div class="column is-6-desktop  is-8-tablet">
+                        <div class="box has-text-centered">
+                            <h3 class="title is-size-4-desktop is-size-5">Enter address and amount (0.001-0.1)</h3>
+
+                            <div id="faucet_err"></div>
+
+                            <div class="field has-margin-top-25">
+                                <div class="control">
+                                    <input class="input" id="address" name="address" type="text" placeholder="tb1q...">
+                                </div>
+                            </div>
+                            <div class="field has-margin-top-25">
+                                <div class="control">
+                                    <input class="input" id="amount" name="amount" type="text" placeholder="0.001">
+                                </div>
+                            </div>
+
+                            
+
+                            
+                                <div class="field has-margin-top-25">
+                                    <div class="control">
+                                        <img id="captcha_img" src="/captcha?1637523473538"/>
+                                    </div>
+                                    <div class="control">
+                                        <input class="input" id="captcha" name="captcha" type="input" placeholder="captcha">
+                                    </div>
+                                </div>
+                            
+
+                            <button id="sendButton" onclick="javascript:faucet_fetch();" class="button is-primary is-fullwidth has-margin-top-25">Send</button>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer class="footer has-text-centered">
+        <div class="container">
+            <div class="columns rv-padding">
+                <div class="column has-text-center has-text-left-tablet sponsor">
+                    <p><a href="https://www.dglab.com/en" target="_blank">
+                        <img src="images/dglab_logo.svg" alt="DG Lab" height="50" width="50">
+                    </a></p>
+                </div>
+                <div class="column has-text-center has-text-right-tablet copyright">
+                    <div class="copyright__text">
+                        <p class="is-size-7">Copyright © DG Lab All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
