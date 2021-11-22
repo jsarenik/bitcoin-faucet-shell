@@ -19,6 +19,9 @@
         function faucet_fetch() {
             let address = document.getElementById('address').value;
             let amount = document.getElementById('amount').value;
+            address.oninvalid = function(event) {
+              event.target.setCustomValidity('Username should only contain lowercase letters. e.g. john');
+            }
             if (!address) return faucet_err("Enter an address");
             if (!amount) amount = 0.001;
             if (amount < 0.001 || amount > 0.1) return faucet_err("Invalid amount");
@@ -67,6 +70,12 @@
                 }
             });
         }
+
+function readyFn( jQuery ) {
+  $('#address').focus();
+}
+
+$(window).on("load", readyFn);
         </script>
 </head>
 
@@ -89,22 +98,25 @@
                 <div class="columns is-centered">
                     <div class="column is-6-desktop  is-8-tablet">
                         <div class="box has-text-centered">
-                            <h3 class="title is-size-4-desktop is-size-5">Enter address and amount (0.001-0.1)</h3>
+                            <h3 class="title is-size-4-desktop is-size-5">Enter address and optionally amount (0.001-0.1)</h3>
 
                             <div id="faucet_err"></div>
 
+<form id="myform" action="javascript:faucet_fetch();" autocomplete="off">
+
                             <div class="field has-margin-top-25">
                                 <div class="control">
-                                    <input class="input" id="address" name="address" type="text" placeholder="tb1q...">
+                                    <input class="input" id="address" name="address" type="text" placeholder="tb1q..." tabindex="1" autocapitalize="off" autocorrect="off" pattern="^tb1q.{8,}" title="Use a valid signet address.">
                                 </div>
                             </div>
                             <div class="field has-margin-top-25">
                                 <div class="control">
-                                    <input class="input" id="amount" name="amount" type="text" placeholder="0.001">
+                                    <input class="input" id="amount" name="amount" type="number" max="0.1" min="0.001" step="0.001" placeholder="0.001" tabindex="2">
                                 </div>
                             </div>
 
-                            <button id="sendButton" onclick="javascript:faucet_fetch();" class="button is-primary is-fullwidth has-margin-top-25">Send</button>
+                            <button id="sendButton" class="button is-primary is-fullwidth has-margin-top-25" tabindex="3">Press ENTER to send</button>
+</form>
                         </div> 
                     </div>
                 </div>
@@ -115,7 +127,8 @@
     <footer class="footer has-text-centered">
         <div class="container">
             <div class="columns rv-padding">
-                <div class="column has-text-center has-text-left-tablet sponsor">
+                <div class="column has-text-left-tablet sponsor">
+                    <p><a href="about.html">About</a></p>
                     <p><a href="https://www.dglab.com/en" target="_blank">
                         <img src="images/dglab_logo.svg" alt="DG Lab" height="50" width="50">
                     </a></p>

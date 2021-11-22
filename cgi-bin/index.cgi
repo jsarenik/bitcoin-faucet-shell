@@ -6,10 +6,7 @@ export PATH=/busybox:$PATH
 WHERE=/tmp/bin
 test "$QUERY_STRING" = "" \
   || {
-    eval $(echo "$QUERY_STRING" | grep -o '[a-zA-Z]\+=[[:alnum:]]\+')
-    test "$pasteid" = "" || {
-      test -r $WHERE/$pasteid/data && { O=p; test "$deletetoken" = "" || O=d; }
-    }
+    eval $(echo "$QUERY_STRING" | grep -o '[a-zA-Z]\+=[0-9a-z\.]\+')
   }
 
 # Use just first letter of HTTP_ACCEPT - either 'a' or 't'
