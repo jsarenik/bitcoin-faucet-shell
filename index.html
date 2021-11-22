@@ -22,11 +22,7 @@
             if (!address) return faucet_err("Enter an address");
             if (!amount) amount = 0.001;
             if (amount < 0.001 || amount > 0.1) return faucet_err("Invalid amount");
-            let url = `/claim/${escape(address)}/${escape(amount)}`;
-            
-                let captcha = document.getElementById('captcha').value;
-                if (!captcha) return faucet_err("Solve captcha");
-                url += `/${escape(captcha)}`;
+            let url = `/claim/?address=${escape(address)}&amount=${escape(amount)}`;
             
             const div = document.getElementById('faucet_err');
             div.className = "";
@@ -47,10 +43,6 @@
                     let div = document.getElementById('faucet_err');
                     div.className = "notification is-success is-light";
                     div.innerHTML = data;
-                    
-                        document.getElementById('captcha_img').src = `/captcha?${new Date().getTime()}`;
-                        document.getElementById('captcha').value = '';
-                    
                 },
                 error: function(err) {
                     sendButton.disabled = false;
@@ -91,18 +83,6 @@
     </nav>
     
     <div class="content">
-        <section class="hero is-dark has-padding-top-70">
-            <div class="hero-body">
-                <div class="container">
-                    <div class="columns">
-                        <div class="column is-12-desktop">
-                            <p class="leadText is-size-4-tablet is-size-6 has-text-centered">Signet Faucet!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
         <!-- body-->
         <section class="section">
             <div class="container ">
@@ -123,19 +103,6 @@
                                     <input class="input" id="amount" name="amount" type="text" placeholder="0.001">
                                 </div>
                             </div>
-
-                            
-
-                            
-                                <div class="field has-margin-top-25">
-                                    <div class="control">
-                                        <img id="captcha_img" src="/captcha?1637523473538"/>
-                                    </div>
-                                    <div class="control">
-                                        <input class="input" id="captcha" name="captcha" type="input" placeholder="captcha">
-                                    </div>
-                                </div>
-                            
 
                             <button id="sendButton" onclick="javascript:faucet_fetch();" class="button is-primary is-fullwidth has-margin-top-25">Send</button>
                         </div> 

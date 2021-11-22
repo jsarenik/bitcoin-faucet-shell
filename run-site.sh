@@ -1,3 +1,3 @@
 #!/bin/sh
 
-httpd -f -p 8123
+httpd -f -p 8124 -vv
