@@ -41,7 +41,7 @@
                     let comps = data.split("txid ");
                     console.log(`comps = ${comps}`);
                     if (comps.length === 2) {
-                        data = `${comps[0]}txid <a href="https://explorer.bc-2.jp/tx/${comps[1]}">${comps[1].substr(0, 10)}...</a>`;
+                        data = `${comps[0]}txid <a href="https://explorer.bc-2.jp/tx/${comps[1]}" target="_blank">${comps[1].substr(0, 10)}...</a>`;
                     }
                     let div = document.getElementById('faucet_err');
                     div.className = "notification is-success is-light";
