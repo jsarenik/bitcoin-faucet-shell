@@ -30,7 +30,7 @@ exit 1
 NOW=$(date +%s)
 HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
 # Limit number of seconds from last POST attempt
-LIMITS=10
+LIMITS=3600
 LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | tr -d '.:[]')
 LAST=$(stat -c "%Y" $LIMIT 2>/dev/null || echo 999; touch $LIMIT) && {
   test $((NOW-LAST)) -le $LIMITS && {
