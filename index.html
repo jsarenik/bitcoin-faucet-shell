@@ -19,16 +19,25 @@
                     <img src="images/logo-signet.svg" alt="Signet Faucet" width="57" height="40">
                     Signet Faucet
                 </a>
+    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="signetNav">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
             </div>
+            <div class="navbar-menu" id="signetNav">
+              <div class="navbar-start">
+                <a class="navbar-item" href="about.html">About</a>
+              </div>
         </div>
     </nav>
     
     <div class="content">
         <!-- body-->
         <section class="section">
-            <div class="container ">
+            <div class="container">
                 <div class="columns is-centered">
-                    <div class="column is-6-desktop  is-8-tablet">
+                    <div class="column is-6-desktop is-8-tablet">
                         <div class="box has-text-centered">
                             <h3 class="title is-size-4-desktop is-size-5">Enter address</h3>
 
@@ -55,7 +64,6 @@
         <div class="container">
             <div class="columns rv-padding">
                 <div class="column has-text-left-tablet sponsor">
-                    <p><a href="about.html">About</a></p>
                     <p><a href="https://www.dglab.com/en" target="_blank">
                         <img src="images/dglab_logo.svg" alt="DG Lab" height="50" width="50">
                     </a></p>
@@ -73,6 +81,7 @@
     function readyFn( jQuery ) {
       if ( window.jQuery ){
         $('#address').focus();
+        fillburger();
       } else {
         window.setTimeout("readyFn();",20);
       }
@@ -134,6 +143,30 @@
             }
         });
     }
+    function fillburger() {
+
+  // Get all "navbar-burger" elements
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+  // Check if there are any navbar burgers
+  if ($navbarBurgers.length > 0) {
+
+    // Add a click event on each of them
+    $navbarBurgers.forEach( el => {
+      el.addEventListener('click', () => {
+
+        // Get the target from the "data-target" attribute
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+
+        // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+
+      });
+    });
+  }
+}
     </script>
 </body>
 </html>
