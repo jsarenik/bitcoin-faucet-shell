@@ -10,6 +10,7 @@ cat ~/Downloads/bulma/css/bulma.css \
 	-e "s/#1c1c1c/#030303/g" \
 	-e "s/#009e86/#b15200/g" \
 	-e "s/#3449a8/#205bbc/g" \
-	-e "s/#0a0a0a/#1C1C1C/g"
+	-e "s/#0a0a0a/#1C1C1C/g" \
+	-e "s/box-shadow: 0 0 0 0.125em rgba(0, 209, 178, 0.25);$/box-shadow: 0 0 0 0.225em rgba(28, 28, 28, 0.25);/"
 
 cat css-add
