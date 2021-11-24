@@ -42,7 +42,8 @@ restofline="txid $(bitcoin-cli -signet -named sendtoaddress \
   subtractfeefromamount=true \
   replaceable=true \
   avoid_reuse=false \
-  fee_rate=1 | grep .)" || {
+  fee_rate=1 | grep .)" \
+|| {
   res 400 "Something wrong" text/html "Something went wrong"
 } && {
   res 200 OK text/html "Payment of ${amount:-0} BTC sent with $restofline"
