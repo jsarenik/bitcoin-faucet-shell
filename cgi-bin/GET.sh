@@ -10,6 +10,8 @@ res() {
   exit
 }
 
+test "$address" = "" && exit 1
+
 bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
   res 400 "Invalid address" application/json '{"message":"Invalid address"}'
 }
