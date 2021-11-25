@@ -1,0 +1,5 @@
+# Find the Tor onion name in the hostname file
+# under HiddenServiceDir
+HiddenServiceDir /var/lib/tor/signet.you.domain/
+HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.123:80

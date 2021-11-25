@@ -36,7 +36,10 @@
 network fee.</p>
 <p>The blocks on Signet network are not mined, but signed and their timing
 is <a href="https://en.wikipedia.org/wiki/Poisson_distribution">poisson distribution</a>.</p>
-<p>Please do not use Testnet addresses. The coins will <a href="https://mempool.space/signet/tx/448ede04f65db5e7a3d94c86bfcc97d904ab5e23316484bcdacd6d938b55bf90">not</a> be <a href="https://mempool.space/signet/tx/75d14df3bc75eb2560fdf0e72c6c55be4df72283f49169a57b900fe19bac2cec">lost forever</a>, but you will need to import the private key of you Testnet address on to Signet (works well in <a href="https://electrum.org">Electrum Bitcoin Wallet</a>).</p>
+<p>Rather do not use Testnet addresses here. Testnet and Signet use the same address format. The coins sent to your Testnet address will <a href="https://mempool.space/signet/tx/448ede04f65db5e7a3d94c86bfcc97d904ab5e23316484bcdacd6d938b55bf90">not</a> be <a href="https://mempool.space/signet/tx/75d14df3bc75eb2560fdf0e72c6c55be4df72283f49169a57b900fe19bac2cec">lost forever</a>, but you will need to import the private key of the address on to Signet (works well in <a href="https://electrum.org">Electrum Bitcoin Wallet</a>).</p>
+<p>An example <a href="Caddyfile.txt">Caddyfile</a> for
+<a href="https://caddyserver.com/">Caddy2</a> web server serving
+also an effecient <a href="torrc.txt">Tor hidden service</a>.</p>
 </div>
                     </div>
                 </div>
