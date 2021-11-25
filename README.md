@@ -8,7 +8,7 @@ comes from https://github.com/kallewoof/bitcoin-faucet
 
 The point is to have something that can run anywhere
 and has no other dependencies than Bitcoin and `busybox`
-(which cat be statically compiled for `x86_64` architecture
+(which can be statically compiled for `Linux x86_64`
 into a binary smaller than 1MB).
 
 It runs at https://signet.bublina.eu.org (try to open it
