@@ -1,0 +1,42 @@
+(basicfile) {
+        encode zstd gzip                                                        
+        file_server {
+                index index.html index.txt index.xml
+        }
+}
+
+(signet) {                                                                
+        @static {                                                         
+                path /*.png /lib/* /images/*                              
+        }                                                                 
+        @gen {                              
+                path /claim/*               
+        }                                   
+        @myreg {                            
+                path_regexp /claim/([a-z0-9]+)/([0-9\.]+)
+        }                                                
+        root * /home/nsm/web/kalewoof-faucet             
+        handle_errors {                                              
+                rewrite * /{http.error.status_code}.html 
+                file_server                              
+        }                                                
+ 	handle @gen {
+		reverse_proxy * http://127.0.0.1:8765 {
+			header_up X-Real-IP {remote_host}
+		}
+	}
+        handle * {                                       
+                header @static Cache-Control "public, max-age=31536000, immutabl
+        }                                                                       
+}
+
+http://onionaddress.onion, http://127.0.0.123 {
+	import basicfile
+	import signet
+}
+
+signet.you.domain {
+	import basicfile
+	import signet
+	header / Onion-Location http://onionaddress.onion
+}
