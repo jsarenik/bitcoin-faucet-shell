@@ -17,20 +17,21 @@ bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
 }
 
 WHERE=/tmp/faucet
+HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
+LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | tr -d '.:[]')
+LAST=$(stat -c "%Y" $LIMIT 2>/dev/null || echo 999; touch $LIMIT)
 mkdir $WHERE/.limit/$address || {
   res 429 "Another address" application/json \
     '{"message":"Please use another address"}'
 } && {
-NOW=$(date +%s)
-HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
-# Limit number of seconds from last POST attempt
-LIMITS=3600
-LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | tr -d '.:[]')
-LAST=$(stat -c "%Y" $LIMIT 2>/dev/null || echo 999; touch $LIMIT) && {
+  NOW=$(date +%s)
+  # Limit number of seconds from last POST attempt
+  LIMITS=3600
+  # If loopback address (Tor), make the limit shorter
+  echo $HTTP_X_REAL_IP | grep -q "^127.0.0.1$" && LIMITS=30
   test $((NOW-LAST)) -le $LIMITS && {
     res 429 "Slow down" application/json '{"message":"Please slow down"}'
   }
-}
 }
 
 amount=0.0001
