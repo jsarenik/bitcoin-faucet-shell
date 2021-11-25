@@ -11,7 +11,10 @@ and has no other dependencies than Bitcoin and `busybox`
 (which cat be statically compiled for `x86_64` architecture
 into a binary smaller than 1MB).
 
-It runs at https://signet.bublina.eu.org
+It runs at https://signet.bublina.eu.org (try to open it
+in the Tor Browser) and any feedback is welcome here in
+GitHub issues (or anonymously at
+[bin.bublina.eu.org](https://bin.bublina.eu.org/?68dbfa5698fcf316#6KBGZkWssS3TrzTVg93K7VCQECBTmwKn2x9WjRYV72rn)).
 
 ### Documentation
 
