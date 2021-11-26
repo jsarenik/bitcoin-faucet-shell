@@ -6,9 +6,6 @@
 }
 
 (signet) {
-        @myreg {                            
-                path_regexp /claim/([a-z0-9]+)/([0-9\.]+)
-        }                                                
         @static {
                 path /*.png /lib/* /images/*
         }
