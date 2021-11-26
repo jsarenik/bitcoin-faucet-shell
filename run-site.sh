@@ -12,4 +12,6 @@ mkdir -p $WHERE/.limit
 echo Faucet data in $WHERE
 
 echo Serving at http://localhost:8123
-httpd -f -p 127.0.0.1:8123 -vv
+busybox httpd \
+  -c httpd.conf \
+  -f -p 127.0.0.1:8123 -vv
