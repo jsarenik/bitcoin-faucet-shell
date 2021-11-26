@@ -1,4 +1,4 @@
-#!/busybox/sh
+#!/bin/sh
 
 a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; HERE=$(cd $a; pwd)
 export PATH=/busybox:$PATH
