@@ -16,7 +16,7 @@ bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
   res 400 "Invalid address" application/json '{"message":"Invalid address"}'
 }
 
-WHERE=/tmp/faucet
+WHERE=${WHERE:-/tmp/faucet}
 HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
 LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | tr -d '.:[]')
 LAST=$(stat -c "%Y" $LIMIT 2>/dev/null || echo 999; touch $LIMIT)
