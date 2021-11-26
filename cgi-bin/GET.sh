@@ -35,7 +35,7 @@ test "$AA" = "1" && {
     '{"message":"Use another address"}'
 }
 
-amount=0.0001
+amount=${amount:-0.0001}
 #restofline=$(lightning-cli --signet withdraw $address ${amount:-0}btc slow \
 #  | grep txid | tr -d '":,' | cut -b4- | grep .) || {
 restofline="txid $(bitcoin-cli -signet -named sendtoaddress \
