@@ -14,4 +14,4 @@ echo Faucet data in $WHERE
 echo Serving at http://localhost:8123
 busybox httpd \
   -c httpd.conf \
-  -f -p 127.0.0.1:8123 -vv
+  -f -p 127.0.0.1:8123
