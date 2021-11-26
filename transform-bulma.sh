@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cat ~/Downloads/bulma/css/bulma.css \
+cat tmp/bulma/css/bulma.css \
   | sed -e "s/#00d1b2/#E46A00/g" \
 	-e "s/#b5b5b5/#b15200/g" \
 	-e "s/rgba(10, 10, 10,/rgba(28, 28, 28,/g" \
