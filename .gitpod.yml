@@ -1,0 +1,10 @@
+image:
+ file: .gitpod.Dockerfile
+
+tasks:
+  - init: ./run-site.sh
+    command: 'echo "No start command defined yet"'
+
+ports:
+  - port: 8123
+    onOpen: open-preview
