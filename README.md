@@ -1,5 +1,7 @@
 # bitcoin-faucet-shell
 
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jsarenik/bitcoin-faucet-shell)
+
 A POSIX shell implementation of a Bitcoin faucet
 intended for use with [Busybox](https://busybox.net).
 
