@@ -7,6 +7,9 @@ bitcoin-cli -signet echo "hello world" >/dev/null 2>&1 || {
   WHERE=$PWD/tmp/faucet
 }
 
+# Make a fake balance.txt
+echo 15.00000000 > balance.txt
+
 export WHERE=${WHERE:-/tmp/faucet}
 mkdir -p $WHERE/.limit
 echo Faucet data in $WHERE
