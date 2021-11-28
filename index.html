@@ -94,9 +94,9 @@
       }
     }
     readyFn();
-    function faucet_err(msg) {
-        let div = document.getElementById('faucet_err');
-        div.className = "notification is-danger is-light";
+    function faucet_err(msg, mclass="notification is-danger is-light") {
+        const div = document.getElementById('faucet_err');
+        div.className = mclass;
         div.innerHTML = msg;
     }
     function faucet_fetch() {
@@ -110,9 +110,7 @@
         if (amount < 0.001 || amount > 0.1) return faucet_err("Invalid amount");
         let url = `/claim/?address=${escape(address)}&amount=${escape(amount)}`;
 
-        const div = document.getElementById('faucet_err');
-        div.className = "";
-        div.innerHTML = "- processing -";
+        faucet_err("- processing -", "");
         const sendButton = document.getElementById('sendButton');
         sendButton.disabled = true;
         $.ajax({
@@ -126,9 +124,7 @@
                 if (comps.length === 2) {
                     data = `${comps[0]}txid <a href="https://mempool.space/signet/tx/${comps[1]}" target="_blank">${comps[1].substr(0, 10)}...</a>`;
                 }
-                let div = document.getElementById('faucet_err');
-                div.className = "notification is-success is-light";
-                div.innerHTML = data;
+                faucet_err(data, "notification is-success is-light");
             },
             error: function(err) {
                 sendButton.disabled = false;
