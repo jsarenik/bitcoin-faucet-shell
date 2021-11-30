@@ -17,9 +17,6 @@
 
 .hero-body {
   padding: 1.5rem; }
-  @media screen and (min-width: 769px) {
-    .hero-body {
-      padding: 3rem 1.5rem; } }
 
 .section {
   background-color: #F4F4F4; }
