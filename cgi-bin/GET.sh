@@ -10,10 +10,8 @@ res() {
   exit
 }
 
-test "$address" = "" && exit 1
-
-bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
-  res 400 "Invalid address" application/json '{"message":"Invalid address"}'
+test "$address" = "" && {
+  res 400 "Empty address" application/json '{"message":"Empty address"}'
 }
 
 WHERE=${WHERE:-/tmp/faucet}
@@ -33,6 +31,10 @@ test $((NOW-LAST)) -le $LIMITS && {
 test "$AA" = "1" && {
   res 429 "Another address" application/json \
     '{"message":"Use another address"}'
+}
+
+bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
+  res 400 "Invalid address" application/json '{"message":"Invalid address"}'
 }
 
 amount=${amount:-0.0001}
