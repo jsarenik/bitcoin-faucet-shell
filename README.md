@@ -18,6 +18,17 @@ in the Tor Browser) and any feedback is welcome here in
 GitHub issues (or anonymously at
 [bin.bublina.eu.org](https://bin.bublina.eu.org/?68dbfa5698fcf316#6KBGZkWssS3TrzTVg93K7VCQECBTmwKn2x9WjRYV72rn)).
 
-### Documentation
+## Documentation
 
-See `git log` and about.html.
+See also `git log` and about.html.
+
+### API
+
+The original REST API is following:
+
+    https://signetfaucet.com/claim/addr/amount/captcha
+
+Busybox is returning 404 error on non-existent directories
+so it has to be used with Caddy2 to get a backward-compatible
+API. See in-repo `Caddyfile.txt` for an example on how to set
+up the redirects properly.
