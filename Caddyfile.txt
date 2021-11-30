@@ -10,7 +10,7 @@
                 path /*.png /lib/* /images/*
         }
         @gen {
-                path /claim/*
+                path /claim/
         }
         root * /srv/web/bitcoin-faucet-shell
         handle_errors {
