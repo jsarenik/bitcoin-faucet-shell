@@ -39,7 +39,7 @@
 		}
 	}
 	route * {
-		root * /home/nsm/web/kalewoof-faucet
+		root * /home/nsm/web/bitcoin-faucet-shell
 		header @static Cache-Control "public, max-age=31536000, immutable"
 	}
 	handle_errors {
