@@ -38,18 +38,21 @@ bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
 }
 
 amount=${amount:-0.0001}
-#restofline=$(lightning-cli --signet withdraw $address ${amount:-0}btc slow \
-#  | grep txid | tr -d '":,' | cut -b4- | grep .) || {
-restofline="txid $(bitcoin-cli -signet -named sendtoaddress \
-  address=$address \
-  amount=$amount \
-  subtractfeefromamount=true \
-  replaceable=true \
-  avoid_reuse=false \
-  fee_rate=1 | grep .)" \
-|| {
-  res 400 "Something wrong" text/html "Something went wrong"
+amsat=$(echo $amount*100000000 | bc | cut -d. -f1)
+test $amsat -le 10000000 -a $amsat -ge 10000 || {
+  res 400 "Out of bounds" application/json \
+    '{"message":"Amount out of boundaries"}'
 } && {
-  res 200 OK text/html "Payment of ${amount:-0} BTC sent with $restofline"
-#Payment of ${amount:-0} BTC sent with txid 2f8e854e4c2205aa1ff47e2a73df5996e38102b3bde0fd0d872552ddc5ab2a46
-}
+  restofline="txid $(bitcoin-cli -signet -named sendtoaddress \
+    address=$address \
+    amount=$amount \
+    subtractfeefromamount=true \
+    replaceable=true \
+    avoid_reuse=false \
+    fee_rate=1 | grep .)" \
+  || {
+    res 400 "Something wrong" text/html "Something went wrong"
+  } && {
+    res 200 OK text/html "Payment of ${amount:-0} BTC sent with $restofline"
+  } # restofline
+} # amount check
