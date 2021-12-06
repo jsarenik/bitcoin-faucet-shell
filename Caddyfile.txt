@@ -20,16 +20,16 @@
 	}
 	# Old API address and amount
 	@oldapi {
-		path_regexp claimre /claim/(tb1[pq][a-z0-9]+)/([0-9\.]+)
+		path_regexp claimre /claim/(tb1[pq][a-z0-9]+)/(0\.[0-1][0-9]*)
 	}
 	# Old API everything else (like captcha)
 	@oldapirest {
-		path_regexp claimrest /claim/(tb1[pq][a-z0-9]+)/([0-9\.]+)/.*
+		path_regexp claimrest /claim/(tb1[pq][a-z0-9]+)/(0\.[0-1][0-9]*)/.*
 	}
 	route /claim/tb1* {
-		rewrite @oldapiao /claim/?address={re.claimreao.1}
-		rewrite @oldapi /claim/?address={re.claimre.1}&amount={re.claimre.2}
 		rewrite @oldapirest /claim/?address={re.claimrest.1}&amount={re.claimrest.2}
+		rewrite @oldapi /claim/?address={re.claimre.1}&amount={re.claimre.2}
+		rewrite @oldapiao /claim/?address={re.claimreao.1}
 	}
 	route @gen {
 		handle @gen {
