@@ -14,15 +14,26 @@ test "$address" = "" && {
   res 400 "Empty address" application/json '{"message":"Empty address"}'
 }
 
+# Setithe directory where the rate-limiting data is stored.
+# It can be overriden by a global inherited environment variable.
 WHERE=${WHERE:-/tmp/faucet}
+
+# HTTP_X_REAL_IP is the HTTP header set in Caddyfile, falling back
+# to the contents of REMOTE_ADDR variable set by busybox httpd
+# if not set by the proxying web server.
 HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
+
+# Set the file name used for rate-limiting.
 LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | cut -d: -f1-4 | tr -d '.:\[\]')
-LAST=$(stat -c "%Y" $LIMIT 2>/dev/null || echo 999; touch $LIMIT)
+
+# Set last modification (seconds from Epoch) or 1, touch the file
+# (this step creates the file if it did not exist yet).
+LAST=$(stat -c "%Y" $LIMIT 2>/dev/null || echo 1; touch $LIMIT)
 mkdir $WHERE/.limit/$address || AA=1
 NOW=$(date +%s)
 # Limit number of seconds from last attempt
 LIMITS=${LIMITS:-4623}
-# If loopback address (Tor), make the limit shorter
+# Special limit for loopback address (usually Tor)
 test "$HTTP_X_REAL_IP" = "127.0.0.1" && LIMITS=${TORLIMITS:-5279}
 test $((NOW-LAST)) -le $LIMITS && {
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
