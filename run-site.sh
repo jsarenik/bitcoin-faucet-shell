@@ -9,7 +9,6 @@ bitcoin-cli -signet echo "hello world" >/dev/null 2>&1 || {
 
 # Make a fake balance.txt
 echo 15.00000000 > balance.txt
-echo 1234 > /dev/shm/signet-block
 
 export WHERE=${WHERE:-/tmp/faucet}
 export USADDR=$WHERE/usaddr
