@@ -9,10 +9,20 @@ bitcoin-cli -signet echo "hello world" >/dev/null 2>&1 || {
 
 # Make a fake balance.txt
 echo 15.00000000 > balance.txt
+echo 1234 > /dev/shm/signet-block
 
 export WHERE=${WHERE:-/tmp/faucet}
+export USADDR=$WHERE/usaddr
+
 mkdir -p $WHERE/.limit
-echo Faucet data in $WHERE
+mkdir $USADDR
+
+# Following are all address prefixes
+cd $USADDR
+mkdir m n 2 tb1q tb1p
+cd -
+
+echo Faucet data is in $WHERE
 
 echo Serving at http://localhost:8123
 busybox httpd \

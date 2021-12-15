@@ -32,6 +32,10 @@ echo "$amount" | grep -qE '^0{0,1}\.[01][0-9]{0,7}$' || {
 # It can be overriden by a global inherited environment variable.
 WHERE=${WHERE:-/tmp/faucet}
 
+# Directory containing directories with used addresses
+# Should be regularly cleaned
+USADDR=${USADDR:-"$WHERE/usaddr"}
+
 # HTTP_X_REAL_IP is the HTTP header set in Caddyfile, falling back
 # to the contents of REMOTE_ADDR variable set by busybox httpd
 # if not set by the proxying web server.
@@ -40,16 +44,26 @@ HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
 # Set the file name used for rate-limiting.
 LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | cut -d: -f1-4 | tr -d '.:\[\]')
 
+# The time is counted according to blocks
+NOW=$(cat /dev/shm/signet-block)
+
 # Set last modification (seconds from Epoch) or 1, touch the file
 # (this step creates the file if it did not exist yet).
-LAST=$(stat -c "%Y" $LIMIT 2>/dev/null || echo 1; touch $LIMIT)
-mkdir $WHERE/.limit/$address || AA=1
-NOW=$(date +%s)
-# Limit number of seconds from last attempt
-LIMITS=${LIMITS:-4623}
+LAST=$(cat $LIMIT 2>/dev/null || echo 1; echo $NOW > $LIMIT)
+
+# Now a hack follows. It separates the addresses into prefix
+# directories. Each for tb1p*, tb1q*, 2*, m*, n*
+# See run-site.sh where the directories are pre-created
+op=${address%${address#?}}
+test "$op" = "t" && op=${address%${address#????}}
+ADLOCK=$USADDR/$op/${address##${op}}
+mkdir $ADLOCK || AA=1
+
+# Limit number of blocks from last attempt
+LIMITB=${LIMITB:-144}
 # Special limit for loopback address (usually Tor)
-test "$HTTP_X_REAL_IP" = "127.0.0.1" && LIMITS=${TORLIMITS:-5279}
-test $((NOW-LAST)) -le $LIMITS && {
+test "$HTTP_X_REAL_IP" = "127.0.0.1" && LIMITB=${TORLIMITB:-155}
+test $((NOW-LAST)) -le $LIMITB && {
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
 
