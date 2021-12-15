@@ -20,7 +20,7 @@
 	}
 	# Old API address and amount
 	@oldapi {
-		path_regexp claimre /claim/(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39,}|[mn2][a-zA-HJ-NP-Z0-9]{25,})/(0\.[0-1][0-9]{0,7})/{0,1}.*
+		path_regexp claimre /claim/(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39,}|[mn2][a-zA-HJ-NP-Z0-9]{25,})/(0{0,1}\.[01][0-9]*)/{0,1}.*
 	}
 	@apiroute {
 		method GET

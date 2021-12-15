@@ -20,6 +20,14 @@ echo "$address" | grep -qE '^(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|tb1[qpzr
   res 400 "Invalid address" application/json '{"message":"Invalid address"}'
 }
 
+amount=${amount:-0.0001}
+amount=${amount##0.}
+amount=0.${amount##.}
+# Early invalid amount detection
+echo "$amount" | grep -q '^0{0,1}\.[01][0-9]{0,7}$' || {
+  res 400 "Invalid amount" application/json '{"message":"Invalid amount"}'
+}
+
 # Setithe directory where the rate-limiting data is stored.
 # It can be overriden by a global inherited environment variable.
 WHERE=${WHERE:-/tmp/faucet}
@@ -54,7 +62,6 @@ bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
   res 400 "Invalid address" application/json '{"message":"Invalid address"}'
 }
 
-amount=${amount:-0.0001}
 amsat=$(echo $amount*100000000 | bc | cut -d. -f1)
 test $amsat -le 10000000 -a $amsat -ge 10000 || {
   res 400 "Out of bounds" application/json \
