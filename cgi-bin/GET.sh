@@ -24,7 +24,7 @@ amount=${amount:-0.0001}
 amount=${amount##0.}
 amount=0.${amount##.}
 # Early invalid amount detection
-echo "$amount" | grep -q '^0{0,1}\.[01][0-9]{0,7}$' || {
+echo "$amount" | grep -qE '^0{0,1}\.[01][0-9]{0,7}$' || {
   res 400 "Invalid amount" application/json '{"message":"Invalid amount"}'
 }
 
