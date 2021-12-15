@@ -16,11 +16,11 @@
 	}
 	# Old API address_only regex path matcher
 	@oldapiao {
-		path_regexp claimreao /claim/(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{59}|[mn2][a-zA-HJ-NP-Z0-9]{25,33})/{0,1}
+		path_regexp claimreao /claim/(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39,}|[mn2][a-zA-HJ-NP-Z0-9]{25,})/{0,1}
 	}
 	# Old API address and amount
 	@oldapi {
-		path_regexp claimre /claim/(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{59}|[mn2][a-zA-HJ-NP-Z0-9]{25,33})/(0\.[0-1][0-9]{0,7})/{0,1}.*
+		path_regexp claimre /claim/(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39,}|[mn2][a-zA-HJ-NP-Z0-9]{25,})/(0\.[0-1][0-9]{0,7})/{0,1}.*
 	}
 	@apiroute {
 		method GET
