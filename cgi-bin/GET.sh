@@ -14,6 +14,12 @@ test "$address" = "" && {
   res 400 "Empty address" application/json '{"message":"Empty address"}'
 }
 
+# Early invalid address detection just using grep
+# does not leave any trace of the invalid address
+echo "$address" | grep -qE '^(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{59}|[mn2][a-zA-HJ-NP-Z0-9]{25,33})$' || {
+  res 400 "Invalid address" application/json '{"message":"Invalid address"}'
+}
+
 # Setithe directory where the rate-limiting data is stored.
 # It can be overriden by a global inherited environment variable.
 WHERE=${WHERE:-/tmp/faucet}
