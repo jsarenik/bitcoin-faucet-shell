@@ -28,7 +28,7 @@ echo "$amount" | grep -qE '^0{0,1}\.[01][0-9]{0,7}$' || {
   res 400 "Invalid amount" application/json '{"message":"Invalid amount"}'
 }
 
-# Setithe directory where the rate-limiting data is stored.
+# Set the directory where the rate-limiting data is stored.
 # It can be overriden by a global inherited environment variable.
 WHERE=${WHERE:-/tmp/faucet}
 
