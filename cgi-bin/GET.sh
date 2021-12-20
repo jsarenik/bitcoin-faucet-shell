@@ -35,6 +35,9 @@ WHERE=${WHERE:-/tmp/faucet}
 # Directory containing directories with used addresses
 # Should be regularly cleaned
 USADDR=${USADDR:-"$WHERE/usaddr"}
+op=${address%${address#?}}
+ADLOCK=$USADDR/$op/${address##${op}}
+mkdir $ADLOCK || { touch $ADLOCK; AA=1; }
 
 # HTTP_X_REAL_IP is the HTTP header set in Caddyfile, falling back
 # to the contents of REMOTE_ADDR variable set by busybox httpd
@@ -44,18 +47,8 @@ HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
 # Set the file name used for rate-limiting.
 LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | cut -d: -f1-3 | tr -d '.:\[\]')
 
-# Set last modification (seconds from Epoch) or 1, touch the file
-# (this step creates the file if it did not exist yet).
-LAST=$(stat -c "%Y" $LIMIT 2>/dev/null || echo 1; touch $LIMIT)
-op=${address%${address#?}}
-ADLOCK=$USADDR/$op/${address##${op}}
-mkdir $ADLOCK || AA=1
-NOW=$(date +%s)
-# Limit number of seconds from last attempt
-LIMITS=${LIMITS:-4623}
-# Special limit for loopback address (usually Tor)
-test "$HTTP_X_REAL_IP" = "127.0.0.1" && LIMITS=${TORLIMITS:-5279}
-test $((NOW-LAST)) -le $LIMITS && {
+mkdir $LIMIT || {
+  touch $LIMIT
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
 
