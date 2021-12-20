@@ -42,7 +42,7 @@ USADDR=${USADDR:-"$WHERE/usaddr"}
 HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
 
 # Set the file name used for rate-limiting.
-LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | cut -d: -f1-4 | tr -d '.:\[\]')
+LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | cut -d: -f1-3 | tr -d '.:\[\]')
 
 # Set last modification (seconds from Epoch) or 1, touch the file
 # (this step creates the file if it did not exist yet).
