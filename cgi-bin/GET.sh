@@ -47,6 +47,7 @@ LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | cut -d: -f1-4 | tr -d '.:\[\]')
 # Set last modification (seconds from Epoch) or 1, touch the file
 # (this step creates the file if it did not exist yet).
 LAST=$(stat -c "%Y" $LIMIT 2>/dev/null || echo 1; touch $LIMIT)
+op=${address%${address#?}}
 ADLOCK=$USADDR/$op/${address##${op}}
 mkdir $ADLOCK || AA=1
 NOW=$(date +%s)
