@@ -16,7 +16,7 @@ test "$address" = "" && {
 
 # Early invalid address detection just using grep
 # does not leave any trace of the invalid address
-echo "$address" | grep -qE '^(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{59}|[mn2][a-zA-HJ-NP-Z0-9]{25,33})$' || {
+echo "$address" | grep -qE '^(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{59}|[mn2][a-zA-HJ-NP-Z0-9]{25,34})$' || {
   res 400 "Invalid address" application/json '{"message":"Invalid address"}'
 }
 
