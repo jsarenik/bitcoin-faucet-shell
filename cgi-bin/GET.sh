@@ -28,6 +28,23 @@ echo "$amount" | grep -qE '^0{0,1}\.[01][0-9]{0,7}$' || {
   res 400 "Invalid amount" application/json '{"message":"Invalid amount"}'
 }
 
+# Make sure the amount makes sense early enough as it is a simple
+# computation not requiring any external binary.
+amsat=$(echo $amount*100000000 | bc | cut -d. -f1)
+test $amsat -le 10000000 -a $amsat -ge 10000 || {
+  res 400 "Out of bounds" application/json \
+    '{"message":"Amount out of boundaries"}'
+}
+
+# Checking address with bitcoin-cli in this stage should be pretty
+# cheap as all totally invalid addresses are already ruled out
+# and we make sure that space is saved by not allowing to create
+# unlimited number of directories which would pass the regex rule
+# but would be actually invalid addresses.
+bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
+  res 400 "Invalid address" application/json '{"message":"Invalid address"}'
+}
+
 # Set the directory where the rate-limiting data is stored.
 # It can be overriden by a global inherited environment variable.
 WHERE=${WHERE:-/tmp/faucet}
@@ -57,25 +74,15 @@ test "$AA" = "1" && {
     '{"message":"Use another address"}'
 }
 
-bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
-  res 400 "Invalid address" application/json '{"message":"Invalid address"}'
-}
-
-amsat=$(echo $amount*100000000 | bc | cut -d. -f1)
-test $amsat -le 10000000 -a $amsat -ge 10000 || {
-  res 400 "Out of bounds" application/json \
-    '{"message":"Amount out of boundaries"}'
+restofline="txid $(bitcoin-cli -signet -named sendtoaddress \
+  address=$address \
+  amount=$amount \
+  subtractfeefromamount=true \
+  replaceable=true \
+  avoid_reuse=false \
+  fee_rate=1 | grep .)" \
+|| {
+  res 400 "Something wrong" text/html "Something went wrong"
 } && {
-  restofline="txid $(bitcoin-cli -signet -named sendtoaddress \
-    address=$address \
-    amount=$amount \
-    subtractfeefromamount=true \
-    replaceable=true \
-    avoid_reuse=false \
-    fee_rate=1 | grep .)" \
-  || {
-    res 400 "Something wrong" text/html "Something went wrong"
-  } && {
-    res 200 OK text/html "Payment of ${amount:-0} BTC sent with $restofline"
-  } # restofline
-} # amount check
+  res 200 OK text/html "Payment of ${amount:-0} BTC sent with $restofline"
+} # restofline
