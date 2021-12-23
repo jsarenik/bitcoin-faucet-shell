@@ -12,4 +12,5 @@ test -r tmp/$USESTYLE || {
 }
 
 mkdir css 2>/dev/null
-./transform-bulma.sh > css/main.css
+./transform-bulma.sh > tmp/css
+uglifycss tmp/css > css/main.css
