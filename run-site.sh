@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./prepare.sh
+./prepare-css.sh
 bitcoin-cli -signet echo "hello world" >/dev/null 2>&1 || {
   echo Running in mock mode
   export PATH=$PWD/mock:$PATH
