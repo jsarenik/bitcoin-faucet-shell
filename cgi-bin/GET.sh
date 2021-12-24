@@ -53,6 +53,7 @@ WHERE=${WHERE:-/tmp/faucet}
 # Should be regularly cleaned
 USADDR=${USADDR:-"$WHERE/usaddr"}
 op=${address%${address#?}}
+test "$op" = "t" && op=${address%${address#????}}
 ADLOCK=$USADDR/$op/${address##${op}}
 mkdir $ADLOCK || { touch $ADLOCK; AA=1; }
 
