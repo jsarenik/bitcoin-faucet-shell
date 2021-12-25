@@ -66,9 +66,11 @@ HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
 LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | cut -d: -f1-3 | tr -d '.:\[\]')
 
 mkdir $LIMIT || {
-  touch $LIMIT
+  touch -r $ADLOCK $LIMIT
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
+
+touch -r $ADLOCK $LIMIT
 
 test "$AA" = "1" && {
   res 429 "Another address" application/json \
