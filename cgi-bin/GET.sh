@@ -85,7 +85,7 @@ restofline="txid $(bitcoin-cli -signet -named sendtoaddress \
   address=$address \
   amount=$amount \
   subtractfeefromamount=false \
-  replaceable=true \
+  replaceable=false \
   avoid_reuse=false \
   fee_rate=1 | grep .)" \
 || {
