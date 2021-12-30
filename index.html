@@ -100,7 +100,7 @@
           event.target.setCustomValidity('Username should only contain lowercase letters. e.g. john');
         }
         if (!address) return faucet_err("Enter an address");
-        let url = `/claim/?address=${escape(address)}&amount=${escape(amount)}`;
+        let url = `/claim/?address=${escape(address)}`;
 
         faucet_err("- processing -", "");
         const sendButton = document.getElementById('sendButton');
