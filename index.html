@@ -41,7 +41,7 @@
                 <div class="columns is-centered">
                     <div class="column is-6-desktop is-8-tablet">
                         <div class="box has-text-centered">
-                            <h3 class="title is-size-4-desktop is-size-5">Enter address and optionally amount (0.001-0.1)</h3>
+                            <h3 class="title is-size-4-desktop is-size-5">Enter address</h3>
 
                             <div id="faucet_err"></div>
 
@@ -50,11 +50,6 @@
                             <div class="field has-margin-top-25">
                                 <div class="control">
                                     <input class="input" id="address" name="address" type="text" placeholder="tb1[pq]... or [mn]... or 2..." tabindex="1" autocapitalize="off" autocorrect="off" pattern="^(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{59}|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|[mn2][a-km-zA-HJ-NP-Z1-9]{25,34})" title="Use a valid signet address (legacy, p2sh-segwit, bech32 or bech32m).">
-                                </div>
-                            </div>
-                            <div class="field has-margin-top-25">
-                                <div class="control">
-                                    <input class="input" id="amount" name="amount" type="number" max="0.1" min="0.001" step="0.001" placeholder="0.001" tabindex="2" value="0.001">
                                 </div>
                             </div>
 
@@ -101,13 +96,10 @@
     }
     function faucet_fetch() {
         let address = document.getElementById('address').value;
-        let amount = document.getElementById('amount').value;
         address.oninvalid = function(event) {
           event.target.setCustomValidity('Username should only contain lowercase letters. e.g. john');
         }
         if (!address) return faucet_err("Enter an address");
-        if (!amount) amount = 0.001;
-        if (amount < 0.001 || amount > 0.1) return faucet_err("Invalid amount");
         let url = `/claim/?address=${escape(address)}&amount=${escape(amount)}`;
 
         faucet_err("- processing -", "");

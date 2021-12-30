@@ -20,6 +20,7 @@ echo "$address" | grep -qE '^(tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|tb1[qpzr
   res 400 "Invalid address" application/json '{"message":"Invalid address"}'
 }
 
+# Left for backward API compatibility, the amount is ignored further
 amount=${amount:-0.0001}
 amount=${amount##0.}
 amount=0.${amount##.}
@@ -35,6 +36,9 @@ test $amsat -le 10000000 -a $amsat -ge 10000 || {
   res 400 "Out of bounds" application/json \
     '{"message":"Amount out of boundaries"}'
 }
+
+# Supplied amount is ignored and set to a random value starting with 0.00
+amount=0.00$(printf "%05d" $RANDOM)
 
 # Checking address with bitcoin-cli in this stage should be pretty
 # cheap as all totally invalid addresses are already ruled out
