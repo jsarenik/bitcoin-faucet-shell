@@ -10,4 +10,4 @@ test -r css/main.css || {
 }
 brotli-it.sh
 rsync -av --exclude=balance.txt --exclude=tmp \
-  --delete . singer:web/bitcoin-faucet-shell/
+  --delete . singer:web/pnp-faucet/

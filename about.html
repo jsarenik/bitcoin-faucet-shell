@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
-    <title>About Signet Faucet</title>
+    <title>About PNP Faucet</title>
     <link rel="stylesheet" href="/css/main.css">
     <style>
 	.word-wrap {
@@ -22,8 +22,7 @@
         <div class="container">
             <div class="navbar-brand">
                 <a class="navbar-item" href="/">
-                    <img src="/images/logo-signet.svg" alt="Signet Faucet" width="57" height="40">
-                    Signet Faucet
+                    PNP Faucet
                 </a>
             </div>
             <div class="navbar-menu" id="signetNav">
@@ -63,14 +62,17 @@ fill="currentColor" class="octo-body"></path>
 <p>When done testing with the signet coins, please return them to the following address:</p>
 
 <ul>
-<li>bech32 (Native Segwit): <span style="font-size: xx-small;" class="word-wrap"><a href="https://ex.signet.bublina.eu.org/address/tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn">tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn</a></span></li>
+<li>bech32 (Native Segwit): <span style="font-size: xx-small;" class="word-wrap"><a href="https://ex.signet.bublina.eu.org/address/tb1q5ygrrwydtuyqxtl8nxkw3wz64d85g3qkq7s0r0">tb1q5ygrrwydtuyqxtl8nxkw3wz64d85g3qkq7s0r0</a></span></li>
 </ul>
 
 <h4>Signet info</h4>
+
+<p>PlebNet Playground is just a custom Signet network.</p>
+
 <p>The blocks on <a href="https://en.bitcoin.it/wiki/Signet">Signet network</a>
 are not really mined, but rather just signed and their timing
-is a <a href="https://en.wikipedia.org/wiki/Poisson_distribution">poisson distribution</a> which is used in order to resemble the average timing of blocks
-on the main Bitcoin network.</p>
+currently tries to lower the difficulty, so exactly just 5 blocks are mined
+on Plebnet Playground in an hour (as of April 2023).</p>
 
 <h4>Testing addresses</h4>
 <p>Do not use Testnet addresses here. Testnet and Signet use the same address format and the coins sent to your Testnet address will need to be redeemed by importing the private key (or <a href="https://bitcoinelectrum.com/sweeping-your-private-keys-into-electrum/">sweeping it</a>) on to Signet (works well in <a href="https://electrum.org">Electrum Bitcoin Wallet</a>, <a href="https://sw.bublina.eu.org">Signet Web Wallet</a> or <a href="https://bitcoincore.org/en/doc/0.21.0/rpc/wallet/importprivkey/">Bitcoin Core</a>).</p>
@@ -80,7 +82,7 @@ on the main Bitcoin network.</p>
 also an efficient <a href="torrc.txt">Tor hidden service</a>.</p>
 <h4>Git repository</h4>
 <p>Originally inspired and SWAG-reused from <a href="https://github.com/kallewoof/bitcoin-faucet">bitcoin-faucet</a>.</p>
-<p>This POSIX-shell reimplementation is <a href="https://github.com/jsarenik/bitcoin-faucet-shell">hosted on GitHub</a>.</p>
+<p>This POSIX-shell reimplementation is <a href="https://github.com/jsarenik/bitcoin-faucet-shell">hosted on GitHub</a>, this Plebnet Playground variant resides in its own branch.</p>
 </div>
                     </div>
                 </div>
