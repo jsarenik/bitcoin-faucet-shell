@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd $DATADIR
+
 res() {
   cat <<-EOF
 	HTTP/1.1 $1 $2
@@ -47,7 +49,7 @@ amount=0.00$(printf "%05d" $((RANDOM + 500)))0
 # and we make sure that space is saved by not allowing to create
 # unlimited number of directories which would pass the regex rule
 # but would be actually invalid addresses.
-bitcoin-cli -signet validateaddress $address | grep -q Invalid && {
+bch.sh validateaddress $address | grep -q Invalid && {
   res 400 "Invalid address" application/json '{"message":"Invalid address"}'
 }
 
@@ -85,7 +87,7 @@ test "$AA" = "1" && {
     '{"message":"Use another address"}'
 }
 
-cd $HOME/.bitcoin/signet/wallets/wosh-default
+cd $HOME/.bitcoin-plebnet/signet/wallets/wosh-default
 restofline="txid $(wosh send $address | grep .)" \
 || {
   res 400 "Something wrong" text/html "Something went wrong"
