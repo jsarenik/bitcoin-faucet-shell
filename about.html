@@ -53,6 +53,7 @@ fill="currentColor" class="octo-body"></path>
                 <div class="columns is-centered">
                     <div class="column is-6-desktop  is-8-tablet">
 <div class="box">
+<br><br>
 <p>This faucet is sending intentionally a random small amount.</p><p>Current balance:</p>
 <div id="faucet_err"></div>
 
@@ -66,11 +67,11 @@ fill="currentColor" class="octo-body"></path>
 <li>legacy: <span style="font-size: xx-small;" class="word-wrap"><a href="https://ex.plebnet.bublina.eu.org/address/mvzF8DhR4YVK7R5nrjAH94pNzDVvwp7Qo1">mvzF8DhR4YVK7R5nrjAH94pNzDVvwp7Qo1</a></span></li>
 </ul>
 
-<p>PlebNet Playground is just a custom Signet network.</p>
+<p>PlebNet Playground is just a <a href="https://en.bitcoin.it/wiki/Signet#Custom_Signet">custom Signet network</a>.</p>
 
-<p>The blocks on <a href="https://en.bitcoin.it/wiki/Signet">Signet network</a>
-are not really mined, but rather just signed and their timing
-is a <a href="https://en.wikipedia.org/wiki/Poisson_distribution">poisson distribution</a> which is used in order to resemble the average timing of blocks
+<p>The blocks on PlebNet Playground network
+are not really mined, but rather just signed, at the moment in very exact 10-minute intervals so that the timing resembles the  <!-- and their timing
+is a <a href="https://en.wikipedia.org/wiki/Poisson_distribution">poisson distribution</a> which is used in order to resemble the average--> average timing of blocks
 on the main Bitcoin network.</p>
 <p>Do not use Testnet addresses here. Testnet and Signet use the same address format and the coins sent to your Testnet address will need to be redeemed by importing the private key (or <a href="https://bitcoinelectrum.com/sweeping-your-private-keys-into-electrum/">sweeping it</a>) on to Signet.</p>
 <p>See an example <a href="Caddyfile.txt">Caddyfile</a> for
@@ -84,22 +85,6 @@ also an efficient <a href="torrc.txt">Tor hidden service</a>.</p>
         </section>
     </div>
     
-    <footer class="footer has-text-centered">
-        <div class="container">
-            <div class="columns rv-padding">
-                <div class="column has-text-center has-text-left-tablet sponsor">
-                    <p><a href="https://www.dglab.com/en" target="_blank">
-                        <img src="/images/dglab_logo.svg" alt="DG Lab" height="50" width="50">
-                    </a></p>
-                </div>
-                <div class="column has-text-center has-text-right-tablet copyright">
-                    <div class="copyright__text">
-                        <p class="is-size-7">Copyright © DG Lab All rights reserved.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
     <script src="/lib/jquery.min.js" async></script>
     <script async>
     function readyFn( jQuery ) {
