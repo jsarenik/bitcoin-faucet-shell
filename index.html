@@ -97,7 +97,7 @@
                 let comps = data.split("txid ");
                 console.log(`comps = ${comps}`);
                 if (comps.length === 2) {
-                    data = `${comps[0]}txid <a href="https://ex.signet.bublina.eu.org/tx/${comps[1]}" target="_blank">${comps[1].substr(0, 10)}...</a>`;
+                    data = `${comps[0]}txid <a href="https://explorer.plebnet.fun/tx/${comps[1]}" target="_blank">${comps[1].substr(0, 10)}...</a>`;
                 }
                 faucet_err(data, "notification is-success is-light");
             },
