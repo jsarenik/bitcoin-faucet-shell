@@ -42,7 +42,7 @@ test $amsat -le 10000000 -a $amsat -ge 10000 || {
 # Supplied amount is ignored and set to a random value starting with 0.00
 # at least 5000 satoshi (500 minimum is 0.0000500 == 0.00005000)
 # $RANDOM maximum value seems to be 5 digits long so add one more zero
-amount=0.00$(printf "%05d" $((RANDOM + 500)))0
+amount=0.$(printf "%05d" $((RANDOM + 500)))000
 
 # Checking address with bitcoin-cli in this stage should be pretty
 # cheap as all totally invalid addresses are already ruled out
