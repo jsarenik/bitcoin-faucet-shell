@@ -1,6 +1,7 @@
 #!/bin/sh
 
-type uglifycss || npm install -g uglifycss
+UGLIFY=uglifycss
+type uglifycss || UGLIFY=cat
 
 BV=0.9.3
 BULMA=https://github.com/jgthms/bulma/releases/download/$BV/bulma-$BV.zip
@@ -15,4 +16,4 @@ test -r tmp/$USESTYLE || {
 
 mkdir css 2>/dev/null
 ./transform-bulma.sh > tmp/css
-uglifycss tmp/css > css/main.css
+$UGLIFY tmp/css > css/main.css
