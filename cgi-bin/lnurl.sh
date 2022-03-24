@@ -58,10 +58,9 @@ do
 done
 
 test "$comment" = "" || label="$label-$comment"
-TY="Thank you!"
-test "$comment" = "" || TY="$TY $comment"
+test "$comment" = "" || desc="$comment"
 
-PR=$(lch.sh invoice "$amount" "$label" "$TY" | jq -r .bolt11) || {
+PR=$(invoice.sh "$amount" "$label" "$desc" | jq -r .bolt11) || {
   res 400 "Something wrong" text/plain "Something went wrong"
 }
 #ROUTES=$(lch.sh decode $PR | jq -c .routes)
