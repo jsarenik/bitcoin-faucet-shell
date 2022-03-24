@@ -57,8 +57,7 @@ do
   lch.sh listinvoices "$label" | grep label || break
 done
 
-test "$comment" = "" || label="$label-$comment"
-test "$comment" = "" || desc="$comment"
+test "$comment" = "" || { label="$label-$comment"; desc="$comment"; }
 
 PR=$(lightning-cli invoice "$amount" "$label" "$desc" | jq -r .bolt11) || {
   res 400 "Something wrong" text/plain "Something went wrong"
