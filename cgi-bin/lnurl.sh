@@ -60,10 +60,9 @@ done
 test "$comment" = "" || label="$label-$comment"
 test "$comment" = "" || desc="$comment"
 
-PR=$(invoice.sh "$amount" "$label" "$desc" | jq -r .bolt11) || {
+PR=$(lightning-cli invoice "$amount" "$label" "$desc" | jq -r .bolt11) || {
   res 400 "Something wrong" text/plain "Something went wrong"
 }
-#ROUTES=$(lch.sh decode $PR | jq -c .routes)
 
 {
 cat <<EOF
@@ -72,5 +71,4 @@ Content-Type: application/json; charset=utf-8
 
 {"pr":"$PR"}
 EOF
-#{"status":"OK","routes":$ROUTES,"pr":"$PR"}
 } | tee $LIMIT/data
