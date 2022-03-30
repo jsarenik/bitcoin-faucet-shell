@@ -59,7 +59,12 @@ done
 
 test "$comment" = "" || { label="$label-$comment"; desc="$comment"; }
 
-PR=$(lightning-cli invoice "$amount" "$label" "$desc" | jq -r .bolt11) || {
+PR=$(lightning-cli -k invoice \
+  msatoshi="$amount" \
+  label="$label" \
+  description="$desc" \
+  deschashonly=true \
+  exposeprivatechannels="728591x176x1" | jq -r .bolt11) || {
   res 400 "Something wrong" text/plain "Something went wrong"
 }
 
