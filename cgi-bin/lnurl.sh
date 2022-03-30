@@ -73,6 +73,6 @@ cat <<EOF
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
 
-{"pr":"$PR"}
+{"pr":"$PR","routes": []}
 EOF
 } | tee $LIMIT/data
