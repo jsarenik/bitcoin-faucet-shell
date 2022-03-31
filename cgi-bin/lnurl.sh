@@ -59,12 +59,20 @@ done
 
 test "$comment" = "" || { label="$label-$comment"; desc="$comment"; }
 
-PR=$(lightning-cli -k invoice \
-  msatoshi="$amount" \
-  label="$label" \
-  description="$desc" \
-  deschashonly=true \
-  exposeprivatechannels="728591x176x1" | jq -r .bolt11) || {
+PR=$({
+cat <<EOF
+{ "jsonrpc" : "2.0",
+ "method" : "invoice",
+ "id" : "lightning-cli-$RANDOM",
+ "params" :{
+   "msatoshi" : $amount,
+   "label" : "$label",
+   "description" : "[[\"text/plain\", \"$desc\"]]"},
+   "exposeprivatechannels" :  "728591x176x1"
+}
+EOF
+} | tr -d '\n' | /usr/bin/nc -U $HOME/.lightning/bitcoin/lightning-rpc \
+  | sed 1q | jq -r .result.bolt11) || {
   res 400 "Something wrong" text/plain "Something went wrong"
 }
 
