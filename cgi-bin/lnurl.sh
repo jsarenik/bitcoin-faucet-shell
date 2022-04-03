@@ -43,18 +43,18 @@ mkdir $LIMIT 2>/dev/null || {
   exit
 }
 myexit() {
-  nohup sh -c "cd $HOME/.lightning; lch.sh waitinvoice "$label"; rm -rf $LIMIT" \
+  nohup sh -c "timeout 60 lightning-cli waitinvoice "$label"; rm -rf $LIMIT" \
     </dev/null >/dev/null 2>&1 &
 }
 
-trap myexit EXIT
-
 cd $HOME/.lightning
+
+trap myexit EXIT
 
 while
   label="lnurl-generated-$RANDOM"
 do
-  lch.sh listinvoices "$label" | grep label || break
+  lightning-cli listinvoices "$label" | grep label || break
 done
 
 test "$comment" = "" || { label="$label-$comment"; desc="$comment"; }
