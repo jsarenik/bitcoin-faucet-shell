@@ -3,12 +3,13 @@
 a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; HERE=$(cd $a; pwd)
 PATH=/busybox:$PATH
 
-#set > /tmp/myset-$$
-
 test "$QUERY_STRING" = "" \
   || {
-    eval $(echo "$QUERY_STRING" | grep -o '[a-zA-Z]\+=[0-9a-zA-Z\.]\+')
+    eval $(echo "$QUERY_STRING" | grep -o '[a-zA-Z]\+=[0-9a-zA-Z +\.]\+' \
+             | tr '+' ' ' | sed 's/=\(.*\)/="\1"/')
   }
+
+#set > /tmp/myset-$$
 
 WHERE=${WHERE:-/tmp/faucet}
 
@@ -49,15 +50,15 @@ myexit() {
 
 cd $HOME/.lightning
 
-trap myexit EXIT
-
 while
   label="lnurl-generated-$RANDOM"
 do
   lightning-cli listinvoices "$label" | grep label || break
 done
 
-test "$comment" = "" || { label="$label-$comment"; desc="$comment"; }
+trap myexit EXIT
+
+test "$comment" = "" || { label="$label"; desc="$comment"; }
 
 PR=$({
 cat <<EOF
