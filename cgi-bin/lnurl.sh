@@ -68,7 +68,7 @@ cat <<EOF
    "msatoshi" : $amount,
    "label" : "$label",
    "deschashonly" : true,
-   "description" : "[[\"text/plain\", \"$desc\"]]",
+   "description" : "[[\\\"text/plain\\\", \\\"$desc\\\"]]",
    "exposeprivatechannels" :  "728591x176x1"
  }
 }
