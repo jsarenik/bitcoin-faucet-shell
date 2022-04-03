@@ -67,8 +67,10 @@ cat <<EOF
  "params" :{
    "msatoshi" : $amount,
    "label" : "$label",
-   "description" : "[[\"text/plain\", \"$desc\"]]"},
+   "deschashonly" : true,
+   "description" : "[[\"text/plain\", \"$desc\"]]",
    "exposeprivatechannels" :  "728591x176x1"
+ }
 }
 EOF
 } | tr -d '\n' | /usr/bin/nc -U $HOME/.lightning/bitcoin/lightning-rpc \
