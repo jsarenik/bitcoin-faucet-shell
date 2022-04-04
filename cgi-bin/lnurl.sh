@@ -69,7 +69,7 @@ cat <<EOF
    "msatoshi" : $amount,
    "label" : "$label",
    "deschashonly" : true,
-   "description" : "[[\"text/plain\", \"$desc\"]]",
+   "description" : "[[\"text/identifier\", \"anyone@ln.anyone.eu.org\"], [\"text/plain\", \"anyone\"]]",
    "exposeprivatechannels" :  "728591x176x1"
  }
 }
