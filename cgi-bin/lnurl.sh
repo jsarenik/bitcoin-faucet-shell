@@ -49,6 +49,7 @@ myexit() {
 }
 
 cd $HOME/.lightning
+SOCK=$HOME/.lightning/bitcoin/lightning-rpc
 
 while
   label="lnurl-generated-$RANDOM"
@@ -62,20 +63,10 @@ test "$comment" = "" || { label="$label"; desc="$comment"; }
 
 PR=$({
 cat <<EOF
-{ "jsonrpc" : "2.0",
- "method" : "invoice",
- "id" : "lightning-cli-$RANDOM",
- "params" :{
-   "msatoshi" : $amount,
-   "label" : "$label",
-   "deschashonly" : true,
-   "description" : "[[\"text/identifier\", \"anyone@ln.anyone.eu.org\"], [\"text/plain\", \"anyone\"]]",
-   "exposeprivatechannels" :  "728591x176x1"
- }
-}
+{"jsonrpc":"2.0","method":"invoice","id":"lightning-rpc-$RANDOM$RANDOM","params":{"msatoshi":$amount,"label":"$label","deschashonly":true,"description":"[[\"text/identifier\", \"anyone@ln.anyone.eu.org\"], [\"text/plain\", \"anyone\"]]","exposeprivatechannels":"728591x176x1"}}
 EOF
-} | tr -d '\n' | /usr/bin/nc -U $HOME/.lightning/bitcoin/lightning-rpc \
-  | sed 1q | jq -r .result.bolt11) || {
+} | /usr/bin/nc -U $SOCK \
+  | head -1 | jq -r .result.bolt11) || {
   res 400 "Something wrong" text/plain "Something went wrong"
 }
 
