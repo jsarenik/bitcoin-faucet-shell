@@ -39,8 +39,7 @@ test "$amount" = "" && {
 }
 
 mkdir $LIMIT 2>/dev/null || {
-  cat $LIMIT/data
-  #res 429 "Slow down" text/plain 'Please slow down'
+  res 429 "Slow down" text/plain 'Please slow down'
   exit
 }
 myexit() {
