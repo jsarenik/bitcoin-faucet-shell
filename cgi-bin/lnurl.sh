@@ -51,7 +51,7 @@ cd $HOME/.lightning
 SOCK=$HOME/.lightning/bitcoin/lightning-rpc
 
 while
-  label="lnurl-generated-$RANDOM"
+  label="lnurl-generated-$RANDOM$RANDOM"
 do
   lightning-cli listinvoices "$label" | grep label || break
 done
