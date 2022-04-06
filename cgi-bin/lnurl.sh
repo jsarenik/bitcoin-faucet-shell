@@ -61,7 +61,7 @@ trap myexit EXIT
 test "$comment" = "" || { label="$label"; desc="$comment"; }
 
 PR=$({
-printf '{"jsonrpc":"2.0","method":"invoice","id":"lightning-rpc-%d","params":{"msatoshi":%d,"label":"%s","deschashonly":true,"description":"[[\"text/identifier\", \"anyone@ln.anyone.eu.org\"], [\"text/plain\", \"anyone\"]]","exposeprivatechannels":"728591x176x1"}}' \
+printf '{"jsonrpc":"2.0","method":"invoice","id":"lightning-rpc-%d","params":{"msatoshi":%d,"label":"%s","deschashonly":true,"description":"[[\"text/plain\", \"anyone\"]]","exposeprivatechannels":"728591x176x1"}}' \
   $RANDOM$RANDOM \
   $amount \
   "$label"
