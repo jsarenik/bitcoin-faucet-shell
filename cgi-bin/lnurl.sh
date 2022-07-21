@@ -40,8 +40,8 @@ test "$amount" = "" && {
 
 mkdir $LIMIT 2>/dev/null || {
   res 429 "Slow down" text/plain 'Please slow down'
-  exit
 }
+
 myexit() {
   nohup sh -c "timeout 60 lightning-cli waitinvoice "$label"; rm -rf $LIMIT" \
     </dev/null >/dev/null 2>&1 &
