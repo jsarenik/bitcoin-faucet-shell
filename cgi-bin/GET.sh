@@ -61,7 +61,8 @@ USADDR=${USADDR:-"$WHERE/usaddr"}
 op=${address%${address#?}}
 test "$op" = "t" && op=${address%${address#????}}
 ADLOCK=$USADDR/$op/${address##${op}}
-mkdir -p $ADLOCK 2>/dev/null || { touch $ADLOCK; AA=1; }
+mkdir -p ${ADLOCK%/*}
+mkdir $ADLOCK 2>/dev/null || { touch $ADLOCK; AA=1; }
 
 # HTTP_X_REAL_IP is the HTTP header set in Caddyfile, falling back
 # to the contents of REMOTE_ADDR variable set by busybox httpd
@@ -71,7 +72,8 @@ HTTP_X_REAL_IP=${HTTP_X_REAL_IP:-"$REMOTE_ADDR"}
 # Set the file name used for rate-limiting.
 LIMIT=$WHERE/.limit/$(echo $HTTP_X_REAL_IP | cut -d: -f1-3 | tr -d '.:\[\]')
 
-mkdir -p $LIMIT 2>/dev/null || {
+mkdir -p ${LIMIT%/*}
+mkdir $LIMIT 2>/dev/null || {
   touch -r $ADLOCK $LIMIT
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
