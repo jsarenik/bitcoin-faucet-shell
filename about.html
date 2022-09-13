@@ -54,10 +54,13 @@ fill="currentColor" class="octo-body"></path>
                 <div class="columns is-centered">
                     <div class="column is-6-desktop  is-8-tablet">
 <div class="box">
-<p>This faucet is sending intentionally a random small amount.</p><p>Current balance:</p>
+<h1>About</h1>
+<p>This faucet is sending intentionally a random small amount.</p>
+<h3>Current balance</h3>
 <div id="faucet_err"></div>
 
-<p>Please recycle signet coins. When done testing send them to any of the following addresses:</p>
+<h3>Please recycle</h3>
+<p>When done testing with the signet coins, please return them to any of the following addresses:</p>
 
 <ul>
 <li>bech32m (Taproot): <span style="font-size: xx-small;" class="word-wrap"><a href="https://ex.signet.bublina.eu.org/address/tb1pc6rlswtdgsadws4ltj7juxgae7mfhm6ytgwwdnfsv8m0wgehaf4sgac7uw">tb1pc6rlswtdgsadws4ltj7juxgae7mfhm6ytgwwdnfsv8m0wgehaf4sgac7uw</a></span></li>
@@ -69,15 +72,20 @@ fill="currentColor" class="octo-body"></path>
 <li>legacy: <span style="font-size: xx-small;" class="word-wrap"><a href="https://ex.signet.bublina.eu.org/address/mizU9eY6wwDXJWoowNGyexEEGNMKRvHsez">mizU9eY6wwDXJWoowNGyexEEGNMKRvHsez</a></span></li>
 </ul>
 
+<h3>Signet info</h3>
 <p>The blocks on <a href="https://en.bitcoin.it/wiki/Signet">Signet network</a>
 are not really mined, but rather just signed and their timing
 is a <a href="https://en.wikipedia.org/wiki/Poisson_distribution">poisson distribution</a> which is used in order to resemble the average timing of blocks
 on the main Bitcoin network.</p>
+
+<h4>Testing addresses</h4>
 <p>Do not use Testnet addresses here. Testnet and Signet use the same address format and the coins sent to your Testnet address will need to be redeemed by importing the private key (or <a href="https://bitcoinelectrum.com/sweeping-your-private-keys-into-electrum/">sweeping it</a>) on to Signet (works well in <a href="https://electrum.org">Electrum Bitcoin Wallet</a>, <a href="https://sw.bublina.eu.org">Signet Web Wallet</a> or <a href="https://bitcoincore.org/en/doc/0.21.0/rpc/wallet/importprivkey/">Bitcoin Core</a>).</p>
 <p>See an example <a href="Caddyfile.txt">Caddyfile</a> for
 <a href="https://caddyserver.com/">Caddy2</a> web server serving
 also an efficient <a href="torrc.txt">Tor hidden service</a>.</p>
-<p>Git repository of this POSIX-shell reimplementation of <a href="https://github.com/kallewoof/bitcoin-faucet">bitcoin-faucet</a> is <a href="https://github.com/jsarenik/bitcoin-faucet-shell">hosted on GitHub</a>.</p>
+<h4>Git repository</h4>
+<p>Originally inspired and SWAG-reused from <a href="https://github.com/kallewoof/bitcoin-faucet">bitcoin-faucet</a>.</p>
+<p>This POSIX-shell reimplementation is hosted at <a href="https://github.com/jsarenik/bitcoin-faucet-shell">hosted on GitHub</a>.</p>
 </div>
                     </div>
                 </div>
