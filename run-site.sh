@@ -21,6 +21,7 @@ cd $USADDR
 mkdir m n 2 tb1q tb1p
 cd -
 
+brotli-it.sh
 echo Faucet data is in $WHERE
 
 echo Serving at http://localhost:8123
