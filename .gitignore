@@ -2,3 +2,5 @@ css/main.css
 tmp
 balance.txt
 version.txt
+*.gz
+*.br
