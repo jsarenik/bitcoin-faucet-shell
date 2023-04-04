@@ -85,15 +85,10 @@ test "$AA" = "1" && {
     '{"message":"Use another address"}'
 }
 
-restofline="txid $(bitcoin-cli -signet -named sendtoaddress \
-  address=$address \
-  amount=$amount \
-  subtractfeefromamount=false \
-  replaceable=false \
-  avoid_reuse=false \
-  fee_rate=1 | grep .)" \
+cd $HOME/.bitcoin/signet/wallets/wosh-default
+restofline="txid $(wosh send $address | grep .)" \
 || {
   res 400 "Something wrong" text/html "Something went wrong"
 } && {
-  res 200 OK text/html "Payment of ${amount:-0} BTC sent with $restofline"
+  res 200 OK text/html "Random small payment sent with $restofline"
 } # restofline
