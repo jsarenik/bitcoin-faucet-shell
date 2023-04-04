@@ -1,7 +1,7 @@
 #!/bin/sh
 
-URL=https://signet.bublina.eu.org/claim
-ADDR=tb1p83p7yperh6yw6dtvgqvxr7m3crkyxczeezdcp7x07d6aa5vtv7pq8w4j90
+URL=http://signet.bublina.eu.org/claim
+ADDR=tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn
 
-torsocks -i /usr/bin/wget \
+torsocks -i /usr/bin/wget -O /dev/null \
   "$URL/?address=$ADDR&amount=0.001"
