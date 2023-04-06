@@ -88,7 +88,7 @@ test "$AA" = "1" && {
     '{"message":"Use another address"}'
 }
 
-cd $HOME/.bitcoin-plebnet/signet/wallets/wosh-default
+cd wallets/wosh-default
 restofline="txid $(wosh send $address | grep .)" \
 || {
   res 400 "Something wrong" text/html "Something went wrong"
