@@ -7,8 +7,14 @@
     <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
-    <title>Signet Faucet</title>
-    <link rel="stylesheet" href="/css/main.css">
+    <title>Alt Signet Faucet</title>
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <style>
+	.word-wrap {
+		word-wrap: break-word;
+		word-break: break-all;
+	}
+    </style>
 </head>
 
 <body>
@@ -17,7 +23,7 @@
             <div class="navbar-brand">
                 <a class="navbar-item" href="/">
                     <img src="/images/logo-signet.svg" alt="Signet Faucet" width="57" height="40">
-                    Signet Faucet
+                    Alt Signet Faucet
                 </a>
     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="signetNav">
       <span aria-hidden="true"></span>
@@ -28,7 +34,7 @@
             <div class="navbar-menu" id="signetNav">
               <div class="navbar-start">
                 <a class="navbar-item" href="about.html">About</a>
-                <a class="navbar-item" href="https://bin.bublina.eu.org/?68dbfa5698fcf316#6KBGZkWssS3TrzTVg93K7VCQECBTmwKn2x9WjRYV72rn">Comments</a>
+                <a class="navbar-item" href="https://github.com/jsarenik/bitcoin-faucet-shell/discussions">Discussion</a>
               </div>
             </div>
         </div>
@@ -41,6 +47,8 @@
                 <div class="columns is-centered">
                     <div class="column is-6-desktop is-8-tablet">
                         <div class="box has-text-centered">
+				<!--<p><b>Apologies, this faucet does not work at the moment (2025-01-30). Use the main <a href="https://signetfaucet.com">signetfaucet.com</a> in the meantime.</b></p>-->
+      <p><b>This is a test network. Coins&nbsp;have&nbsp;no&nbsp;value.</b></p>
                             <h3 class="title is-size-4-desktop is-size-5">Enter address</h3>
 
                             <div id="faucet_err"></div>
@@ -49,38 +57,25 @@
 
                             <div class="field has-margin-top-25">
                                 <div class="control">
-                                    <input class="input" id="address" name="address" type="text" placeholder="tb1[pq]... or [mn]... or 2..." tabindex="1" autocapitalize="off" autocorrect="off" pattern="^(tb1([02-9ac-hj-np-z]{59}|[02-9ac-hj-np-z]{39})|[mn2][a-km-zA-HJ-NP-Z1-9]{25,34})$" title="Use a valid signet address (legacy, p2sh-segwit, bech32 or bech32m).">
+                                    <input class="input" id="address" name="address" type="text" placeholder="tb1[pq]... or [mn]... or 2..." tabindex="1" autocapitalize="off" autocorrect="off" pattern="^(tb1(pfees9rn5nz|[02-9ac-hj-np-z]{59}|[02-9ac-hj-np-z]{39})|[mn2][a-km-zA-HJ-NP-Z1-9]{25,34})$" title="Use a valid signet address (legacy, p2sh-segwit, bech32 or bech32m).">
                                 </div>
                             </div>
+<div id="cftsWidget"></div>
 
-                            <button id="sendButton" class="button is-primary is-fullwidth has-margin-top-25" tabindex="2">Press ENTER to send</button>
+                            <button id="sendButton" class="button is-primary is-fullwidth has-margin-top-25" tabindex="2" disabled>^ Please wait ^</button>
 </form>
                             <p>Please <a href="about.html">recycle</a> used coins.</p>
+			    <!-- <span style="font-size: xx-small;" class="word-wrap"><code>tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4</code></span> -->
                         </div> 
                     </div>
                 </div>
             </div>
         </section>
     </div>
-    
-    <footer class="footer has-text-centered">
-        <div class="container">
-            <div class="columns rv-padding">
-                <div class="column has-text-left-tablet sponsor">
-                    <p><a href="https://www.dglab.com/en" target="_blank">
-                        <img src="/images/dglab_logo.svg" alt="DG Lab" height="50" width="50">
-                    </a></p>
-                </div>
-                <div class="column has-text-center has-text-right-tablet copyright">
-                    <div class="copyright__text">
-                        <p class="is-size-7">Copyright © DG Lab All rights reserved.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
     <script src="/lib/jquery.min.js" async></script>
     <script async>
+    const sendButton = document.getElementById('sendButton');
+    const myform = document.getElementById('myform');
     function readyFn( jQuery ) {
       if ( window.jQuery ){
         $('#address').focus();
@@ -90,37 +85,63 @@
       }
     }
     readyFn();
-    function faucet_err(msg, mclass="notification is-danger is-light") {
+    function faucet_err(msg, mclass="notification is-danger") {
         const div = document.getElementById('faucet_err');
         div.className = mclass;
         div.innerHTML = msg;
     }
+function _turnstileCb() {
+    turnstile.render('#cftsWidget', {
+      sitekey: '0x4AAAAAAA36puNDPRXfvPDZ'
+    });
+    setTimeout(np, 2510);
+}
+function np() {
+    let cfts = turnstile.getResponse();
+    if (cfts) {
+      sendButton.innerHTML = "Press (ENTER) to receive";
+      sendButton.disabled = false;
+    } else {
+      setTimeout(np, 2510);
+    };
+}
     function faucet_fetch() {
         let address = document.getElementById('address').value;
+        let cfts = turnstile.getResponse();
         address.oninvalid = function(event) {
           event.target.setCustomValidity('Username should only contain lowercase letters. e.g. john');
         }
         if (!address) return faucet_err("Enter an address");
-        let url = `/claim/?address=${escape(address)}`;
+        let url = `/claim/?address=${escape(address)}&cfts=${escape(cfts)}`;
 
         faucet_err("- processing -", "");
         const sendButton = document.getElementById('sendButton');
         sendButton.disabled = true;
+        myform.reset();
+      sendButton.innerHTML = "^^ Please wait ^^";
         $.ajax({
             url,
             type: 'GET',
             success: function(data) {
-                sendButton.disabled = false;
+		turnstile.reset();
+                sendButton.disabled = true;
+                myform.reset();
+      sendButton.innerHTML = "^^ Please wait ^^";
+                setTimeout(np, 2510);
                 // replace txid with explorer link
-                let comps = data.split("txid ");
+                let comps = data.split("to ");
                 console.log(`comps = ${comps}`);
                 if (comps.length === 2) {
-                    data = `${comps[0]}txid <a href="https://ex.signet.bublina.eu.org/tx/${comps[1]}" target="_blank">${comps[1].substr(0, 10)}...</a>`;
+		    data = `${comps[0]} to <a href="https://mempool.space/signet/address/${comps[1]}" target="_blank"><code>${comps[1].substr(0, 4)}&nbsp;${comps[1].substr(4, 4)}&nbsp;&ctdot;&nbsp;${comps[1].substr(-7, 4)}&nbsp;${comps[1].substr(-3, 2)}</code></a>`;
                 }
-                faucet_err(data, "notification is-success is-light");
+                faucet_err(data, "notification is-success");
             },
             error: function(err) {
-                sendButton.disabled = false;
+		turnstile.reset();
+                sendButton.disabled = true;
+                myform.reset();
+      sendButton.innerHTML = "^^ Please wait ^^";
+                setTimeout(np, 2510);
                 // {"readyState":4,
                 //  "responseText":"{\"message\":\"Please slow down\"}",
                 //  "responseJSON":{"message":"Please slow down"},
@@ -167,5 +188,6 @@
   }
 }
     </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=_turnstileCb"></script>
 </body>
 </html>
