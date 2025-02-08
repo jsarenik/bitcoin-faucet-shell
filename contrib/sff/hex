@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "$1" | grep -q '^[0-9]\+$' && { num=$1; shift; } || read -r num
+echo "$2" | grep -q '^[0-9]\+$' && { prec=$2; shift 2; }
+printf "%0.${prec:-8}x\n" $num
