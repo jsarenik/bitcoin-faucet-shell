@@ -57,7 +57,8 @@ find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 2>/dev/null | xargs cat \
 
 newouts=$(cat /tmp/nosff | wc -l)
 max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') || max=90000000
-new=$((($max-10000000000)/250/$newouts))
+max=$(($max-10000000000))
+new=$(($max/50/$newouts))
 rest=$(($max-$new*$newouts))
 
 # needs $new and /tmp/nosff
