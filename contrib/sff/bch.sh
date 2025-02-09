@@ -30,7 +30,9 @@ echo $chain | grep -qE '^(signet|test|testnet4|regtest|liquid)' \
 
 test "${chain%${chain#liquid}}" = "liquid" && cmd=elements-cli
 
+add=""
 test "$1" = "-k" && exec pkill -f "$cmd -datadir=${ddir:-$PWD}"
 test "$1" = "-g" && exec pgrep -f "$cmd -datadir=${ddir:-$PWD}"
+test "$1" = "-t" && add="-rpcclienttimeout=0"
 
-exec $cmd -rpcclienttimeout=0 -datadir=${ddir:-$PWD} -chain=${chain:-main} $w "$@"
+exec $cmd $add -datadir=${ddir:-$PWD} -chain=${chain:-main} $w "$@"
