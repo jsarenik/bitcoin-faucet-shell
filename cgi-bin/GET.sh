@@ -42,6 +42,12 @@ WHERE=${WHERE:-/tmp/faucet}
 # Set the file name used for rate-limiting.
 LIMIT=$WHERE/.limit/${xip%:*:*:*:*:*}
 uuid=$(uuidgen)
+
+# Pre-set Site-key and Secret-key to always-blocking dummy ones from
+# https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+sitkey=2x00000000000000000000AB
+seckey=2x0000000000000000000000000000000AA
+# Override the pre-set keys now if file exists
 . ~/.cfts
 curl -sSL 'https://challenges.cloudflare.com/turnstile/v0/siteverify' \
   --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
