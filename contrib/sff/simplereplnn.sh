@@ -72,10 +72,13 @@ weight=$(cat $hf | drt.sh | jq -r .weight)
 cfr=$(((1000*$bf/$weight+999)/1000))
 
 . /dev/shm/UpdateTip-signet
+hold=$height
 
 cat $hf | nd-untilout.sh | safecat.sh $hf-uo
 
 dotx() {
+. /dev/shm/UpdateTip-signet
+test "$hold" = "$height" || myexit
 cat $hf-uo
 printouts $((2+$newouts))
 echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
