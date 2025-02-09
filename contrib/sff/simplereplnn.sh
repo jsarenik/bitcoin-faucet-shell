@@ -19,11 +19,15 @@ printouts() {
     || { printf "fd"; hex ${1:-1} - 4 | ce.sh; }
 }
 
+sertl() {
+  timeout 5 bch.sh -stdin sendrawtransaction
+}
+
 set -o pipefail
 tx=$(list.sh | sort -rn -k 3 | grep -m1 " 0 true$") || {
   list.sh | grep "[1-9] true$" | safecat.sh /tmp/mylist
   cat /tmp/mylist | awklist-all.sh \
-    | mktx.sh | crt.sh | srt.sh | bch.sh -stdin sendrawtransaction
+    | mktx.sh | crt.sh | srt.sh | sertl
 }
 tx=$(list.sh | sort -rn -k 3 | grep -m1 " 0 true$")
 txid=${tx%% *}
@@ -99,7 +103,7 @@ echo stage 2 >&2
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh /tmp/sffhex
 vsizenew=$(cat /tmp/sffhex | fee.sh)
 : > $errf
-bch.sh -stdin sendrawtransaction 2>$errf >$sfl </tmp/sffhex
+sertl 2>$errf >$sfl </tmp/sffhex
 ret=$?
 
 #########################################################
@@ -115,7 +119,7 @@ dvs=$(( $add+($vsizenew*${fee:-20569}+999)/1000))
 hha=$(hex $(($outsum + $bf - $max + $rest - 31 - $dvs)) - 16 | ce.sh)
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh /tmp/sffhex
 : > $errf
-bch.sh -stdin sendrawtransaction 2>$errf >$sfl </tmp/sffhex
+sertl 2>$errf >$sfl </tmp/sffhex
 ret=$?
 
 ############
@@ -126,7 +130,7 @@ echo fee-rate $fee vsize $vsizenew ad $as >&2
 dvs=$(( $add+($vsizenew*${fee:-29568}+999)/1000))
 hha=$(hex $(($outsum + $bf - $max + $rest - 31 - $dvs)) - 16 | ce.sh)
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh /tmp/sffhex
-bch.sh -stdin sendrawtransaction 2>$errf >$sfl </tmp/sffhex
+sertl 2>$errf >$sfl </tmp/sffhex
 ret=$?
 }
 
