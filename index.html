@@ -62,7 +62,7 @@
                             </div>
 <div id="cftsWidget"></div>
 
-                            <button id="sendButton" class="button is-primary is-fullwidth has-margin-top-25" tabindex="2" disabled>^ Please wait ^</button>
+                            <button id="sendButton" type="submit" class="button is-primary is-fullwidth has-margin-top-25" tabindex="2" disabled>^ Please wait ^</button>
 </form>
                             <p>Please <a href="about.html">recycle</a> used coins.</p>
 			    <!-- <span style="font-size: xx-small;" class="word-wrap"><code>tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4</code></span> -->
@@ -90,11 +90,21 @@
         div.className = mclass;
         div.innerHTML = msg;
     }
+function eb() {
+  let cfts = turnstile.getResponse();
+  if (cfts) {
+    $('#address').focus();
+    sendButton.innerHTML = "Press (ENTER) to receive";
+    sendButton.disabled = false;
+  }
+}
 function _turnstileCb() {
     turnstile.render('#cftsWidget', {
-      sitekey: '0x4AAAAAAA36puNDPRXfvPDZ'
+      sitekey: '0x4AAAAAAA36puNDPRXfvPDZ',
+      callback: function (token) {
+        eb();
+      },
     });
-    setTimeout(np, 2510);
 }
 function np() {
     let cfts = turnstile.getResponse();
@@ -127,7 +137,7 @@ function np() {
                 sendButton.disabled = true;
                 myform.reset();
       sendButton.innerHTML = "^^ Please wait ^^";
-                setTimeout(np, 2510);
+                // setTimeout(np, 2510);
                 // replace txid with explorer link
                 let comps = data.split("to ");
                 console.log(`comps = ${comps}`);
@@ -141,7 +151,7 @@ function np() {
                 sendButton.disabled = true;
                 myform.reset();
       sendButton.innerHTML = "^^ Please wait ^^";
-                setTimeout(np, 2510);
+                // setTimeout(np, 2510);
                 // {"readyState":4,
                 //  "responseText":"{\"message\":\"Please slow down\"}",
                 //  "responseJSON":{"message":"Please slow down"},
