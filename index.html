@@ -106,15 +106,6 @@ function _turnstileCb() {
       },
     });
 }
-function np() {
-    let cfts = turnstile.getResponse();
-    if (cfts) {
-      sendButton.innerHTML = "Press (ENTER) to receive";
-      sendButton.disabled = false;
-    } else {
-      setTimeout(np, 2510);
-    };
-}
     function faucet_fetch() {
         let address = document.getElementById('address').value;
         let cfts = turnstile.getResponse();
@@ -137,7 +128,6 @@ function np() {
                 sendButton.disabled = true;
                 myform.reset();
       sendButton.innerHTML = "^^ Please wait ^^";
-                // setTimeout(np, 2510);
                 // replace txid with explorer link
                 let comps = data.split("to ");
                 console.log(`comps = ${comps}`);
@@ -151,7 +141,6 @@ function np() {
                 sendButton.disabled = true;
                 myform.reset();
       sendButton.innerHTML = "^^ Please wait ^^";
-                // setTimeout(np, 2510);
                 // {"readyState":4,
                 //  "responseText":"{\"message\":\"Please slow down\"}",
                 //  "responseJSON":{"message":"Please slow down"},
