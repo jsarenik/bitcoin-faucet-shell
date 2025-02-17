@@ -74,22 +74,22 @@
     </div>
     <script src="/lib/jquery.min.js" async></script>
     <script async>
-    const sendButton = document.getElementById('sendButton');
-    const myform = document.getElementById('myform');
-    function readyFn( jQuery ) {
-      if ( window.jQuery ){
-        $('#address').focus();
-        fillburger();
-      } else {
-        window.setTimeout("readyFn();",20);
-      }
-    }
-    readyFn();
-    function faucet_err(msg, mclass="notification is-danger") {
-        const div = document.getElementById('faucet_err');
-        div.className = mclass;
-        div.innerHTML = msg;
-    }
+ const sendButton = document.getElementById('sendButton');
+ const myform = document.getElementById('myform');
+ function readyFn( jQuery ) {
+   if ( window.jQuery ){
+     $('#address').focus();
+     fillburger();
+   } else {
+     window.setTimeout("readyFn();",20);
+   }
+ }
+ readyFn();
+ function faucet_err(msg, mclass="notification is-danger") {
+   const div = document.getElementById('faucet_err');
+   div.className = mclass;
+   div.innerHTML = msg;
+}
 function eb() {
   let cfts = turnstile.getResponse();
   if (cfts) {
@@ -106,82 +106,76 @@ function _turnstileCb() {
       },
     });
 }
-    function faucet_fetch() {
-        let address = document.getElementById('address').value;
-        let cfts = turnstile.getResponse();
-        address.oninvalid = function(event) {
-          event.target.setCustomValidity('Username should only contain lowercase letters. e.g. john');
-        }
-        if (!address) return faucet_err("Enter an address");
-        let url = `/claim/?address=${escape(address)}&cfts=${escape(cfts)}`;
+function faucet_fetch() {
+  let address = document.getElementById('address').value;
+  let cfts = turnstile.getResponse();
+  address.oninvalid = function(event) {
+    event.target.setCustomValidity('Username should only contain lowercase letters. e.g. john');
+  }
+  if (!address) return faucet_err("Enter an address");
+  let url = `/claim/?address=${escape(address)}&cfts=${escape(cfts)}`;
 
-        faucet_err("- processing -", "");
-        const sendButton = document.getElementById('sendButton');
-        sendButton.disabled = true;
-        myform.reset();
+  faucet_err("- processing -", "");
+  const sendButton = document.getElementById('sendButton');
+  sendButton.disabled = true;
+  myform.reset();
+  sendButton.innerHTML = "^^ Please wait ^^";
+  $.ajax({
+    url,
+    type: 'GET',
+    success: function(data) {
+      turnstile.reset();
+      sendButton.disabled = true;
+      myform.reset();
       sendButton.innerHTML = "^^ Please wait ^^";
-        $.ajax({
-            url,
-            type: 'GET',
-            success: function(data) {
-		turnstile.reset();
-                sendButton.disabled = true;
-                myform.reset();
+      // replace txid with explorer link
+      let comps = data.split("to ");
+      // console.log(`comps = ${comps}`);
+      if (comps.length === 2) {
+        data = `${comps[0]} to <a href="https://mempool.space/signet/address/${comps[1]}" target="_blank"><code>${comps[1].substr(0, 4)}&nbsp;${comps[1].substr(4, 4)}&nbsp;&ctdot;&nbsp;${comps[1].substr(-7, 4)}&nbsp;${comps[1].substr(-3, 2)}</code></a>`;
+      }
+      faucet_err(data, "notification is-success");
+    },
+    error: function(err) {
+      turnstile.reset();
+      sendButton.disabled = true;
+      myform.reset();
       sendButton.innerHTML = "^^ Please wait ^^";
-                // replace txid with explorer link
-                let comps = data.split("to ");
-                console.log(`comps = ${comps}`);
-                if (comps.length === 2) {
-		    data = `${comps[0]} to <a href="https://mempool.space/signet/address/${comps[1]}" target="_blank"><code>${comps[1].substr(0, 4)}&nbsp;${comps[1].substr(4, 4)}&nbsp;&ctdot;&nbsp;${comps[1].substr(-7, 4)}&nbsp;${comps[1].substr(-3, 2)}</code></a>`;
-                }
-                faucet_err(data, "notification is-success");
-            },
-            error: function(err) {
-		turnstile.reset();
-                sendButton.disabled = true;
-                myform.reset();
-      sendButton.innerHTML = "^^ Please wait ^^";
-                // {"readyState":4,
-                //  "responseText":"{\"message\":\"Please slow down\"}",
-                //  "responseJSON":{"message":"Please slow down"},
-                //  "status":400,
-                //  "statusText":"error"}
-                var msg = "";
-                if (err.status) {
-                    msg += err.status + ": ";
-                }
-                if (err.responseJSON && err.responseJSON.message) {
-                    msg += err.responseJSON.message;
-                    return faucet_err("Error: " + msg);
-                }
-                if (err.responseText) {
-                    msg += err.responseText;
-                    return faucet_err("Error: " + msg);
-                }
-                faucet_err(msg + JSON.stringify(err));
-            }
-        });
+      // {"readyState":4,
+      //  "responseText":"{\"message\":\"Please slow down\"}",
+      //  "responseJSON":{"message":"Please slow down"},
+      //  "status":400,
+      //  "statusText":"error"}
+      var msg = "";
+      if (err.status) {
+          msg += err.status + ": ";
+      }
+      if (err.responseJSON && err.responseJSON.message) {
+          msg += err.responseJSON.message;
+          return faucet_err("Error: " + msg);
+      }
+      if (err.responseText) {
+          msg += err.responseText;
+          return faucet_err("Error: " + msg);
+      }
+      faucet_err(msg + JSON.stringify(err));
     }
-    function fillburger() {
-
+  });
+}
+function fillburger() {
   // Get all "navbar-burger" elements
   const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-
   // Check if there are any navbar burgers
   if ($navbarBurgers.length > 0) {
-
     // Add a click event on each of them
     $navbarBurgers.forEach( el => {
       el.addEventListener('click', () => {
-
         // Get the target from the "data-target" attribute
         const target = el.dataset.target;
         const $target = document.getElementById(target);
-
         // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
         el.classList.toggle('is-active');
         $target.classList.toggle('is-active');
-
       });
     });
   }
