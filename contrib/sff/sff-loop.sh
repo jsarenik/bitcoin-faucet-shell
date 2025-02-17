@@ -7,5 +7,5 @@ ls /tmp/sff | grep -q . \
   ash repltotal.sh
   date -u
   }
-sleep 15
+sleep 30
 exec ash $0
