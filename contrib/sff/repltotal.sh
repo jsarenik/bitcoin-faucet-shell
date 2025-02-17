@@ -1,4 +1,4 @@
 cd $HOME/.bitcoin/signet/wallets
 f=/tmp/my
-  ash simplereplnn.sh
+  timeout 10 ash simplereplnn.sh
   rm -rf /tmp/locksff
