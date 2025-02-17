@@ -34,6 +34,9 @@ res() {
   exit
 }
 
+# LN address: name@domain
+# https://domain/.well-known/lnurlp/name
+#
 test "$amount" = "" && {
   res 400 "Amount not specified." text/plain 'Empty amount'
 }
@@ -43,7 +46,7 @@ mkdir $LIMIT 2>/dev/null || {
 }
 
 myexit() {
-  nohup sh -c "timeout 60 lightning-cli waitinvoice "$label"; rm -rf $LIMIT" \
+  nohup sh -c "timeout 5900 lightning-cli waitinvoice "$label"; rm -rf $LIMIT" \
     </dev/null >/dev/null 2>&1 &
 }
 
