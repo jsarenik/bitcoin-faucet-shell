@@ -109,6 +109,7 @@ cat $gmef | grep -w ancestorsize \
   | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//' \
   | safecat.sh $asf
 vsize=$(cat $hf | vsize.sh)
+test "$vsize" -lt 9970 || myexit 1 "early TOO BIG"
 outsum=$(cat $hf | nd-outs.sh | cut -b-16 | ce.sh | fold -w 16 \
 	| while read l; do echo $((0x$l)); done | paste -d+ -s | bc)
 mkdir -p /tmp/sff-s2
