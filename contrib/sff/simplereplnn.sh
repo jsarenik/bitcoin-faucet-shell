@@ -1,27 +1,14 @@
+#!/bin/sh
 #echo $$ >&2
 lock=/tmp/locksff
 mkdir $lock || exit 1
+
+export HOME=/home/nsm
 errf=/tmp/sff-err
 sfl=/tmp/sfflast
-
-myexit() {
-  ret=${1:-$?}
-  test -s $sfl && cat $sfl
-  test "$ret" = "0" && {
-    echo SUCCESS >&2
-    mv /tmp/sff/* /tmp/sff-s2 2>/dev/null
-  }
-  rmdir $lock 2>/dev/null
-  exit $ret
-}
-
-cd /home/nsm/.bitcoin/signet/wallets/newnew || myexit
-
-printouts() {
-  test ${1:-1} -lt 252 \
-    && hex ${1:-1} - 2 \
-    || { printf "fd"; hex ${1:-1} - 4 | ce.sh; }
-}
+shf=/tmp/sffhex
+addmyf=$HOME/.bitcoin/signet/wallets/addmy
+myp=$HOME/.bitcoin/signet/wallets
 
 sertl() {
   : > $errf
@@ -30,6 +17,33 @@ sertl() {
   echo 0
   } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
       2>$errf >$sfl
+}
+
+myexit() {
+  ret=${1:-$?}
+  test -s $sfl && cat $sfl
+  test "$ret" = "0" && {
+    echo SUCCESS >&2
+    mv /tmp/sff/* /tmp/sff-s2 2>/dev/null
+  } || {
+    mv /tmp/sff-s2/* /tmp/sff/
+    mv /tmp/sff/* /tmp/sffrest/
+  }
+  rmdir $lock 2>/dev/null
+  echo ${2:-"myexit"} >&2
+  exit $ret
+}
+
+
+# are we online?
+ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
+
+cd $myp/newnew
+
+printouts() {
+  test ${1:-1} -lt 252 \
+    && hex ${1:-1} - 2 \
+    || { printf "fd"; hex ${1:-1} - 4 | ce.sh; }
 }
 
 #set -o errexit
@@ -43,11 +57,11 @@ tx=$(list.sh | sort -rn -k 3 | grep -m1 " 0 true$") || {
 tx=$(list.sh | sort -rn -k 3 | grep -m1 " 0 true$")
 txid=${tx%% *}
 hf=/tmp/replnhex
-shf=/tmp/sffhex
 bff=/tmp/replbasefee
 gmef=/tmp/sff-gme
 asf=/tmp/sff-ancestorsize
 grt.sh $txid | safecat.sh $hf
+test -s $hf || myexit 1 "grt hf"
 gme.sh $txid | safecat.sh $gmef
 cat $gmef | grep -w base \
   | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//' \
@@ -60,12 +74,22 @@ outsum=$(cat $hf | nd-outs.sh | cut -b-16 | ce.sh | fold -w 16 \
 	| while read l; do echo $((0x$l)); done | paste -d+ -s | bc)
 mkdir -p /tmp/sff-s2
 mkdir -p /tmp/sff-s3
+d=/tmp/sffrest
+mkdir -p $d
+ls -t1 "$d" 2>/dev/null \
+  | head -n 1 | while read a; do mv -v "$d/$a" /tmp/sff; done
 ls /tmp/sff >&2
 mv /tmp/sff-s2/* /tmp/sff-s3 2>/dev/null
 find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 2>/dev/null | xargs cat \
   | sort -u | shuf | safecat.sh /tmp/nosff
 
-newouts=$(cat /tmp/nosff | wc -l)
+newouts=$(wc -l < /tmp/nosff)
+test "$newouts" -ne "0" || myexit 1 "no new outputs"
+newoutso=$newouts
+newoutsadd=$((210-$newouts))
+test $newoutsadd -lt 0 && newoutsadd=0
+echo NEWOUTSADD $newoutsadd >&2
+newouts=$(($newouts+$newoutsadd))
 max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') || max=90000000
 #max=$(($max-3210000000))
 #max=$(($max-$max/52))
@@ -76,16 +100,13 @@ rest=$(($max-$new*$newouts))
 # needs $new and /tmp/nosff
 of=/tmp/sff-outs
 newh=$(hex $new - 16 | ce.sh)
-cat /tmp/nosff | sed "s/^/$newh/" | safecat.sh $of
+{ cat /tmp/nosff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
+  | sed "s/^/$newh/" | safecat.sh $of
 
 # basefee
 read -r bf < $bff
 read -r as < $asf
 weight=$(cat $hf | drt.sh | jq -r .weight)
-#cfr=$(((1000*$bf/$weight+999)/1000))
-#echo $cfr
-#rmdir $lock 2>/dev/null
-#exit
 
 . /dev/shm/UpdateTip-signet
 hold=$height
@@ -96,18 +117,52 @@ myadd=$1
 
 dotx() {
 . /dev/shm/UpdateTip-signet
-add=${myadd:-$add}
-#echo add $add >&2
 test "$hold" = "$height" || myexit 1
+add=${myadd:-0}
+#echo add $add >&2
 #hha=$(hex $(($outsum + $vsizenew + $add - $max + $rest - $dvs)) - 16 | ce.sh)
-hha=$(hex $(($outsum + $bf + $add - $max + $rest - $dvs)) - 16 | ce.sh)
+hha=$(hex $(($outsum + $bf - ($add) - $max + $rest - $dvs)) - 16 | ce.sh)
 cat $hf-uo
 printouts $((2+$newouts))
 echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
 # 31 is OP_RETURN alt.signetfaucet.com
-echo 0000000000000000166a14616c742e7369676e65746661756365742e636f6d
+#echo 0000000000000000166a14616c742e7369676e65746661756365742e636f6d
+finta=$(printf " | %3d" $newoutso | xxd -p)
+echo 00000000000000001c6a1a616c742e7369676e65746661756365742e636f6d$finta
 cat $of
 hex $height - 8 | ce.sh
+}
+
+feer() {
+  # Fee-rate $abs_sats_fee $divisor_vsize
+  mysats=$1
+  mydiv=$2
+  fr=$(((1000*$mysats+$mydiv-1)/$mydiv))
+  echo $fr
+}
+
+feerl() {
+  # Fee-rate (low end) $abs_sats_fee $divisor_vsize
+  mysats=$1
+  mydiv=$2
+  fr=$((1000*$mysats/$mydiv))
+  echo $fr
+}
+
+sats() {
+  # Absolute_sats_fee $feer $divisor_vsize
+  myfeer=$1
+  mydiv=$2
+  out=$(((($myfeer)+999)*$mydiv/1000))
+  echo $out
+}
+
+satsl() {
+  # Absolute_sats_fee (low end) $feer $divisor_vsize
+  myfeer=$1
+  mydiv=$2
+  out=$(($myfeer*$mydiv/1000))
+  echo $out
 }
 
 ########################################################
@@ -120,23 +175,17 @@ add=${myadd:-0}
 
 #hha=$(hex $(($outsum + (${1:-$add}) - $max + $rest - $dvs)) - 16 | ce.sh)
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
-vsizenew=$(cat $shf | fee.sh)
-test "$vsizenew" -lt 10000 || myexit 1
-nw=$(cat $shf | drt.sh | jq -r .weight)
-#test $vsize -lt $vsizenew \
-#  && add=${myadd:-3}
+vsizenew=$(cat $shf | fee.sh | grep .) || vsizenew=$vsize
 echo vsize $vsize vsizenew $vsizenew add $add >&2
+test "$vsizenew" -lt 10000 || myexit 1 "TOO BIG"
 
 #sertl <$shf
 ofeer=$((((4000*$bf)+3)/$weight))
 feer=$(($ofeer+1000))
 echo ofeer $ofeer feer $feer >&2
-#myexit 1
 test $feer -ge $(($max-1000)) && myexit 1
 echo max $max fee-rate $feer bf $bf vsize $vsizenew >&2
-#test "$feer" -ge 1000 -a "$feer" -lt 100000
 dvs=$(( $bf+(($vsizenew-$vsize)*$feer+999)/1000))
-#dvs=$(( ($vsize*$feer+999)/1000))
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
 #sertl <$shf
 #ret=$?
@@ -147,27 +196,15 @@ echo stage 3 >&2
 
 #cat $errf >&2
 
-#dvs=$vsizenew
-#dvs=$(( ($vsizenew*$feer+999)/1000 ))
-#dvs=$(( ($vsizenew*$feer+999)/1000))
 dvs=$(( $vsizenew+$bf))
-#test "$vsizenew" = "$vsize" \
-#  && dvs=$(( $vsizenew+$bf)) \
-#  || dvs=$(( $vsizenew+($vsize*$ofeer+999)/1000))
-#  && dvs=$(( $vsizenew+(($vsizenew-$vsize)*$ofeer+999)/1000)) \
-#  || dvs=$(( $vsizenew+($vsize*$ofeer+999)/1000))
 test "$vsizenew" = "$vsize" && vsize=0
-#dvs=$(( $vsizenew+(($vsizenew-$vsize)*$feer+999)/1000))
-#dvs=$(( $bf+(($vsizenew-$vsize)*$feer+999)/1000))
-#dvs=$(( ($vsize*$feer+999)/1000))
-#hha=$(hex $(($outsum + $bf - $max + $rest - 31 - $dvs)) - 16 | ce.sh)
-#echo "$outsum + $bf = $(($outsum+$bf))" >&2
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+#tma.sh <$shf
 sertl <$shf
 ret=$?
 #cat $errf >&2
 
-grep "^insufficient fee, rejecting replacement" $errf || myexit $ret
+#grep "^insufficient fee, rejecting replacement" $errf || myexit $ret
 
 ############
 # stage 4
@@ -178,28 +215,25 @@ echo stage 4 >&2
 fee=$(grep "^insufficient fee, rejecting replacement" $errf \
   | cut -d'<' -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//')
 echo fee4 $fee >&2
-#dvs=$(( $vsizenew+($vsizenew*${fee:-29568}+999)/1000))
-#test "$vsizenew" = "$vsize" && vsize=0
+#dvs=$(($bf+$(sats $feer $vsizenew)))
 dvs=$(( $bf+(($vsizenew-$vsize)*$feer+999)/1000))
-#dvs=$(( ($vsizenew*($vsizenew*$fee+999)/1000) ))
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+#tma.sh <$shf
 sertl <$shf
 ret=$?
 test "$ret" = "0" || {
 
 grep "^insufficient fee, rejecting replacement" $errf
-#hha=$(hex $(($outsum + (${1:-$add}) + $bf - $max + $rest - $dvs)) - 16 | ce.sh)
-#hha=$(hex $(($outsum - 20 - $max + $rest - $dvs)) - 16 | ce.sh)
 fee=$(grep "^insufficient fee, rejecting replacement" $errf \
   | cut -d'<' -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//')
 echo fee5 $fee >&2
 dvs=$(( $vsizenew+($vsizenew*$fee+999)/1000))
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+#tma.sh <$shf
 sertl <$shf
 ret=$?
 grep "^insufficient fee, rejecting replacement" $errf
 }
 }
-#ls -t | grep '^[0-9]\+$' | xargs rm -v >&2
 
 myexit $ret
