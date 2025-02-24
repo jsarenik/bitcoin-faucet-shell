@@ -34,11 +34,55 @@ myexit() {
   exit $ret
 }
 
+##############################
+### from blocknotify-signet.sh
+rmdir /tmp/sffnewblock || test "$1" = "-f" && {
+test "$1" = "-f" && shift
+d=/tmp/sffrest
+mkdir -p $d
+mv /tmp/sff/* $d/
+ls -t1 $d 2>/dev/null \
+  | head -n 200 | while read a; do mv -v "$d/$a" /tmp/sff/; done
+
+while pgrep -f refreshsignetwallets.sh; do sleep 1; done
+cd $myp/newnew
+list.sh | sort -rn -k3 | grep "[1-9] true$" | safecat.sh /tmp/mylist
+
+# was: clean-sff.sh
+tx=$(cat /tmp/mylist | head -1 | grep .") || myexit 1 "newblock tx"
+txid=${tx%% *}
+# && {
+  bch.sh gettransaction $txid | jq -r .details[].address \
+    | sort -u | safecat.sh /tmp/sffgt
+  cat /tmp/sffgt | (cd /tmp/sff-s3; xargs rm)
+  cat /tmp/sffgt | (cd /tmp/sff-s2; xargs rm)
+#}
+
+cat /tmp/mylist | awklist-all.sh \
+  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+fee=$(fee.sh < $shf)
+cat /tmp/mylist | awklist-all.sh -f $fee \
+  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+sertl <$shf
+
+cd $myp/pokus202412
+sff-add.sh -f 1
+rm -f /tmp/pokus2list
+  list.sh | grep "[1-9] true$" | safecat.sh /tmp/pokus2list
+  test -s /tmp/pokus2list || echo empty
+  num=$(wc -l < /tmp/pokus2list)
+  #awklist-all.sh -f $((777*$num)) < /tmp/pokus2list \
+  awklist.sh -f $((777*$num)) -a 50000 < /tmp/pokus2list \
+    | mktx.sh | crt.sh | srt.sh | sert.sh
+test -d /tmp/sffnewblock && myexit 1 "new block again"
+}
+##############################
 
 # are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
-cd $myp/newnew
+cd $myp/newnew || myexit 1 "early cd newnew"
+list.sh | sort -rn -k3 | grep -m1 " 0 true$" | safecat.sh /tmp/mylist
 
 printouts() {
   test ${1:-1} -lt 252 \
@@ -48,14 +92,9 @@ printouts() {
 
 #set -o errexit
 set -o pipefail
-tx=$(list.sh | sort -rn -k 3 | grep -m1 " 0 true$") || {
-  list.sh | grep "[1-9] true$" | safecat.sh /tmp/mylist
-  cat /tmp/mylist | awklist-all.sh -fr \
-    | mktx.sh | crt.sh | srt.sh | sertl
-  myexit 1
-}
-tx=$(list.sh | sort -rn -k 3 | grep -m1 " 0 true$")
+tx=$(cat /tmp/mylist)
 txid=${tx%% *}
+test "$txid" = "" && myexit 1 "empty TXID"
 hf=/tmp/replnhex
 bff=/tmp/replbasefee
 gmef=/tmp/sff-gme
