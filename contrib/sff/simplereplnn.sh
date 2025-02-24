@@ -49,7 +49,7 @@ cd $myp/newnew
 list.sh | sort -rn -k3 | grep "[1-9] true$" | safecat.sh /tmp/mylist
 
 # was: clean-sff.sh
-tx=$(cat /tmp/mylist | head -1 | grep .") || myexit 1 "newblock tx"
+tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "newblock tx"
 txid=${tx%% *}
 # && {
   bch.sh gettransaction $txid | jq -r .details[].address \
