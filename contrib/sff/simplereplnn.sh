@@ -29,9 +29,9 @@ myexit() {
     echo SUCCESS >&2
     mv /tmp/sff/* /tmp/sff-s2/ 2>/dev/null
   } || {
-    mv /tmp/sff/* /tmp/sffrest/
+    mv /tmp/sff/* /tmp/sffrest/ 2>/dev/null
   }
-  mv /tmp/sff-s2/* /tmp/sff-s3/
+  mv /tmp/sff-s2/* /tmp/sff-s3/ 2>/dev/null
   ls -t1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
   myrest=$(ls -1 /tmp/sffrest/ | wc -l)
   myst=$(ls -1 /tmp/sff-s3/ | wc -l)
@@ -53,11 +53,11 @@ pgrep -f refreshsignetwallets.sh | grep -q . && myexit 1 "refreshing wallets"
 
 ##############################
 ### from blocknotify-signet.sh
-rmdir /tmp/sffnewblock || test "$1" = "-f" && {
+rmdir /tmp/sffnewblock 2>/dev/null || test "$1" = "-f" && {
 test "$1" = "-f" && shift
 d=/tmp/sffrest
 mkdir -p $d
-mv /tmp/sff/* $d/
+mv /tmp/sff/* $d/ 2>/dev/null
 
 cd $myp/newnew
 list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh /tmp/mylist
@@ -71,11 +71,11 @@ cd $myp/newnew
     | sort -u | safecat.sh /tmp/sffgt
 cd $myp
 d=/tmp/sffrest
-mv /tmp/sff-s2/* $d/
-mv /tmp/sff-s3/* $d/
+mv /tmp/sff-s2/* $d/ 2>/dev/null
+mv /tmp/sff-s3/* $d/ 2>/dev/null
   cat /tmp/sffgt | (cd /tmp/sffrest; xargs rm -rf)
 ls -t1 $d 2>/dev/null \
-  | head -n 200 | while read a; do mv -v "$d/$a" /tmp/sff/; done
+  | head -n 200 | while read a; do mv "$d/$a" /tmp/sff/; done
 
 cd $myp/newnew
 cat /tmp/mylist | awklist-all.sh \
@@ -88,9 +88,8 @@ cd $myp
 
 cd $myp/pokus202412
 sff-add.sh -f 1
-rm -f /tmp/pokus2list
   list.sh | grep "[1-9] true$" | safecat.sh /tmp/pokus2list
-  test -s /tmp/pokus2list || echo empty
+  test -s /tmp/pokus2list || myexit 1 "empty pokus2list"
   num=$(wc -l < /tmp/pokus2list)
   #awklist-all.sh -f $((777*$num)) < /tmp/pokus2list \
   awklist.sh -f $((777*$num)) -a 50000 < /tmp/pokus2list \
@@ -100,7 +99,7 @@ test -d /tmp/sffnewblock && myexit 1 "new block again"
 ##############################
 
 cd $myp/newnew || myexit 1 "early cd newnew"
-list.sh | grep -m1 " 0 true$" | sort -rn -k3 | safecat.sh /tmp/mylist
+list.sh | grep " 0 true$" | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
 cd $myp
 
 printouts() {
@@ -127,8 +126,8 @@ cat $gmef | grep -w base \
 cat $gmef | grep -w ancestorsize \
   | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//' \
   | safecat.sh $asf
-vsize=$(cat $hf | vsize.sh)
-test "$vsize" -le 9999 || myexit 1 "early TOO BIG vsize $vsize"
+vsize=$(cat $hf | vsize.sh | grep .) || myexit 1 "invalid vsize"
+test "$vsize" -lt 9999 || myexit 1 "early TOO BIG vsize $vsize"
 outsum=$(cat $hf | nd-outs.sh | cut -b-16 | ce.sh | fold -w 16 \
 	| while read l; do echo $((0x$l)); done | paste -d+ -s | bc)
 mkdir -p /tmp/sff-s2
@@ -137,7 +136,8 @@ mkdir -p /tmp/sff-s3
 d=/tmp/sffrest
 mkdir -p $d
 ls -1 /tmp/sff/ | grep -q . || ls -t1 "$d" 2>/dev/null \
-  | head -n 1 | while read a; do mv -v "$d/$a" /tmp/sff; done
+  | head -n 1 | while read a; do mv "$d/$a" /tmp/sff; done
+#  | head -n $(((10000-$vsize+59)/60)) | while read a; do mv "$d/$a" /tmp/sff; done
 
 ls /tmp/sff >&2
 find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 2>/dev/null | xargs cat \
