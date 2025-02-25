@@ -8,7 +8,8 @@ errf=/tmp/sff-err
 sfl=/tmp/sfflast
 shf=/tmp/sffhex
 addmyf=$HOME/.bitcoin/signet/wallets/addmy
-myp=$HOME/.bitcoin/signet/wallets
+sdi=$HOME/.bitcoin/signet
+myp=$sdi/wallets
 
 sertl() {
   : > $errf
@@ -56,6 +57,7 @@ ls -t1 $d 2>/dev/null \
 
 cd $myp/newnew
 list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh /tmp/mylist
+cd $myp
 
 # was: clean-sff.sh
 tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "newblock tx"
@@ -67,12 +69,14 @@ txid=${tx%% *}
   cat /tmp/sffgt | (cd /tmp/sff-s2; xargs rm)
 #}
 
+cd $myp/newnew
 cat /tmp/mylist | awklist-all.sh \
   | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
 fee=$(fee.sh < $shf)
 cat /tmp/mylist | awklist-all.sh -f $fee \
   | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
 sertl <$shf
+cd $myp
 
 cd $myp/pokus202412
 sff-add.sh -f 1
@@ -89,6 +93,7 @@ test -d /tmp/sffnewblock && myexit 1 "new block again"
 
 cd $myp/newnew || myexit 1 "early cd newnew"
 list.sh | grep -m1 " 0 true$" | sort -rn -k3 | safecat.sh /tmp/mylist
+cd $myp
 
 printouts() {
   test ${1:-1} -lt 252 \
@@ -220,7 +225,9 @@ dvs=$vsize
 add=${myadd:-0}
 
 #hha=$(hex $(($outsum + (${1:-$add}) - $max + $rest - $dvs)) - 16 | ce.sh)
+cd $myp/newnew
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+cd $sdi
 vsizenew=$(cat $shf | fee.sh | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew add $add >&2
 test "$vsizenew" -lt 10000 || myexit 1 "TOO BIG"
@@ -232,7 +239,9 @@ echo ofeer $ofeer feer $feer >&2
 test $feer -ge $(($max-1000)) && myexit 1 "some non-sense here"
 echo max $max fee-rate $feer bf $bf vsize $vsizenew >&2
 dvs=$(( $bf+(($vsizenew-$vsize)*$feer+999)/1000))
+cd $myp/newnew
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+cd $sdi
 #sertl <$shf
 #ret=$?
 #test -s $errf || myexit 1
@@ -244,7 +253,9 @@ echo stage 3 >&2
 
 dvs=$(( $vsizenew+$bf))
 test "$vsizenew" = "$vsize" && vsize=0
+cd $myp/newnew
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+cd $sdi
 #tma.sh <$shf
 sertl <$shf
 ret=$?
@@ -263,7 +274,9 @@ fee=$(grep "^insufficient fee, rejecting replacement" $errf \
 echo fee4 $fee >&2
 #dvs=$(($bf+$(sats $feer $vsizenew)))
 dvs=$(( $bf+(($vsizenew-$vsize)*$feer+999)/1000))
+cd $myp/newnew
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+cd $sdi
 #tma.sh <$shf
 sertl <$shf
 ret=$?
@@ -274,7 +287,9 @@ fee=$(grep "^insufficient fee, rejecting replacement" $errf \
   | cut -d'<' -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//')
 echo fee5 $fee >&2
 dvs=$(( $vsizenew+($vsizenew*$fee+999)/1000))
+cd $myp/newnew
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+cd $sdi
 #tma.sh <$shf
 sertl <$shf
 ret=$?
