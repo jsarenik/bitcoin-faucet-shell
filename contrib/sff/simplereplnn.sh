@@ -224,6 +224,7 @@ echo stage 1 >&2
 dvs=$vsize
 add=${myadd:-0}
 
+#hha=$(hex $(($outsum + (${1:-$add}) - $max + $rest - $dvs)) - 16 | ce.sh)
 cd $myp/newnew
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
 cd $sdi
@@ -232,24 +233,18 @@ echo vsize $vsize vsizenew $vsizenew add $add >&2
 test "$vsizenew" -lt 10000 || myexit 1 "TOO BIG"
 
 #sertl <$shf
-ofeer=$(feerl $bf $vsize)
-nsats=$(($vsizenew))
-nfeer=$(feerl $nsats $vsizenew)
-test "$nfeer" -le "$ofeer" && nfeer=$(($ofeer+1))
-
-sats=$(satsl $nfeer $vsizenew)
-echo ofeer $ofeer nfeer $nfeer >&2
-echo max $max fee-rate $feer bf $bf vsize $vsize vsizenew $vsizenew >&2
-#vsadd=$(($vsizenew-$vsize))
-#test "$vsadd" -gt 0 || vsadd=0
-#dvs=$(($sats+1+$vsadd))
-dvs=$(($sats+1))
+ofeer=$((((4000*$bf)+3)/$weight))
+feer=$(($ofeer+1000))
+echo ofeer $ofeer feer $feer >&2
+test $feer -ge $(($max-1000)) && myexit 1 "some non-sense here"
+echo max $max fee-rate $feer bf $bf vsize $vsizenew >&2
+dvs=$(( $bf+(($vsizenew-$vsize)*$feer+999)/1000))
+cd $myp/newnew
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
-sertl <$shf
-ret=$?
-test -s $errf || myexit 0 "stage 1 SUCCESS"
-cat $errf
-myexit 1 "hack ofeer $ofeer nfeer $nfeer"
+cd $sdi
+#sertl <$shf
+#ret=$?
+#test -s $errf || myexit 1
 
 #########################################################
 echo stage 3 >&2
