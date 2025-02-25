@@ -242,7 +242,7 @@ dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
 #tma.sh <$shf
 sertl <$shf
 ret=$?
-cat $errf >&2 | grep . || myexit $ret
+cat $errf | grep . || myexit $ret
 
 #grep "^insufficient fee, rejecting replacement" $errf || myexit $ret
 
