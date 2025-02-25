@@ -23,16 +23,22 @@ sertl() {
 
 myexit() {
   ret=${1:-$?}
+  d=/tmp/sffrest
   test -s $sfl && cat $sfl
   test "$ret" = "0" && {
     echo SUCCESS >&2
-    mv /tmp/sff/* /tmp/sff-s2 2>/dev/null
+    mv /tmp/sff/* /tmp/sff-s2/ 2>/dev/null
   } || {
-    mv /tmp/sff-s2/* /tmp/sff/
     mv /tmp/sff/* /tmp/sffrest/
   }
-  rmdir $lock 2>/dev/null
+  mv /tmp/sff-s2/* /tmp/sff-s3/
+  ls -t1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
+  myrest=$(ls -1 /tmp/sffrest/ | wc -l)
+  myst=$(ls -1 /tmp/sff-s3/ | wc -l)
+  echo rest $myrest s3 $myst >&2
+
   echo ${2:-"myexit"} >&2
+  rmdir $lock 2>/dev/null
   exit $ret
 }
 
@@ -52,8 +58,6 @@ test "$1" = "-f" && shift
 d=/tmp/sffrest
 mkdir -p $d
 mv /tmp/sff/* $d/
-ls -t1 $d 2>/dev/null \
-  | head -n 200 | while read a; do mv -v "$d/$a" /tmp/sff/; done
 
 cd $myp/newnew
 list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh /tmp/mylist
@@ -62,12 +66,16 @@ cd $myp
 # was: clean-sff.sh
 tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "newblock tx"
 txid=${tx%% *}
+cd $myp/newnew
   bch.sh gettransaction $txid | jq -r .details[].address \
     | sort -u | safecat.sh /tmp/sffgt
-  cat /tmp/sffgt | (cd /tmp/sff-s3; xargs rm)
-mv /tmp/sff-s3/* $d/
-  cat /tmp/sffgt | (cd /tmp/sff-s2; xargs rm)
+cd $myp
+d=/tmp/sffrest
 mv /tmp/sff-s2/* $d/
+mv /tmp/sff-s3/* $d/
+  cat /tmp/sffgt | (cd /tmp/sffrest; xargs rm -rf)
+ls -t1 $d 2>/dev/null \
+  | head -n 200 | while read a; do mv -v "$d/$a" /tmp/sff/; done
 
 cd $myp/newnew
 cat /tmp/mylist | awklist-all.sh \
@@ -125,12 +133,13 @@ outsum=$(cat $hf | nd-outs.sh | cut -b-16 | ce.sh | fold -w 16 \
 	| while read l; do echo $((0x$l)); done | paste -d+ -s | bc)
 mkdir -p /tmp/sff-s2
 mkdir -p /tmp/sff-s3
+
 d=/tmp/sffrest
 mkdir -p $d
 ls -t1 "$d" 2>/dev/null \
   | head -n 1 | while read a; do mv -v "$d/$a" /tmp/sff; done
+
 ls /tmp/sff >&2
-mv /tmp/sff-s2/* /tmp/sff-s3 2>/dev/null
 find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 2>/dev/null | xargs cat \
   | sort -u | shuf | safecat.sh /tmp/nosff
 
