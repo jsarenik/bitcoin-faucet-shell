@@ -221,7 +221,7 @@ add=${myadd:-0}
 
 #hha=$(hex $(($outsum + (${1:-$add}) - $max + $rest - $dvs)) - 16 | ce.sh)
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
-vsizenew=$(cat $shf | fee.sh | grep .) || vsizenew=$vsize
+vsizenew=$(cat $shf | fee.sh | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew add $add >&2
 test "$vsizenew" -lt 10000 || myexit 1 "TOO BIG"
 
@@ -250,7 +250,7 @@ sertl <$shf
 ret=$?
 cat $errf | grep . || myexit $ret
 
-#grep "^insufficient fee, rejecting replacement" $errf || myexit $ret
+grep "^insufficient fee, rejecting replacement" $errf || myexit 1 "no fee-rate"
 
 ############
 # stage 4
