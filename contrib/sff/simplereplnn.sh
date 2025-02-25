@@ -12,6 +12,7 @@ myp=$HOME/.bitcoin/signet/wallets
 
 sertl() {
   : > $errf
+  cd $myp
   {
   cat
   echo 0
@@ -34,11 +35,14 @@ myexit() {
   exit $ret
 }
 
-cd myp
+cd $myp
 bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 
 # are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
+
+# are wallets being refreshed?
+pgrep -f refreshsignetwallets.sh | grep -q . && myexit 1 "refreshing wallets"
 
 ##############################
 ### from blocknotify-signet.sh
@@ -50,9 +54,8 @@ mv /tmp/sff/* $d/
 ls -t1 $d 2>/dev/null \
   | head -n 200 | while read a; do mv -v "$d/$a" /tmp/sff/; done
 
-while pgrep -f refreshsignetwallets.sh; do sleep 1; done
 cd $myp/newnew
-list.sh | sort -rn -k3 | grep "[1-9] true$" | safecat.sh /tmp/mylist
+list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh /tmp/mylist
 
 # was: clean-sff.sh
 tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "newblock tx"
@@ -85,7 +88,7 @@ test -d /tmp/sffnewblock && myexit 1 "new block again"
 ##############################
 
 cd $myp/newnew || myexit 1 "early cd newnew"
-list.sh | sort -rn -k3 | grep -m1 " 0 true$" | safecat.sh /tmp/mylist
+list.sh | grep -m1 " 0 true$" | sort -rn -k3 | safecat.sh /tmp/mylist
 
 printouts() {
   test ${1:-1} -lt 252 \
