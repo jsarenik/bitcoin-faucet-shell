@@ -136,7 +136,7 @@ mkdir -p /tmp/sff-s3
 
 d=/tmp/sffrest
 mkdir -p $d
-ls -t1 "$d" 2>/dev/null \
+ls -1 /tmp/sff/ | grep -q . || ls -t1 "$d" 2>/dev/null \
   | head -n 1 | while read a; do mv -v "$d/$a" /tmp/sff; done
 
 ls /tmp/sff >&2
