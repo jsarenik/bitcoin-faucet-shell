@@ -134,7 +134,7 @@ max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') ||
 #max=$(($max-3210000000))
 #max=$(($max-$max/52))
 new=$(($max/52/$newouts))
-test "$new" -gt 330 || myexit 1
+test "$new" -gt 330 || myexit 1 "new $new is too low"
 rest=$(($max-$new*$newouts))
 
 # needs $new and /tmp/nosff
@@ -157,7 +157,7 @@ myadd=$1
 
 dotx() {
 . /dev/shm/UpdateTip-signet
-test "$hold" = "$height" || myexit 1
+test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
 add=${myadd:-0}
 #echo add $add >&2
 #hha=$(hex $(($outsum + $vsizenew + $add - $max + $rest - $dvs)) - 16 | ce.sh)
@@ -223,7 +223,7 @@ test "$vsizenew" -lt 10000 || myexit 1 "TOO BIG"
 ofeer=$((((4000*$bf)+3)/$weight))
 feer=$(($ofeer+1000))
 echo ofeer $ofeer feer $feer >&2
-test $feer -ge $(($max-1000)) && myexit 1
+test $feer -ge $(($max-1000)) && myexit 1 "some non-sense here"
 echo max $max fee-rate $feer bf $bf vsize $vsizenew >&2
 dvs=$(( $bf+(($vsizenew-$vsize)*$feer+999)/1000))
 dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
@@ -242,7 +242,7 @@ dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
 #tma.sh <$shf
 sertl <$shf
 ret=$?
-#cat $errf >&2
+cat $errf >&2 | grep . || myexit $ret
 
 #grep "^insufficient fee, rejecting replacement" $errf || myexit $ret
 
