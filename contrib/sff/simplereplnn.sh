@@ -62,12 +62,12 @@ cd $myp
 # was: clean-sff.sh
 tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "newblock tx"
 txid=${tx%% *}
-# && {
   bch.sh gettransaction $txid | jq -r .details[].address \
     | sort -u | safecat.sh /tmp/sffgt
   cat /tmp/sffgt | (cd /tmp/sff-s3; xargs rm)
+mv /tmp/sff-s3/* $d/
   cat /tmp/sffgt | (cd /tmp/sff-s2; xargs rm)
-#}
+mv /tmp/sff-s2/* $d/
 
 cd $myp/newnew
 cat /tmp/mylist | awklist-all.sh \
