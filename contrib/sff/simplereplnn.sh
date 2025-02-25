@@ -37,6 +37,9 @@ myexit() {
 cd myp
 bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 
+# are we online?
+ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
+
 ##############################
 ### from blocknotify-signet.sh
 rmdir /tmp/sffnewblock || test "$1" = "-f" && {
@@ -80,9 +83,6 @@ rm -f /tmp/pokus2list
 test -d /tmp/sffnewblock && myexit 1 "new block again"
 }
 ##############################
-
-# are we online?
-ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
 cd $myp/newnew || myexit 1 "early cd newnew"
 list.sh | sort -rn -k3 | grep -m1 " 0 true$" | safecat.sh /tmp/mylist
