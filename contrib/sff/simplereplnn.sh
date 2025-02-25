@@ -34,6 +34,9 @@ myexit() {
   exit $ret
 }
 
+cd myp
+bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
+
 ##############################
 ### from blocknotify-signet.sh
 rmdir /tmp/sffnewblock || test "$1" = "-f" && {
