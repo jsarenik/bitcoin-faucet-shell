@@ -14,6 +14,8 @@ gen-sfb.sh
 
 mkdir -p /tmp/sffnewblock
 
-simplereplnn.sh
+ash -x ~/bin/simplereplnn.sh 2>&1 | safecat.sh /tmp/sfflastnew.log
+tail /tmp/sfflastnew.log | safecat.sh /tmp/sfflastnew.log
+date -u | safeadd.sh /tmp/sfflastnew.log
 
 true
