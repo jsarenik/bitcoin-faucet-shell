@@ -74,8 +74,6 @@ d=/tmp/sffrest
 mv /tmp/sff-s2/* $d/ 2>/dev/null
 mv /tmp/sff-s3/* $d/ 2>/dev/null
   cat /tmp/sffgt | (cd /tmp/sffrest; xargs rm -rf)
-ls -t1 $d 2>/dev/null \
-  | head -n 200 | while read a; do mv "$d/$a" /tmp/sff/; done
 
 cd $myp/newnew
 cat /tmp/mylist | awklist-all.sh \
@@ -94,7 +92,14 @@ sff-add.sh -f 1
   #awklist-all.sh -f $((777*$num)) < /tmp/pokus2list \
   awklist.sh -f $((777*$num)) -a 50000 < /tmp/pokus2list \
     | mktx.sh | crt.sh | srt.sh | sert.sh
+
 test -d /tmp/sffnewblock && myexit 1 "new block again"
+d=/tmp/sffrest
+mv /tmp/sff/* $d/ 2>/dev/null
+ls -1 /tmp/sff-s3 | grep -q . || {
+  ls -t1 $d 2>/dev/null \
+    | head -n 200 | while read a; do mv "$d/$a" /tmp/sff/; done
+}
 }
 ##############################
 
@@ -109,7 +114,8 @@ printouts() {
 }
 
 #set -o errexit
-set -o pipefail
+#set -o pipefail
+#set +o pipefail
 tx=$(cat /tmp/mylist)
 txid=${tx%% *}
 test "$txid" = "" && myexit 1 "empty TXID"
@@ -136,11 +142,11 @@ mkdir -p /tmp/sff-s3
 d=/tmp/sffrest
 mkdir -p $d
 ls -1 /tmp/sff/ | grep -q . || {
-  ls -t1 "$d" 2>/dev/null | head -n $(((10000-$vsize)/60)) \
+  ls -t1 "$d" 2>/dev/null | head -n $(((10000-$vsize)/50)) \
     | while read a; do mv "$d/$a" /tmp/sff; done
 }
 
-ls /tmp/sff >&2
+ls -1 /tmp/sff >&2
 find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 2>/dev/null | xargs cat \
   | sort -u | shuf | safecat.sh /tmp/nosff
 
