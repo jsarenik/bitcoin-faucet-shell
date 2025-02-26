@@ -85,7 +85,6 @@ sertl <$shf
 cd $myp
 
 cd $myp/pokus202412
-sff-add.sh -f 1
   list.sh | grep "[1-9] true$" | safecat.sh /tmp/pokus2list
   test -s /tmp/pokus2list || myexit 1 "empty pokus2list"
   num=$(wc -l < /tmp/pokus2list)
@@ -98,7 +97,7 @@ d=/tmp/sffrest
 mv /tmp/sff/* $d/ 2>/dev/null
 ls -1 /tmp/sff-s3 | grep -q . || {
   ls -t1 $d 2>/dev/null \
-    | head -n 200 | while read a; do mv "$d/$a" /tmp/sff/; done
+    | head -n 210 | while read a; do mv "$d/$a" /tmp/sff/; done
 }
 }
 ##############################
