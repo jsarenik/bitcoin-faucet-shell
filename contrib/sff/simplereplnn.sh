@@ -136,8 +136,7 @@ mkdir -p /tmp/sff-s3
 d=/tmp/sffrest
 mkdir -p $d
 ls -1 /tmp/sff/ | grep -q . || ls -t1 "$d" 2>/dev/null \
-  | head -n 1 | while read a; do mv "$d/$a" /tmp/sff; done
-#  | head -n $(((10000-$vsize+59)/60)) | while read a; do mv "$d/$a" /tmp/sff; done
+  | head -n $(((10000-$vsize)/60)) | while read a; do mv "$d/$a" /tmp/sff; done
 
 ls /tmp/sff >&2
 find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 2>/dev/null | xargs cat \
