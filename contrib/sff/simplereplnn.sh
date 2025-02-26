@@ -48,9 +48,6 @@ bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 # are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
-# are wallets being refreshed?
-pgrep -f refreshsignetwallets.sh | grep -q . && myexit 1 "refreshing wallets"
-
 ##############################
 ### from blocknotify-signet.sh
 rmdir /tmp/sffnewblock 2>/dev/null || test "$1" = "-f" && {
@@ -140,8 +137,9 @@ mkdir -p /tmp/sff-s3
 
 d=/tmp/sffrest
 mkdir -p $d
+randomone=$(($RANDOM%2))
 ls -1 /tmp/sff/ | grep -q . || {
-  ls -t1 "$d" 2>/dev/null | head -n $(((10000-$vsize)/50)) \
+  ls -t1 "$d" 2>/dev/null | head -n $(((10000-$vsize)/50+$randomone)) \
     | while read a; do mv "$d/$a" /tmp/sff; done
 }
 
