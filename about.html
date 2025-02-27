@@ -103,7 +103,7 @@ function readyFn( jQuery ) {
   }
 }
 readyFn();
-function faucet_err(msg, mclass="notification is-success") {
+function faucet_err(msg, mclass="notification is-danger") {
     const div = document.getElementById('faucet_err');
     div.className = mclass;
     div.innerHTML = msg;
@@ -124,13 +124,13 @@ function my() {
             }
             if (err.responseJSON && err.responseJSON.message) {
                 msg += err.responseJSON.message;
-                return faucet_err("Error: " + msg, "notification is-danger");
+                return faucet_err("Error: " + msg);
             }
             if (err.responseText) {
                 msg += err.responseText;
-                return faucet_err("Error: " + msg, "notification is-danger");
+                return faucet_err("Error: " + msg);
             }
-            faucet_err(msg + JSON.stringify(err), "notification is-danger");
+            faucet_err(msg + JSON.stringify(err));
         }
     });
 }
