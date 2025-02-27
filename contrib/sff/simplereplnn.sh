@@ -35,7 +35,7 @@ myexit() {
   ls -t1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
   myrest=$(ls -1 /tmp/sffrest/ | wc -l)
   myst=$(ls -1 /tmp/sff-s3/ | wc -l)
-  echo rest $myrest s3 $myst >&2
+  echo rest $myrest stage3 $myst >&2
 
   echo ${2:-"myexit"} >&2
   rmdir $lock 2>/dev/null
