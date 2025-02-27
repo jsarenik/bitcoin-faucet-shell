@@ -79,6 +79,7 @@ fee=$(fee.sh < $shf)
 cat /tmp/mylist | awklist-all.sh -f $fee \
   | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
 sertl <$shf
+cat $errf >&2
 cd $myp
 
 cd $myp/pokus202412
@@ -112,7 +113,7 @@ printouts() {
 #set -o errexit
 #set -o pipefail
 #set +o pipefail
-tx=$(cat /tmp/mylist)
+tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "main loop tx issue"
 txid=${tx%% *}
 test "$txid" = "" && myexit 1 "empty TXID"
 hf=/tmp/replnhex
