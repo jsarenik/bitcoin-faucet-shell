@@ -81,6 +81,7 @@ cat /tmp/mylist | awklist-all.sh -f $fee \
 sertl <$shf
 cat $errf >&2
 cd $myp
+signetcatapultleftovers.sh
 
 cd $myp/pokus202412
   list.sh | grep "[1-9] true$" | safecat.sh /tmp/pokus2list
