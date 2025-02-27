@@ -1,5 +1,7 @@
 #!/bin/sh
 #echo $$ >&2
+lock=/tmp/rsw
+test -d $lock && exit 1
 lock=/tmp/locksff
 mkdir $lock || exit 1
 
