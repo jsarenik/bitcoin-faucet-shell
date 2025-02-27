@@ -83,13 +83,22 @@ cat $errf >&2
 cd $myp
 signetcatapultleftovers.sh
 
+list=/tmp/pokus2list
+: > $list
 cd $myp/pokus202412
-  list.sh | grep "[1-9] true$" | safecat.sh /tmp/pokus2list
-  test -s /tmp/pokus2list || myexit 1 "empty pokus2list"
-  num=$(wc -l < /tmp/pokus2list)
-  #awklist-all.sh -f $((777*$num)) < /tmp/pokus2list \
-  awklist.sh -f $((777*$num)) -a 50000 < /tmp/pokus2list \
-    | mktx.sh | crt.sh | srt.sh | sert.sh
+  list.sh | grep "[1-9] true$" | safecat.sh $list
+test -s $list && {
+  num=$(wc -l < $list)
+cd $myp/pokus202412
+cat $list | awklist.sh \
+  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+fee=$(fee.sh < $shf)
+cd $myp/pokus202412
+cat $list | awklist.sh -f $fee -a 99999 \
+  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+sertl <$shf
+cat $errf >&2
+}
 
 test -d /tmp/sffnewblock && myexit 1 "new block again"
 d=/tmp/sffrest
