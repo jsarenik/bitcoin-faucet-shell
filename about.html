@@ -52,7 +52,7 @@
 <p>This faucet is sending intentionally a random amount. Currently the amount is changed on every replacement that has more outputs than the previous one or the fee changes with number of the outputs staying the same.</p>
 <p>Since using <a href="https://bitcoinops.org/en/topics/version-3-transaction-relay/">v3 transactions (TRUC)</a> the received coins can not be spent until they are confirmed in a block.</p>
 <h4>Current balance</h4>
-<div id="faucet_err"></div>
+<div id="faucet_err" class="notification is-success">Getting balance...</div>
 
 <h4>Please recycle</h4>
 <p>When done testing with the signet coins, please return them to any of the following addresses:</p>
@@ -103,13 +103,13 @@ function readyFn( jQuery ) {
   }
 }
 readyFn();
-function faucet_err(msg, mclass="notification is-danger") {
+function faucet_err(msg, mclass="notification is-success") {
     const div = document.getElementById('faucet_err');
     div.className = mclass;
     div.innerHTML = msg;
 }
 function my() {
-    faucet_err("Getting balance...");
+    faucet_err("Getting balance...", "notification is-success");
     const url = `/balance.txt?${new Date().getTime()}`;
     $.ajax({
         url,
@@ -124,13 +124,13 @@ function my() {
             }
             if (err.responseJSON && err.responseJSON.message) {
                 msg += err.responseJSON.message;
-                return faucet_err("Error: " + msg);
+                return faucet_err("Error: " + msg, "notification is-danger");
             }
             if (err.responseText) {
                 msg += err.responseText;
-                return faucet_err("Error: " + msg);
+                return faucet_err("Error: " + msg, "notification is-danger");
             }
-            faucet_err(msg + JSON.stringify(err));
+            faucet_err(msg + JSON.stringify(err), "notification is-danger");
         }
     });
 }
