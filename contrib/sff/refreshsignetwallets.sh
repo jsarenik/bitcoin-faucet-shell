@@ -15,9 +15,6 @@ ash refresh.sh
 ash refr-pokus.sh
 
 cd lnanchor
-#lts.sh | awk '{print $1}' | sort -u | rpf.sh
-#wv.sh
-#fullrpf20.sh
 ulw.sh
 rm /dev/shm/wallets-signet/lnanchor/wallet.dat
 cd ..
