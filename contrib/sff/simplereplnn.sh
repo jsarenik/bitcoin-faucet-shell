@@ -14,6 +14,7 @@ pkf=/tmp/sffpkf
 addmyf=$HOME/.bitcoin/signet/wallets/addmy
 sdi=$HOME/.bitcoin/signet
 myp=$sdi/wallets
+gmef=/tmp/sff-gme
 
 mkpack() {
   printf '['
@@ -45,18 +46,23 @@ mklnas() {
 sertl() {
   : > $errf
   cd $myp
-  mtxid=$(drt.sh < $shf | jq -r .txid)
-  echo inside sertl $mtxid >&2
-  mklnas $mtxid | safecat.sh $phf
-  mkpack | safecat.sh $pkf
-  submitp < $pkf \
-      2>$errf >$sfl
-  ! grep -q '"error"' $errf
-#  {
-#  cat
-#  echo 0
-#  } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
+#  mtxid=$(drt.sh < $shf | jq -r .txid)
+#  echo inside sertl $mtxid >&2
+#  mklnas $mtxid | safecat.sh $phf
+#  mkpack | safecat.sh $pkf
+#  submitp < $pkf \
 #      2>$errf >$sfl
+#  ! grep -q '"error"' $errf
+  {
+  cat
+  echo 0
+  } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
+      2>$errf >$sfl
+}
+
+myjq() {
+  cat ${2:-$gmef} | grep -w ${1:-base} \
+    | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//'
 }
 
 myexit() {
@@ -115,25 +121,9 @@ cat /tmp/mylist | awklist-all.sh \
   | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
 fee=$(fee.sh < $shf)
 cat /tmp/mylist | awklist-all.sh -f $fee -fm \
-  | mktx.sh | crt.sh | v3.sh | srt.sh | safecat.sh $shf
+  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
 sertl <$shf
 cat $errf >&2
-
-######################################################
-# Leftovers from a try to disallow V3 child spend
-#cd $myp/newnew
-#list.sh | grep "0 true$" | sort -rn -k3 | safecat.sh /tmp/mylist
-#cd $myp/newnew
-#cat /tmp/mylist | awklist-all.sh \
-#  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-#fee=$(fee.sh < $shf)
-#cd $myp/newnew
-#cat /tmp/mylist | awklist-all.sh -f $fee -fm \
-#  | mktx.sh | crt.sh | v3.sh | srt.sh | safecat.sh $shf
-#cd $myp/newnew
-#sertl <$shf
-#cat $errf >&2
-######################################################
 
 cd $myp
 signetcatapultleftovers.sh
@@ -161,7 +151,7 @@ rm -rf $d/tb1pfees9rn5nz
 mv /tmp/sff/* $d/ 2>/dev/null
 ls -1 /tmp/sff-s3 | grep -q . || {
   ls -t1 $d 2>/dev/null \
-    | head -n 210 | while read a; do mv "$d/$a" /tmp/sff/; done
+    | head -n 300 | while read a; do mv "$d/$a" /tmp/sff/; done
 }
 }
 ##############################
@@ -182,30 +172,28 @@ printouts() {
 tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "main loop tx issue"
 txid=${tx%% *}
 test "$txid" = "" && myexit 1 "empty TXID"
+
 hf=/tmp/replnhex
-bff=/tmp/replbasefee
-gmef=/tmp/sff-gme
-asf=/tmp/sff-ancestorsize
 grt.sh $txid | safecat.sh $hf
 test -s $hf || myexit 1 "grt hf"
+sert.sh < $hf
+grep '^03' $hf && myexit 1 "V3 no more"
+
 : > $gmef
 gme.sh $txid | safecat.sh $gmef
-#jq -r .spentby[] < $gmef | grep -q . && myexit 1 "V3 CHILD SPEND"
-af=""
+bf=0
+df=""
+ac=0
 test -s $gmef && {
   $(jq -r '.fees.descendant <= 0.01' < $gmef) || myexit 1 "V3 CHILD FEE HIGH"
-  af=$(jq -r '.fees.descendant' < $gmef)
-  af=$(echo $af | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//')
+  bf=$(myjq base $gmef)
+  df=$(myjq descendant $gmef)
+  ac=$(myjq ancestorcount $gmef)
+  as=$(myjq ancestorsize $gmef)
 }
 
-cat $gmef | grep -w base \
-  | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//' \
-  | safecat.sh $bff
-cat $gmef | grep -w ancestorsize \
-  | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//' \
-  | safecat.sh $asf
 vsize=$(cat $hf | vsize.sh | grep .) || myexit 1 "invalid vsize"
-test "$vsize" -lt 9999 || myexit 1 "early TOO BIG vsize $vsize"
+#test "$vsize" -lt 9999 || myexit 1 "early TOO BIG vsize $vsize"
 outsum=$(cat $hf | nd-outs.sh | cut -b-16 | ce.sh | fold -w 16 \
 	| while read l; do echo $((0x$l)); done | paste -d+ -s | bc)
 mkdir -p /tmp/sff-s2
@@ -217,8 +205,8 @@ randomone=$(($RANDOM%2))
 ls -1 /tmp/sff/ | grep -q . || {
 d=/tmp/sffrest
 rm -rf $d/tb1pfees9rn5nz
-  ls -t1 "$d" 2>/dev/null | head -n $((((10000-$vsize)/50)-$randomone)) \
-    | while read a; do mv "$d/$a" /tmp/sff; done
+  #ls -t1 "$d" 2>/dev/null | head -n $((((100000-$vsize)/50)-$randomone)) \
+  #  | while read a; do mv "$d/$a" /tmp/sff; done
 }
 
 ls -1 /tmp/sff >&2
@@ -245,17 +233,13 @@ newh=$(hex $new - 16 | ce.sh)
 { cat /tmp/nosff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
   | sed "s/^/$newh/" | safecat.sh $of
 
-# basefee
-read -r bf < $bff
-read -r as < $asf
-weight=$(cat $hf | drt.sh | jq -r .weight)
-
 . /dev/shm/UpdateTip-signet
 hold=$height
 
 cat $hf | nd-untilout.sh | safecat.sh $hf-uo
 
 myadd=$1
+df=0
 
 dotx() {
 . /dev/shm/UpdateTip-signet
@@ -263,16 +247,16 @@ test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
 add=${myadd:-0}
 #echo add $add >&2
 #hha=$(hex $(($outsum + $vsizenew + $add - $max + $rest - $dvs)) - 16 | ce.sh)
-#hha=$(hex $(($outsum + $bf - 240 - 13 - ($add) - $max + $rest - $dvs)) - 16 | ce.sh)
-hha=$(hex $(($outsum + $bf - 240 - 13 - ($add) - $max + $rest - $dvs)) - 16 | ce.sh)
+#hha=$(hex $(($outsum + $df - 240 - 13 - ($add) - $max + $rest - $dvs)) - 16 | ce.sh)
+hha=$(hex $(($outsum + $df - ($add) - $max + $rest - $dvs)) - 17 | ce.sh)
 cat $hf-uo
-printouts $((3+$newouts))
+printouts $((2+$newouts))
 echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
 # 31 is OP_RETURN alt.signetfaucet.com
 #echo 0000000000000000166a14616c742e7369676e65746661756365742e636f6d
-finta=$(printf " | %3d" $newoutso | xxd -p)
-echo 00000000000000001c6a1a616c742e7369676e65746661756365742e636f6d$finta
-echo f0000000000000000451024e73
+finta=$(printf " | %4d" $newoutso | xxd -p)
+echo 00000000000000001d6a1b616c742e7369676e65746661756365742e636f6d$finta
+#echo f0000000000000000451024e73
 cat $of
 hex $height - 8 | ce.sh
 }
@@ -288,7 +272,7 @@ feer() {
 feerl() {
   # Fee-rate (low end) $abs_sats_fee $divisor_vsize
   mysats=$1
-  mydiv=$2
+  mydiv=${2:100}
   fr=$((1000*$mysats/$mydiv))
   echo $fr
 }
@@ -318,14 +302,17 @@ dvs=$vsize
 add=${myadd:-0}
 
 cd $myp/newnew
-dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+dotx | txcat.sh | safecat.sh /tmp/tmp
+
+cat /tmp/tmp | srt.sh 2>$errf | safecat.sh $shf
+grep . $errf && myexit 1 "error in signing"
 cd $sdi
 vsizenew=$(cat $shf | fee.sh | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew add $add >&2
-test "$vsizenew" -lt 10000 || myexit 1 "TOO BIG"
+test "$vsizenew" -lt 100000 || myexit 1 "TOO BIG"
 
 cd $myp/newnew
-dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 
 #########################################################
@@ -333,10 +320,11 @@ echo stage 3 >&2
 
 #cat $errf >&2
 
-dvs=$(( $vsizenew+$bf))
+# FOLLOWING DOESN'T MATTER - it's just for vsizenew
+dvs=$(( $df+$vsize ))
 test "$vsizenew" = "$vsize" && vsize=0
 cd $myp/newnew
-dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 
 ############
@@ -344,9 +332,9 @@ cd $sdi
 ############
 
 echo stage 4 >&2
-af=${af:-$bf}
-sats=$(( $af+$vsizenew ))
-  ofeer=$(feerl $af $vsize)
+df=${df:-$bf}
+sats=$(( $df+$vsizenew ))
+  ofeer=$(feerl $df $vsize)
   feer=$(feerl $sats $vsizenew)
   test $feer -lt $ofeer && {
     sats=$(satsl $(($ofeer)) $vsizenew)
@@ -354,12 +342,12 @@ sats=$(( $af+$vsizenew ))
   }
 dvs=$sats
 cd $myp/newnew
-dotx | txcat.sh | v3.sh | srt.sh | safecat.sh $shf
+dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 sertl <$shf
 ret=$?
 echo feer4 $feer sats $sats >&2
 echo ofeer $ofeer feer $feer >&2
-echo max $max fee-rate $feer bf $bf vsize $vsizenew >&2
+echo max $max fee-rate $feer df $df vsize $vsizenew >&2
 
 myexit $ret "finn"
