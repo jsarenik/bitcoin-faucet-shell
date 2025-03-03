@@ -240,6 +240,7 @@ test $newoutsadd -lt 0 && newoutsadd=0
 echo NEWOUTSADD $newoutsadd >&2
 newouts=$(($newouts+$newoutsadd))
 max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') || max=90000000
+test $max -gt 330 || myexit 1 "max $max"
 #max=$(($max-3210000000))
 #max=$(($max-$max/52))
 new=$(($max/52/$newouts))
@@ -258,23 +259,14 @@ read -r as < $asf
 
 cat $hf | nd-untilout.sh | safecat.sh $hf-uo
 
-myadd=$1
-
 dotx() {
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
-  add=${myadd:-0}
-  #echo add $add >&2
-  #hha=$(hex $(($outsum + $vsizenew + $add - $max + $rest - $dvs)) - 16 | ce.sh)
-  #hha=$(hex $(($outsum + $bf - 240 - 13 - ($add) - $max + $rest - $dvs)) - 16 | ce.sh)
-  hha=$(hex $(($outsum + $bf - 240 - 13 - ($add) - $max + $rest - $dvs)) - 16 | ce.sh)
+  hha=$(hex $(($outsum + $bf - 240 - $max + $rest - $dvs)) - 16 | ce.sh)
   cat $hf-uo
   printouts $((3+$newouts))
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
-  # 31 is OP_RETURN alt.signetfaucet.com
-  #echo 0000000000000000166a14616c742e7369676e65746661756365742e636f6d
   finta=$(printf " | %4d" $newoutso | xxd -p)
-  #leo=$(($le+
   echo 00000000000000001d6a1b616c742e7369676e65746661756365742e636f6d$finta
   echo f0000000000000000451024e73
   cat $of
@@ -319,14 +311,14 @@ satsl() {
 echo stage 1 >&2
 
 dvs=$vsize
-add=${myadd:-0}
 
 cd $myp/newnew
 dotx | safecat.sh /tmp/us
+
 cat /tmp/us | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 vsizenew=$(cat $shf | fee.sh | grep .) || myexit 1 "missing vsizenew"
-echo vsize $vsize vsizenew $vsizenew add $add >&2
+echo vsize $vsize vsizenew $vsizenew >&2
 test "$vsizenew" -lt 100000 || myexit 1 "TOO BIG"
 
 #cd $myp/newnew
@@ -355,8 +347,6 @@ sats=$(( $af+$vsizenew ))
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test $feer -lt $ofeer && {
     sats=$(sats $(($ofeer+1)) $vsizenew)
-    #sats=$(($sats+$vsizenew*2-$vsize+3))
-    sats=$(($sats+(240+13)*2))
   }
 dvs=$sats
 cd $myp/newnew
