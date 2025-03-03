@@ -96,6 +96,23 @@ d=/tmp/sffrest
 mkdir -p $d
 mv /tmp/sff/* $d/ 2>/dev/null
 
+list=/tmp/pokus2list
+: > $list
+cd $myp/pokus202412
+  list.sh | grep "[1-9] true$" | safecat.sh $list
+test -s $list && {
+  num=$(wc -l < $list)
+  cd $myp/pokus202412
+  cat $list | awklist.sh \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  fee=$(fee.sh < $shf)
+  cd $myp/pokus202412
+  cat $list | awklist.sh -f $fee -fm -a 99999 \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  sertl <$shf
+  cat $errf >&2
+}
+
 cd $myp/newnew
 list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh /tmp/mylist
 cd $myp
@@ -134,55 +151,12 @@ do
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf
-# | grep . || exit 1
+  sertl <$shf | grep -q . || break
   cp $l $lpr
 done
 
-#cd $myp/newnew
-#cat /tmp/mylist | awklist-all.sh \
-#  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-#fee=$(fee.sh < $shf)
-#cat /tmp/mylist | awklist-all.sh -f $fee -fm \
-#  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-#sertl <$shf
-#cat $errf >&2
-
-######################################################
-# Leftovers from a try to disallow V3 child spend
-#cd $myp/newnew
-#list.sh | grep "0 true$" | sort -rn -k3 | safecat.sh /tmp/mylist
-#cd $myp/newnew
-#cat /tmp/mylist | awklist-all.sh \
-#  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-#fee=$(fee.sh < $shf)
-#cd $myp/newnew
-#cat /tmp/mylist | awklist-all.sh -f $fee -fm \
-#  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-#cd $myp/newnew
-#sertl <$shf
-#cat $errf >&2
-######################################################
-
 cd $myp
 signetcatapultleftovers.sh
-
-list=/tmp/pokus2list
-: > $list
-cd $myp/pokus202412
-  list.sh | grep "[1-9] true$" | safecat.sh $list
-test -s $list && {
-  num=$(wc -l < $list)
-cd $myp/pokus202412
-cat $list | awklist.sh \
-  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-fee=$(fee.sh < $shf)
-cd $myp/pokus202412
-cat $list | awklist.sh -f $fee -fm -a 99999 \
-  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-sertl <$shf
-cat $errf >&2
-}
 
 test -d /tmp/sffnewblock && myexit 1 "new block again"
 d=/tmp/sffrest
@@ -191,7 +165,7 @@ mv /tmp/sff/* $d/ 2>/dev/null
 ls -1 /tmp/sff-s3 | grep -q . || {
   ls -t1 $d 2>/dev/null \
     | head -n 2016 | while read a; do mv "$d/$a" /tmp/sff/; done
-}
+  }
 }
 ##############################
 
@@ -293,16 +267,16 @@ dotx() {
   #echo add $add >&2
   #hha=$(hex $(($outsum + $vsizenew + $add - $max + $rest - $dvs)) - 16 | ce.sh)
   #hha=$(hex $(($outsum + $bf - 240 - 13 - ($add) - $max + $rest - $dvs)) - 16 | ce.sh)
-  hha=$(hex $(($outsum + $bf - ($add) - $max + $rest - $dvs)) - 16 | ce.sh)
+  hha=$(hex $(($outsum + $bf - 240 - 13 - ($add) - $max + $rest - $dvs)) - 16 | ce.sh)
   cat $hf-uo
-  printouts $((2+$newouts))
+  printouts $((3+$newouts))
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
   # 31 is OP_RETURN alt.signetfaucet.com
   #echo 0000000000000000166a14616c742e7369676e65746661756365742e636f6d
   finta=$(printf " | %4d" $newoutso | xxd -p)
   #leo=$(($le+
   echo 00000000000000001d6a1b616c742e7369676e65746661756365742e636f6d$finta
-  #echo f0000000000000000451024e73
+  echo f0000000000000000451024e73
   cat $of
   hex $height - 8 | ce.sh
 }
@@ -380,8 +354,9 @@ sats=$(( $af+$vsizenew ))
   ofeer=$(feer $af $vsize | grep .) || myexit 1 "ofeer $ofeer af $af vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test $feer -lt $ofeer && {
-    sats=$(sats $(($ofeer)) $vsizenew)
-    #sats=$(($sats+4))
+    sats=$(sats $(($ofeer+1)) $vsizenew)
+    #sats=$(($sats+$vsizenew*2-$vsize+3))
+    sats=$(($sats+(240+13)*2))
   }
 dvs=$sats
 cd $myp/newnew
