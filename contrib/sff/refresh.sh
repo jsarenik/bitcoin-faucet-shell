@@ -44,7 +44,14 @@ do
   echo waiting for wallet synchronization
   busybox sleep 10
   i=$((${i:-0}+1))
-  test $i -gt 10 && { cd ../$neww; ulw.sh; exit 1; }
+  test $i -gt 10 && {
+    cd ../$neww
+    ulw.sh
+    cd ..
+    rm -rf $neww
+    rm -rf $tmpd
+    exit 1
+  }
 done
 cd ..
 
