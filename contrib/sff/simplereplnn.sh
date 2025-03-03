@@ -127,12 +127,12 @@ do
     sleep 0.2
   done
   }
-
+  
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || break
   fee=$(awklist-all.sh < /tmp/mylist \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -fm < /tmp/mylist  \
+  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
 # | grep . || exit 1
@@ -377,11 +377,11 @@ cd $sdi
 echo stage 4 >&2
 af=${af:-$bf}
 sats=$(( $af+$vsizenew ))
-  ofeer=$(feerl $af $vsize | grep .) || myexit 1 "ofeer $ofeer af $af vsize $vsize"
-  feer=$(feerl $sats $vsizenew | grep .) || myexit 1 "feer $feer"
+  ofeer=$(feer $af $vsize | grep .) || myexit 1 "ofeer $ofeer af $af vsize $vsize"
+  feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test $feer -lt $ofeer && {
-    sats=$(satsl $(($ofeer)) $vsizenew)
-    #sats=$(($sats+1))
+    sats=$(sats $(($ofeer)) $vsizenew)
+    #sats=$(($sats+4))
   }
 dvs=$sats
 cd $myp/newnew
