@@ -18,6 +18,7 @@ mydd() {
 }
 scs() {
   test $((0x$next)) -lt 253 || {
+    #res=""; printf fd; mydd; res=$next; mydd; next=$next$res
     res=""; mydd; res=$next; mydd; next=$next$res
   }
 }
@@ -41,6 +42,10 @@ test "$next" = "00" && mydd && mydd #|| echo
 
 scs
 #echo $next
+#test $next = "fd" && {
+#  mydd 2
+#  next=$(echo $next | ce.sh)
+#}
 
 for i in $(seq $((0x$next)))
 do
