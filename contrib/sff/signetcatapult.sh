@@ -1,4 +1,6 @@
 #!/bin/sh
+exit 1
+
 net=$(hnet.sh)
 tmp=$(mktemp /dev/shm/catapult-$net-XXXXXX)
 
@@ -17,5 +19,6 @@ echo $line | awklist-allfee.sh | mktx.sh | crt.sh | srt.sh \
   | sert.sh >/dev/null 2>&1
 done < $tmp
 }
-
 rm -rf $tmp > /dev/null
+
+#signetcatapultleftovers.sh

@@ -14,8 +14,11 @@ gen-sfb.sh
 
 mkdir -p /tmp/sffnewblock
 
-ash -x ~/bin/simplereplnn.sh 2>&1 | safecat.sh /tmp/sfflastnew.log
-tail /tmp/sfflastnew.log | safecat.sh /tmp/sfflastnew.log
-date -u | safeadd.sh /tmp/sfflastnew.log
+log=/tmp/sfflastnew.log
+tail=/tmp/sfflastnew-tail.log
+ash -x ~/bin/simplereplnn.sh 2>&1 | safecat.sh $log
+date -u | safeadd.sh $log
+du -hs /dev/shm/wallets-signet/* | safeadd.sh $log
+tail -n 25 $log | safecat.sh $tail
 
 true

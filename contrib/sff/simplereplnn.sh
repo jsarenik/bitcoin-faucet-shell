@@ -161,6 +161,9 @@ test -s $list && {
   cat $errf >&2
 }
 
+cd $myp
+signetcatapultleftovers.sh
+
 l=/tmp/mylist
 lpr=/tmp/l123p
 
@@ -184,9 +187,6 @@ do
   sertl <$shf | grep -q . || break
   cp $l $lpr
 done
-
-#cd $myp
-#signetcatapultleftovers.sh
 
 test -d /tmp/sffnewblock && myexit 1 "new block again"
 d=/tmp/sffrest
