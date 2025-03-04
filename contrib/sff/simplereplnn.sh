@@ -194,7 +194,7 @@ d=/tmp/sffrest
 mv /tmp/sff/* $d/ 2>/dev/null
 ls -1 /tmp/sff-s3 | grep -q . || {
   ls -t1 $d 2>/dev/null \
-    | head -n 1016 | while read a; do mv "$d/$a" /tmp/sff/; done
+    | head -n 2016 | sed 's/^/mv /;s|$| /tmp/sff/|' | (cd $d; sh -s)
   }
 }
 ##############################
@@ -271,8 +271,8 @@ randomone=$(($RANDOM%2))
 ls -1 /tmp/sff/ | grep -q . || {
 d=/tmp/sffrest
 #rm -rf $d/tb1pfees9rn5nz
-  ls -t1 "$d" 2>/dev/null | head -n $((((20000-$vsize)/52)-$randomone)) \
-    | while read a; do mv "$d/$a" /tmp/sff; done
+  ls -t1 "$d" 2>/dev/null | head -n $((((100000-$vsize)/52)-$randomone)) \
+    | sed 's/^/mv /;s|$| /tmp/sff/|' | (cd $d; sh -s)
 }
 
 ls -1 /tmp/sff >&2
