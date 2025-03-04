@@ -102,7 +102,7 @@ list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh /tmp/mylist
 cd $myp
 
 # was: clean-sff.sh
-tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "newblock tx"
+tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "EARLY newblock tx"
 txid=${tx%% *}
 cd $myp/newnew
   bch.sh gettransaction $txid | jq -r .details[].address \
@@ -122,7 +122,7 @@ cd $myp/newnew
   awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf | grep -q . || break
-for i in $(seq 23)
+for i in $(seq 25)
 do
   test -s $lpr && {
   until
@@ -139,7 +139,8 @@ do
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf | grep -q . || break
+  sertl <$shf | grep -q .
+# || break
   cp $l $lpr
 done
 
@@ -163,12 +164,12 @@ test -s $list && {
 l=/tmp/mylist
 lpr=/tmp/l123p
 
-for i in $(seq 24)
+for i in $(seq 25)
 do
   test -s $lpr && {
   until
     cd $myp/newnew || myexit 1 "early cd newnew $(($i+1))"
-    list.sh | safecat.sh $l
+    list.sh | grep " true$" | safecat.sh $l
     ! cmp $l $lpr
   do
     sleep 0.2
@@ -193,27 +194,29 @@ d=/tmp/sffrest
 mv /tmp/sff/* $d/ 2>/dev/null
 ls -1 /tmp/sff-s3 | grep -q . || {
   ls -t1 $d 2>/dev/null \
-    | head -n 2016 | while read a; do mv "$d/$a" /tmp/sff/; done
+    | head -n 1016 | while read a; do mv "$d/$a" /tmp/sff/; done
   }
 }
 ##############################
+##############################
+##############################
 
 cd $myp/newnew || myexit 1 "early cd newnew"
-list.sh | grep " 0 true$" | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
+list.sh | grep " true$" | sort -rn -k3 | safecat.sh /tmp/mylist
 #list.sh | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
 cd $myp
 
 l=/tmp/mylist
 cd $myp/newnew
-  fee=$(awklist-all.sh < /tmp/mylist \
-    | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf
+#  fee=$(awklist-all.sh < /tmp/mylist \
+#    | mktx.sh | crt.sh | srt.sh | fee.sh)
+#  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
+#    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+#  sertl <$shf
 
 cd $myp/newnew || myexit 1 "early cd newnew"
 #list.sh | grep " 0 true$" | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
-list.sh | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
+list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh /tmp/mylist
 cd $myp
 
 printouts() {
@@ -223,9 +226,10 @@ printouts() {
 }
 
 #set -o errexit
-set -o pipefail
+#set -o pipefail
 #set +o pipefail
-tx=$(cat /tmp/mylist | grep .) || myexit 1 "main loop tx issue"
+tx=$(head -1 /tmp/mylist | grep .) || myexit 1 "main loop tx issue"
+tx=${1:-$tx}
 txid=${tx%% *}
 test "$txid" = "" && myexit 1 "empty TXID"
 bff=/tmp/replbasefee
@@ -267,7 +271,7 @@ randomone=$(($RANDOM%2))
 ls -1 /tmp/sff/ | grep -q . || {
 d=/tmp/sffrest
 #rm -rf $d/tb1pfees9rn5nz
-  ls -t1 "$d" 2>/dev/null | head -n $((((100000-$vsize)/52)-$randomone)) \
+  ls -t1 "$d" 2>/dev/null | head -n $((((20000-$vsize)/52)-$randomone)) \
     | while read a; do mv "$d/$a" /tmp/sff; done
 }
 

@@ -2,6 +2,7 @@ net=$(hnet.sh)
 export LC_ALL=C
 
 . $HOME/.testkeys
+dt=/home/nsm/.bitcoin/signet/wallets/pokus202412-dt.txt
 
 while
   add=$RANDOM
@@ -26,6 +27,8 @@ bch.sh importdescriptors '[{ "desc": "pkh('$privkeyo')#'$pkhcs'", "timestamp": "
 bch.sh importdescriptors '[{ "desc": "sh(wpkh('$privkeyo'))#'$onestedcs'", "timestamp": "now" }]'
 bch.sh importdescriptors '[{ "desc": "wsh(pkh('$privkeyo'))#'$owshcs'", "timestamp": "now" }]'
 #bch.sh importdescriptors '[{ "desc": "combo('$privkey')#'$combocs'", "timestamp": "now" }]'
+A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
+bch.sh importdescriptors $A
 . /dev/shm/UpdateTip-signet
 bch.sh rescanblockchain $(($height-20))
 sleep 1
