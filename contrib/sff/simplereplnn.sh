@@ -117,7 +117,7 @@ mv /tmp/sff-s3/* $d/ 2>/dev/null
 l=/tmp/mylist
 lpr=/tmp/l123p
 cd $myp/newnew
-  fee=$(awklist-all.sh < /tmp/mylist \
+  fee=$(awklist-all.sh -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
@@ -135,7 +135,7 @@ do
   }
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || break
-  fee=$(awklist-all.sh < /tmp/mylist \
+  fee=$(awklist-all.sh -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
@@ -180,7 +180,7 @@ do
   }
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || break
-  fee=$(awklist-all.sh < /tmp/mylist \
+  fee=$(awklist-all.sh -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
@@ -208,11 +208,6 @@ cd $myp
 
 l=/tmp/mylist
 cd $myp/newnew
-#  fee=$(awklist-all.sh < /tmp/mylist \
-#    | mktx.sh | crt.sh | srt.sh | fee.sh)
-#  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
-#    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-#  sertl <$shf
 
 cd $myp/newnew || myexit 1 "early cd newnew"
 #list.sh | grep " 0 true$" | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
