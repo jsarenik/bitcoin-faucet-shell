@@ -285,6 +285,7 @@ newouts=$(($newouts+$newoutsadd))
 max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
 test $max -gt 330 || myexit 1 "low max $max"
+test $max -gt 22330902625 && max=22330902625
 new=$(($max/210/$newouts))
 test "$new" -gt 330 || myexit 1 "new $new is too low"
 rest=$(($max-$new*$newouts))
