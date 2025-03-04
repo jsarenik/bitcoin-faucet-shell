@@ -96,22 +96,6 @@ d=/tmp/sffrest
 mkdir -p $d
 mv /tmp/sff/* $d/ 2>/dev/null
 
-list=/tmp/pokus2list
-: > $list
-cd $myp/pokus202412
-  list.sh | grep "[1-9] true$" | safecat.sh $list
-test -s $list && {
-  num=$(wc -l < $list)
-  cd $myp/pokus202412
-  cat $list | awklist.sh \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  fee=$(fee.sh < $shf)
-  cd $myp/pokus202412
-  cat $list | awklist.sh -f $fee -fm -a 99999 \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf
-  cat $errf >&2
-}
 
 cd $myp/newnew
 list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh /tmp/mylist
@@ -133,18 +117,22 @@ mv /tmp/sff-s3/* $d/ 2>/dev/null
 l=/tmp/mylist
 lpr=/tmp/l123p
 cd $myp/newnew
-for i in $(seq 25)
+  fee=$(awklist-all.sh < /tmp/mylist \
+    | mktx.sh | crt.sh | srt.sh | fee.sh)
+  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  sertl <$shf | grep -q . || break
+for i in $(seq 23)
 do
   test -s $lpr && {
   until
     cd $myp/newnew
-    list.sh > $l
+    list.sh | grep " true$" | safecat.sh $l
     ! cmp $l $lpr
   do
     sleep 0.2
   done
   }
-  
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || break
   fee=$(awklist-all.sh < /tmp/mylist \
@@ -155,8 +143,49 @@ do
   cp $l $lpr
 done
 
-cd $myp
-signetcatapultleftovers.sh
+list=/tmp/pokus2list
+: > $list
+cd $myp/pokus202412
+  list.sh | grep " true$" | safecat.sh $list
+test -s $list && {
+  num=$(wc -l < $list)
+  cd $myp/pokus202412
+  cat $list | awklist-all.sh \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  fee=$(fee.sh < $shf)
+  cd $myp/pokus202412
+  cat $list | awklist-all.sh -f $fee -fm \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  sertl <$shf
+  cat $errf >&2
+}
+
+l=/tmp/mylist
+lpr=/tmp/l123p
+
+for i in $(seq 24)
+do
+  test -s $lpr && {
+  until
+    cd $myp/newnew || myexit 1 "early cd newnew $(($i+1))"
+    list.sh | safecat.sh $l
+    ! cmp $l $lpr
+  do
+    sleep 0.2
+  done
+  }
+  . /dev/shm/UpdateTip-signet
+  test "$hold" = "$height" || break
+  fee=$(awklist-all.sh < /tmp/mylist \
+    | mktx.sh | crt.sh | srt.sh | fee.sh)
+  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  sertl <$shf | grep -q . || break
+  cp $l $lpr
+done
+
+#cd $myp
+#signetcatapultleftovers.sh
 
 test -d /tmp/sffnewblock && myexit 1 "new block again"
 d=/tmp/sffrest
@@ -171,6 +200,20 @@ ls -1 /tmp/sff-s3 | grep -q . || {
 
 cd $myp/newnew || myexit 1 "early cd newnew"
 list.sh | grep " 0 true$" | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
+#list.sh | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
+cd $myp
+
+l=/tmp/mylist
+cd $myp/newnew
+  fee=$(awklist-all.sh < /tmp/mylist \
+    | mktx.sh | crt.sh | srt.sh | fee.sh)
+  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  sertl <$shf
+
+cd $myp/newnew || myexit 1 "early cd newnew"
+#list.sh | grep " 0 true$" | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
+list.sh | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
 cd $myp
 
 printouts() {
@@ -180,9 +223,9 @@ printouts() {
 }
 
 #set -o errexit
-#set -o pipefail
+set -o pipefail
 #set +o pipefail
-tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "main loop tx issue"
+tx=$(cat /tmp/mylist | grep .) || myexit 1 "main loop tx issue"
 txid=${tx%% *}
 test "$txid" = "" && myexit 1 "empty TXID"
 bff=/tmp/replbasefee
@@ -239,17 +282,16 @@ newoutsadd=$((210-$newouts))
 test $newoutsadd -lt 0 && newoutsadd=0
 echo NEWOUTSADD $newoutsadd >&2
 newouts=$(($newouts+$newoutsadd))
-max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') || max=90000000
-test $max -gt 330 || myexit 1 "max $max"
-#max=$(($max-3210000000))
-#max=$(($max-$max/52))
-new=$(($max/52/$newouts))
+max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
+  || myexit 1 "unknown max $max"
+test $max -gt 330 || myexit 1 "low max $max"
+new=$(($max/210/$newouts))
 test "$new" -gt 330 || myexit 1 "new $new is too low"
 rest=$(($max-$new*$newouts))
 
 # needs $new and /tmp/nosff
 of=/tmp/sff-outs
-newh=$(hex $new - 16 | ce.sh)
+newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
 { cat /tmp/nosff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
   | sed "s/^/$newh/" | safecat.sh $of
 
@@ -262,7 +304,9 @@ cat $hf | nd-untilout.sh | safecat.sh $hf-uo
 dotx() {
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
-  hha=$(hex $(($outsum + $bf - 240 - $max + $rest - $dvs)) - 16 | ce.sh)
+  hhasum=$(($outsum + $bf - 240 - $max + $rest - $dvs))
+  echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
+  hha=$(hex $hhasum - 16 | ce.sh)
   cat $hf-uo
   printouts $((3+$newouts))
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90

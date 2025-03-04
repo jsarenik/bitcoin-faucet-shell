@@ -119,18 +119,18 @@ oxff=$HTTP_X_FORWARDED_FOR
 #HTTP_X_REAL_IP=${HTTP_CF_CONNECTING_IP:-"$REMOTE_ADDR"}
 
 
-read -r myip < /tmp/myip
-myip=${myip:-"1234567890"}
-test \
-	"${xip%.*.*}" = "192.168" \
-	-o "$xip" = "127.0.0.1" \
-	-o "$xip" = "$myip" \
-	&& {
-  #echo Exception $ADLOCK $xip
-  rm -rf \
-    $LIMIT \
-    $ADLOCK $WHERE/.limit/192.168* $WHERE/.limit/127.0.0.1 $WHERE/.limit/$myip
-}
+#read -r myip < /tmp/myip
+#myip=${myip:-"1234567890"}
+#test \
+#	"${xip%.*.*}" = "192.168" \
+#	-o "$xip" = "127.0.0.1" \
+#	-o "$xip" = "$myip" \
+#	&& {
+#  #echo Exception $ADLOCK $xip
+#  rm -rf \
+#    $LIMIT \
+#    $ADLOCK $WHERE/.limit/192.168* $WHERE/.limit/127.0.0.1 $WHERE/.limit/$myip
+#}
 mkdir -p ${ADLOCK%/*}
 mkdir $ADLOCK 2>/dev/null || { test -d $ADLOCK && touch $ADLOCK; AA=1; }
 #set | safecat.sh /tmp/setmy
