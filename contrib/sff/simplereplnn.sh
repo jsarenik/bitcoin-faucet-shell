@@ -87,6 +87,7 @@ cd $myp/newnew
   bch.sh gettransaction $txid | jq -r .details[].address \
     | sort -u | safecat.sh /tmp/sffgt
 cd $myp
+rm -rf /tmp/sff-s3/0*
 d=/tmp/sffrest
 mymv /tmp/sff-s2 /tmp/sff-s3 $d
   cat /tmp/sffgt | (cd /tmp/sffrest; xargs rm -rf)
