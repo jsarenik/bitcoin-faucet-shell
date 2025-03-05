@@ -184,7 +184,7 @@ grep '^03' $hf && myexit 1 "V3 no more"
 
 : > $gmef
 gme.sh $txid | safecat.sh $gmef
-#jq -r .spentby[] < $gmef | grep -q . && myexit 1 "V3 CHILD SPEND"
+jq -r .spentby[] < $gmef | grep -q . && myexit 1 "FOREIGN CHILD SPEND"
 af=""
 test -s $gmef && {
   $(jq -r '.fees.descendant <= 0.01' < $gmef) || myexit 1 "V3 CHILD FEE HIGH"
