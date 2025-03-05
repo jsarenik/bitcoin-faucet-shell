@@ -202,9 +202,7 @@ test -d /tmp/sffnewblock && myexit 1 "new block again"
 d=/tmp/sffrest
 #rm -rf $d/tb1pfees9rn5nz
 mymv /tmp/sff $d
-  # following is inspired by https://superuser.com/questions/294161
-  # answer by Alex Shchur. Kudos.
-  find $d -type f -maxdepth 1 -type f -exec ls -t {} + \
+  ls -t1 "$d" \
     | head -n 2016 | sed 's/^/mv /;s|$| /tmp/sff/|' | (cd $d; sh -s)
 }
 ##############################
