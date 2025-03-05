@@ -14,6 +14,7 @@ pkf=/tmp/sffpkf
 addmyf=$HOME/.bitcoin/signet/wallets/addmy
 sdi=$HOME/.bitcoin/signet
 myp=$sdi/wallets
+otra=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
 
 . /dev/shm/UpdateTip-signet
 hold=$height
@@ -117,9 +118,9 @@ mv /tmp/sff-s3/* $d/ 2>/dev/null
 l=/tmp/mylist
 lpr=/tmp/l123p
 cd $myp/newnew
-  fee=$(awklist-all.sh -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist \
+  fee=$(awklist-all.sh -d $otra < /tmp/mylist \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
+  awklist-all.sh -f $fee -fm -d $otra < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf | grep -q . || break
 for i in $(seq 25)
@@ -135,9 +136,9 @@ do
   }
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || break
-  fee=$(awklist-all.sh -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist \
+  fee=$(awklist-all.sh -d $otra < /tmp/mylist \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
+  awklist-all.sh -f $fee -fm -d $otra < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf | grep -q .
 # || break
@@ -180,9 +181,9 @@ do
   }
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || break
-  fee=$(awklist-all.sh -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist \
+  fee=$(awklist-all.sh -d $otra < /tmp/mylist \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -fm -d tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn < /tmp/mylist  \
+  awklist-all.sh -f $fee -fm -d $otra < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf | grep -q . || break
   cp $l $lpr
@@ -284,8 +285,8 @@ newouts=$(($newouts+$newoutsadd))
 max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
 test $max -gt 330 || myexit 1 "low max $max"
-test $max -gt 22330902625 && max=22330902625
-new=$(($max/210/$newouts))
+test $max -gt 52330902625 && max=52330902625
+new=$(($max/180/$newouts))
 test "$new" -gt 330 || myexit 1 "new $new is too low"
 rest=$(($max-$new*$newouts))
 

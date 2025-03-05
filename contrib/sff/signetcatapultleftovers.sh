@@ -25,7 +25,7 @@ fee=${fee:-190}
 echo fee $fee >&2
 cd $wd
 #cat $list | awklist.sh -f ${fee:-190} -d tb1pfees9rn5nz -a 99999 \
- echo $txid $vout $amount | awklist.sh -f $fee -d tb1pfees9rn5nz -a 999999 \
+ echo $txid $vout $amount | awklist.sh -f $fee -d tb1pfees9rn5nz -a 123456 \
   | mktx.sh | crt.sh | srt.sh | safecat.sh $lh
 sert.sh <$lh
 done
