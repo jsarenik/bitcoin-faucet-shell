@@ -63,7 +63,7 @@ test "$address" = "" && {
 
 # Early invalid address detection just using grep
 # does not leave any trace of the invalid address
-echo "$address" | grep -qE '^(tb1pfees9rn5nz|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{59}|[mn2][a-km-zA-HJ-NP-Z1-9]{25,34})$' || {
+echo "$address" | grep -qE '^(0[23][0-9a-f]{64}|tb1pfees9rn5nz|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{39}|tb1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{59}|[mn2][a-km-zA-HJ-NP-Z1-9]{25,34})$' || {
   res 400 "Invalid address" application/json '{"message":"Invalid address"}'
 }
 #cd ~/.bitcoin/signet
