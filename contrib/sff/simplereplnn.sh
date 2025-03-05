@@ -31,43 +31,10 @@ mymv() {
     | sed "s/^/mv /;s|$| $to|" | sh -s
 }
 
-mkpack() {
-  printf '['
-  {
-    cat $shf
-    cat $phf
-  } | sed 's/^/"/;s/$/"/' | paste -d, -s | tr -d '\n'
-  printf ']'
-}
-
-submitp() {
-  bch.sh -stdin submitpackage < $pkf
-}
-
-mklnas() {
-  mytx=$1
-  . /dev/shm/UpdateTip-signet
-  {
-    echo 03000000
-    echo 01
-    echo $mytx | ce.sh
-    echo 02000000 00 fdffffff
-    echo 01
-    echo 0000000000000000 11 6a0f696e20666565732077652072757374
-    hex $height - 8 | ce.sh
-  } | tr -d ' \n' | grep .
-}
-
 sertl() {
   : > $errf
   cd $myp
   mtxid=$(drt.sh < $shf | jq -r .txid)
-#  echo inside sertl $mtxid >&2
-#  mklnas $mtxid | safecat.sh $phf
-#  mkpack | safecat.sh $pkf
-#  submitp < $pkf \
-#      2>$errf >$sfl
-#  ! grep -q '"error"' $errf
   {
   cat
   echo 0
@@ -122,7 +89,6 @@ cd $myp/newnew
 cd $myp
 d=/tmp/sffrest
 mymv /tmp/sff-s2 /tmp/sff-s3 $d
-#rm -rf $d/tb1pfees9rn5nz
   cat /tmp/sffgt | (cd /tmp/sffrest; xargs rm -rf)
 
 l=/tmp/mylist
@@ -175,34 +141,9 @@ test -s $list && {
 cd $myp
 signetcatapultleftovers.sh
 
-l=/tmp/mylist
-lpr=/tmp/l123p
-
-for i in $(seq 25)
-do
-  test -s $lpr && {
-  until
-    cd $myp/newnew || myexit 1 "early cd newnew $(($i+1))"
-    list.sh | grep " true$" | safecat.sh $l
-    ! cmp $l $lpr
-  do
-    sleep 0.2
-  done
-  }
-  . /dev/shm/UpdateTip-signet
-  test "$hold" = "$height" || break
-  fee=$(awklist-all.sh -d $otra < /tmp/mylist \
-    | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -fm -d $otra < /tmp/mylist  \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf | grep -q . || break
-  cp $l $lpr
-done
-
 test -d /tmp/sffnewblock && myexit 1 "new block again"
 
 d=/tmp/sffrest
-#rm -rf $d/tb1pfees9rn5nz
 mymv /tmp/sff $d
   ls -t1 "$d" \
     | head -n 2016 | sed 's/^/mv /;s|$| /tmp/sff/|' | (cd $d; sh -s)
@@ -211,16 +152,10 @@ mymv /tmp/sff $d
 ##############################
 ##############################
 
-cd $myp/newnew || myexit 1 "early cd newnew"
-list.sh | grep " true$" | sort -rn -k3 | safecat.sh /tmp/mylist
-#list.sh | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
-cd $myp
-
 l=/tmp/mylist
 cd $myp/newnew
 
 cd $myp/newnew || myexit 1 "early cd newnew"
-#list.sh | grep " 0 true$" | sort -rn -k3 | head -1 | safecat.sh /tmp/mylist
 list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh /tmp/mylist
 cd $myp
 
@@ -275,7 +210,6 @@ mkdir -p $d
 randomone=$(($RANDOM%2))
 ls -1 /tmp/sff/ | grep -q . || {
 d=/tmp/sffrest
-#rm -rf $d/tb1pfees9rn5nz
   ls -t1 "$d" 2>/dev/null | head -n $((((100000-$vsize)/52)-$randomone)) \
     | sed 's/^/mv /;s|$| /tmp/sff/|' | (cd $d; sh -s)
 }
@@ -375,14 +309,8 @@ vsizenew=$(cat $shf | fee.sh | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
 test "$vsizenew" -lt 100000 || myexit 1 "TOO BIG"
 
-#cd $myp/newnew
-#dotx | txcat.sh | srt.sh | safecat.sh $shf
-#cd $sdi
-
 #########################################################
 echo stage 3 >&2
-
-#cat $errf >&2
 
 dvs=$(( $vsizenew+$bf))
 test "$vsizenew" = "$vsize" && vsizenew=$(($vsizenew+1))
