@@ -14,6 +14,15 @@
 		word-wrap: break-word;
 		word-break: break-all;
 	}
+// from https://github.com/jgthms/bulma/issues/3668
+html {
+    scroll-padding-top: 75px;
+}
+section {
+    h1, h2, h3, h4, h5, h6 {
+        scroll-margin-top: 75px;
+    }
+}
     </style>
 </head>
 
@@ -54,7 +63,7 @@
 <h4>Current balance</h4>
 <div id="faucet_err" class="notification is-success">Getting balance...</div>
 
-<h4>Please recycle</h4>
+<h4 id="recycle">Please recycle</h4>
 <p>When done testing with the signet coins, please return them to any of the following addresses:</p>
 
 <ul>
