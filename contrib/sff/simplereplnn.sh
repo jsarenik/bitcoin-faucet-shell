@@ -19,6 +19,16 @@ otra=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
 . /dev/shm/UpdateTip-signet
 hold=$height
 
+mymv() {
+  all=$*
+  last=${all##* }
+  from=${all% *}
+  from=${from:-/dev/null}
+  to=${last:-/dev/null}
+  find $from -maxdepth 1 -type f \
+    | sed "s/^/mv /;s|$| $to|" | sh -s
+}
+
 mkpack() {
   printf '['
   {
@@ -68,11 +78,11 @@ myexit() {
   d=/tmp/sffrest
   #test -s $sfl && cat $sfl
   test "$ret" = "0" && {
-    mv /tmp/sff/* /tmp/sff-s2/ 2>/dev/null
+    mymv /tmp/sff /tmp/sff-s2
   } || {
-    mv /tmp/sff/* /tmp/sffrest/ 2>/dev/null
+    mymv /tmp/sff /tmp/sffrest
   }
-  mv /tmp/sff-s2/* /tmp/sff-s3/ 2>/dev/null
+  mymv /tmp/sff-s2 /tmp/sff-s3
   ls -t1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
   myrest=$(ls -1 /tmp/sffrest/ | wc -l)
   myst=$(ls -1 /tmp/sff-s3/ | wc -l)
@@ -95,8 +105,7 @@ rmdir /tmp/sffnewblock 2>/dev/null || test "$1" = "-f" && {
 test "$1" = "-f" && shift
 d=/tmp/sffrest
 mkdir -p $d
-mv /tmp/sff/* $d/ 2>/dev/null
-
+mymv /tmp/sff $d
 
 cd $myp/newnew
 list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh /tmp/mylist
@@ -110,8 +119,7 @@ cd $myp/newnew
     | sort -u | safecat.sh /tmp/sffgt
 cd $myp
 d=/tmp/sffrest
-mv /tmp/sff-s2/* $d/ 2>/dev/null
-mv /tmp/sff-s3/* $d/ 2>/dev/null
+mymv /tmp/sff-s2 /tmp/sff-s3 $d
 #rm -rf $d/tb1pfees9rn5nz
   cat /tmp/sffgt | (cd /tmp/sffrest; xargs rm -rf)
 
@@ -190,13 +198,12 @@ do
 done
 
 test -d /tmp/sffnewblock && myexit 1 "new block again"
+
 d=/tmp/sffrest
 #rm -rf $d/tb1pfees9rn5nz
-mv /tmp/sff/* $d/ 2>/dev/null
-ls -1 /tmp/sff-s3 | grep -q . || {
-  ls -t1 $d 2>/dev/null \
+mymv /tmp/sff $d
+  find $d -type f -maxdepth 1 -type f -exec ls -t {} + \
     | head -n 2016 | sed 's/^/mv /;s|$| /tmp/sff/|' | (cd $d; sh -s)
-  }
 }
 ##############################
 ##############################
