@@ -15,6 +15,8 @@ addmyf=$HOME/.bitcoin/signet/wallets/addmy
 sdi=$HOME/.bitcoin/signet
 myp=$sdi/wallets
 otra=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
+xdna=tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn
+feea=tb1pfees9rn5nz
 
 . /dev/shm/UpdateTip-signet
 hold=$height
