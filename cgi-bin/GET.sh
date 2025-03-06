@@ -10,6 +10,7 @@ res() {
   exit
 }
 
+sfs=/tmp/sff-sfs
 now=signet25
 rest=bublina.eu.org
 myfull=$now.$rest
@@ -60,39 +61,38 @@ echo "$address" | grep -qE '^(0[23][0-9a-f]{64}|tb1pfees9rn5nz|tb1[qpzry9x8gf2tv
 #
 # IP exceptions
 #
-
-read -r myip < /tmp/myip
-myip=${myip:-"1234567890"}
-test \
-	"${xip%.*.*}" = "192.168" \
-	-o "$xip" = "127.0.0.1" \
-	-o "$xip" = "$myip" \
-	&& {
-  rm -rf \
-    $LIMIT \
-    $WHERE/.limit/192.168* $WHERE/.limit/127.0.0.1 $WHERE/.limit/$myip
-}
+#
+#read -r myip < /tmp/myip
+#myip=${myip:-"1234567890"}
+#test \
+#	"${xip%.*.*}" = "192.168" \
+#	-o "$xip" = "127.0.0.1" \
+#	-o "$xip" = "$myip" \
+#	&& {
+#  rm -rf \
+#    $LIMIT \
+#    $WHERE/.limit/192.168* $WHERE/.limit/127.0.0.1 $WHERE/.limit/$myip
+#}
 
 #
-# Limit 1 IP per signet block
-# Where cleanup is done in blocknotify-signet.sh
+# Limit 1 IP per signet block after reaching some amount (sfsn)
+#  cleanup is done in blocknotify-signet.sh and simplereplnn.sh
 #
 
+test -d $LIMIT && touch $LIMIT
 mkdir -p ${LIMIT%/*}
-mkdir $LIMIT 2>/dev/null || {
-  test -d $LIMIT && touch $LIMIT
+! mkdir $LIMIT 2>/dev/null \
+  && test -d $sfs && {
   echo $xip 429 >&2
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
 
-test -d $LIMIT && touch $LIMIT
-
-limit=/tmp/faucet/signetlimit
-test -r $limit && {
-  echo $xip wait >&2
-  rmdir $LIMIT 2>/dev/null
-  res 400 "Wait a block"
-}
+#limit=/tmp/faucet/signetlimit
+#test -r $limit && {
+#  echo $xip wait >&2
+#  rmdir $LIMIT 2>/dev/null
+#  res 400 "Wait a block"
+#}
 
 echo $xip >&2
 cd ${WALLETDIR:-"$HOME/.bitcoin/signet/wallets/newnew"}

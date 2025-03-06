@@ -6,6 +6,8 @@ lock=/tmp/locksff
 mkdir $lock || exit 1
 
 export HOME=/home/nsm
+sfs=/tmp/sff-sfs # sff-flag-slowdown
+sfsn=2000
 errf=/tmp/sff-err
 sfl=/tmp/sfflast
 shf=/tmp/sffhex
@@ -71,6 +73,7 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 ##############################
 ### from blocknotify-signet.sh
 rmdir /tmp/sffnewblock 2>/dev/null || test "$1" = "-f" && {
+rm -rf $sfs
 test "$1" = "-f" && shift
 d=/tmp/sffrest
 mkdir -p $d
@@ -221,6 +224,7 @@ find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 2>/dev/null | xargs cat \
 
 newouts=$(wc -l < /tmp/nosff)
 test "$newouts" -ne "0" || myexit 1 "no new outputs"
+test $newouts -gt $sfsn && mkdir -p $sfs
 newoutso=$newouts
 newoutsadd=$((210-$newouts))
 test $newoutsadd -lt 0 && newoutsadd=0
