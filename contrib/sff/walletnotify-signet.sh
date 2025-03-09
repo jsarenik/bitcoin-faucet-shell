@@ -5,7 +5,7 @@ wall=$2
 hash=$3
 height=$4
 
-echo "$wall" | grep -q "newmy" && signetcatapult.sh
+#echo "$wall" | grep -q "newmy" && signetcatapult.sh
 test "$wall" = "lnanchor" && signetcatapultlna.sh
 
 true
