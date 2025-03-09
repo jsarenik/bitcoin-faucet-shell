@@ -342,6 +342,17 @@ sats=$(( $af+$vsizenew ))
     sats=$(sats $(($ofeer+1)) $vsizenew)
   }
 dvs=$sats
+
+  new=$((($max-$dvs)/(102+(50-$height%50))/$newouts))
+  test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
+  rest=$(($max-$new*$newouts))
+
+# needs $new and /tmp/nosff
+of=/tmp/sff-outs
+newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
+{ cat /tmp/nosff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
+  | sed "s/^/$newh/" | safecat.sh $of
+
 cd $myp/newnew
 dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
