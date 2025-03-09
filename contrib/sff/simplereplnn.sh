@@ -191,7 +191,6 @@ gme.sh $txid | safecat.sh $gmef
 jq -r .spentby[] < $gmef | grep -q . && myexit 1 "FOREIGN CHILD SPEND"
 af=""
 test -s $gmef && {
-  $(jq -r '.fees.descendant <= 0.01' < $gmef) || myexit 1 "V3 CHILD FEE HIGH"
   af=$(jq -r '.fees.descendant' < $gmef)
   af=$(echo $af | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//')
 }
