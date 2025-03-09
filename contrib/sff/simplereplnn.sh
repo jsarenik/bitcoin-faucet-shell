@@ -125,23 +125,6 @@ do
   cp $l $lpr
 done
 
-list=/tmp/pokus2list
-: > $list
-cd $myp/pokus202412
-  list.sh | grep " true$" | safecat.sh $list
-test -s $list && {
-  num=$(wc -l < $list)
-  cd $myp/pokus202412
-  cat $list | awklist-all.sh \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  fee=$(fee.sh < $shf)
-  cd $myp/pokus202412
-  cat $list | awklist-all.sh -f $fee -fm \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf
-  cat $errf >&2
-}
-
 cd $myp
 signetcatapultleftovers.sh
 

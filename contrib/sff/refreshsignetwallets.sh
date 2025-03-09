@@ -12,7 +12,6 @@ mkdir -p /dev/shm/wallets-signet/lnanchor
 
 cd ~/.bitcoin/signet/wallets
 ash refresh.sh
-ash refr-pokus.sh
 
 cd lnanchor
 ulw.sh
