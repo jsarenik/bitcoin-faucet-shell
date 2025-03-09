@@ -1,6 +1,17 @@
 net=$(hnet.sh)
 export LC_ALL=C
 
+myim() {
+  gdi=$(bch.sh getdescriptorinfo "$1")
+  cs=$(echo $gdi | jq -r .checksum)
+  rode=$(echo $gdi | jq -r .descriptor)
+  bch.sh importdescriptors '''[{"desc":"'$1'#'$cs'","timestamp":"now"}]''' \
+    2>/dev/null | grep -q . && {
+    echo $rode
+    bch.sh deriveaddresses $rode 2>/dev/null
+  }
+}
+
 . $HOME/.testkeys
 dt=/home/nsm/.bitcoin/signet/wallets/pokus202412-dt.txt
 
@@ -18,15 +29,22 @@ mkdir $tmpd
 ln -s $tmpd .
 bch.sh -named createwallet wallet_name=$neww blank=true
 cd $neww
-bch.sh importdescriptors '''[{ "desc": "wpkh('$privkey')#'$wpkhcs'", "timestamp": "now" }]'''
-bch.sh importdescriptors '[{ "desc": "tr('$privkey')#'$trcs'", "timestamp": "now" }]'
-bch.sh importdescriptors '[{ "desc": "pkh('$privkey')#'$npkhcs'", "timestamp": "now" }]'
-bch.sh importdescriptors '[{ "desc": "sh(wpkh('$privkey'))#'$nestedcs'", "timestamp": "now" }]'
-bch.sh importdescriptors '[{ "desc": "wsh(pkh('$privkey'))#'$wshcs'", "timestamp": "now" }]'
-bch.sh importdescriptors '[{ "desc": "pkh('$privkeyo')#'$pkhcs'", "timestamp": "now" }]'
-bch.sh importdescriptors '[{ "desc": "sh(wpkh('$privkeyo'))#'$onestedcs'", "timestamp": "now" }]'
-bch.sh importdescriptors '[{ "desc": "wsh(pkh('$privkeyo'))#'$owshcs'", "timestamp": "now" }]'
-#bch.sh importdescriptors '[{ "desc": "combo('$privkey')#'$combocs'", "timestamp": "now" }]'
+myim "pk($privkey)"
+myim "sh(pk($privkey))"
+myim "wsh(pk($privkey))"
+myim "pkh($privkey)"
+myim "sh(pkh($privkey))"
+myim "wsh(pkh($privkey))"
+myim "wpkh($privkey)"
+myim "sh(wpkh($privkey))"
+myim "tr($privkey)"
+#myim "combo($privkey)"
+
+myim "pkh($privkeyo)"
+myim "sh(wpkh($privkeyo))"
+myim "wsh(pkh($privkeyo))"
+myim "tr($privkeyo)"
+
 A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
 bch.sh importdescriptors $A
 . /dev/shm/UpdateTip-signet
@@ -40,6 +58,7 @@ cd $old
 #  || list.sh | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sert.sh
 rm -rf /tmp/compare-diff-$net-*
 cdf=/tmp/compare-diff-$net-$$
+: > $cdf
 until
   list.sh | sort | safecat.sh $cdf
   (cd ../$neww; list.sh | sort | cmp $cdf )
