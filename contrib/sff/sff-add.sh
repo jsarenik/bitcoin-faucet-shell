@@ -1,7 +1,6 @@
 #!/bin/sh
 #
 # Adds my address to sff
-exit 1
 
 #ls /tmp/sff | grep -q . && exit
 test "$1" = "-f" \

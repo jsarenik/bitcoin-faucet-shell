@@ -159,9 +159,8 @@ tx=$(head -1 /tmp/mylist | grep .) || myexit 1 "main loop tx issue"
 tx=${1:-$tx}
 txid=${tx%% *}
 test "$txid" = "" && myexit 1 "empty TXID"
-bff=/tmp/replbasefee
 gmef=/tmp/sff-gme
-asf=/tmp/sff-ancestorsize
+gmep=/tmp/sff-gme.sh
 
 hf=/tmp/replnhex
 grt.sh $txid | safecat.sh $hf
@@ -170,22 +169,21 @@ sert.sh < $hf
 grep '^03' $hf && myexit 1 "V3 no more"
 
 : > $gmef
+: > $gmep
 gme.sh $txid | safecat.sh $gmef
+test -s $gmef || myexit 1 "missing $gmef"
 jq -r .spentby[] < $gmef | grep -q . && myexit 1 "FOREIGN CHILD SPEND"
-af=""
-test -s $gmef && {
-  af=$(jq -r '.fees.descendant' < $gmef)
-  af=$(echo $af | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//')
-}
 
-cat $gmef | grep -w base \
-  | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//' \
-  | safecat.sh $bff
-cat $gmef | grep -w ancestorsize \
-  | cut -d: -f2 | tr -dc '[0-9]' | tr -d . | sed 's/^0\+//' \
-  | safecat.sh $asf
-vsize=$(cat $hf | fee.sh | grep .) || myexit 1 "invalid vsize"
+tr -d '{} \t",.' < $gmef \
+  | sed '/^depends/,$d' \
+  | sed '/^fees/d; $d' | tr : = \
+  | sed 's/=0\+/=/' \
+  | safecat.sh $gmep
+# sets vsize weight time height descendantcount descendantsize
+# ancestorcount ancestorsize wtxid base modified ancestor descendant
+. $gmep
 test "$vsize" -lt 99999 || myexit 1 "early TOO BIG vsize $vsize"
+
 outsum=$(cat $hf | nd-outs.sh | cut -b-16 | ce.sh | fold -w 16 \
 	| while read l; do echo $((0x$l)); done | paste -d+ -s | bc)
 mkdir -p /tmp/sff-s2
@@ -226,10 +224,6 @@ newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
 { cat /tmp/nosff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
   | sed "s/^/$newh/" | safecat.sh $of
 
-# basefee
-read -r bf < $bff
-read -r as < $asf
-
 cat $hf | nd-untilout.sh | safecat.sh $hf-uo
 
 dotx() {
@@ -237,7 +231,7 @@ dotx() {
   test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
 
   examples=$((613 + 1985 + 240 + 2016 + 1913 + 1971))
-  hhasum=$(($outsum + $bf - $examples - ${max:-0} + $rest - $dvs))
+  hhasum=$(($outsum + $base - $examples - ${max:-0} + $rest - $dvs))
   echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
   hha=$(hex $hhasum - 16 | ce.sh)
   #echo 020000
@@ -302,15 +296,15 @@ dotx | safecat.sh /tmp/us
 
 cat /tmp/us | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
-vsizenew=$(cat $shf | fee.sh | grep .) || myexit 1 "missing vsizenew"
+vsizenew=$(fee.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
-test "$vsizenew" -lt 100000 || myexit 1 "TOO BIG"
+test $(($ancestorsize-$vsize+$vsizenew)) -lt 100000 || myexit 1 "TOO BIG"
 
 #########################################################
 echo stage 3 >&2
 
-dvs=$(( $vsizenew+$bf))
-test "$vsizenew" = "$vsize" && vsizenew=$(($vsizenew+1))
+dvs=$(( $vsizenew+$base ))
+test "$vsizenew" = "$vsize" && myexit 1 "no change"
 cd $myp/newnew
 dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
@@ -320,9 +314,8 @@ cd $sdi
 ############
 
 echo stage 4 >&2
-af=${af:-$bf}
-sats=$(( $af+$vsizenew ))
-  ofeer=$(feer $af $vsize | grep .) || myexit 1 "ofeer $ofeer af $af vsize $vsize"
+sats=$(( $base + $vsizenew ))
+  ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test $feer -lt $ofeer && {
     sats=$(sats $(($ofeer+1)) $vsizenew)
@@ -334,7 +327,6 @@ dvs=$sats
   rest=$(($max-$new*$newouts))
 
 # needs $new and /tmp/nosff
-of=/tmp/sff-outs
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
 { cat /tmp/nosff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
   | sed "s/^/$newh/" | safecat.sh $of
@@ -346,6 +338,6 @@ sertl <$shf
 ret=$?
 echo feer4 $feer sats $sats >&2
 echo ofeer $ofeer feer $feer >&2
-echo max $max fee-rate $feer bf $bf vsize $vsizenew >&2
+echo max $max fee-rate $feer base $base vsize $vsizenew >&2
 
 myexit $ret "finn"
