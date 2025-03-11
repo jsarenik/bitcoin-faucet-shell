@@ -93,7 +93,7 @@ cd $myp
 rm -rf /tmp/sff-s3/0*
 d=/tmp/sffrest
 mymv /tmp/sff-s2 /tmp/sff-s3 $d
-  cat /tmp/sffgt | (cd /tmp/sffrest; xargs rm -rf)
+  cat /tmp/sffgt | (cd $d; sed 's/^/rm -rf /' | sh -s)
 
 l=/tmp/mylist
 lpr=/tmp/l123p
