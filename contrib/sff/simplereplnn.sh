@@ -9,6 +9,7 @@ export HOME=/home/nsm
 sfs=/tmp/sff-sfs # sff-flag-slowdown
 sfsn=2000
 errf=/tmp/sff-err
+nusff=/tmp/nosff
 sfl=/tmp/sfflast
 shf=/tmp/sffhex
 phf=/tmp/sffphf
@@ -199,10 +200,11 @@ d=/tmp/sffrest
 }
 
 ls -1 /tmp/sff >&2
-find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 2>/dev/null | xargs cat \
-  | sort -u | shuf | safecat.sh /tmp/nosff
+find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 -type f 2>/dev/null \
+  | sed 's/^/cat /' | sh -s \
+  | sort -u | shuf | safecat.sh $nusff
 
-newouts=$(wc -l < /tmp/nosff)
+newouts=$(wc -l < $nusff)
 test "$newouts" -ne "0" || myexit 1 "no new outputs"
 test $newouts -gt $sfsn && mkdir -p $sfs
 newoutso=$newouts
@@ -218,10 +220,10 @@ new=$(($max/102/$newouts))
 test "$new" -gt 330 || myexit 1 "new $new is too low"
 rest=$(($max-$new*$newouts))
 
-# needs $new and /tmp/nosff
+# needs $new and $nusff
 of=/tmp/sff-outs
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
-{ cat /tmp/nosff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
+{ cat $nusff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
   | sed "s/^/$newh/" | safecat.sh $of
 
 cat $hf | nd-untilout.sh | safecat.sh $hf-uo
@@ -326,9 +328,9 @@ dvs=$sats
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($max-$new*$newouts))
 
-# needs $new and /tmp/nosff
+# needs $new and $nusff
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
-{ cat /tmp/nosff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
+{ cat $nusff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
   | sed "s/^/$newh/" | safecat.sh $of
 
 cd $myp/newnew
