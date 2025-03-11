@@ -233,7 +233,7 @@ dotx() {
   test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
 
   examples=$((613 + 1985 + 240 + 2016 + 1913 + 1971))
-  hhasum=$(($outsum + $base - $examples - ${max:-0} + $rest - $dvs))
+  hhasum=$(($outsum + $base - $examples - ${max:-0} + $rest))
   echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
   hha=$(hex $hhasum - 16 | ce.sh)
   #echo 020000
@@ -324,9 +324,9 @@ sats=$(( $base + $vsizenew ))
   }
 dvs=$sats
 
-  new=$((($max-$dvs)/(102+(50-$height%50))/$newouts))
+  new=$(( $max/(152+(50-$height%50))/$newouts ))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
-  rest=$(($max-$new*$newouts))
+  rest=$(($max-$dvs-$new*$newouts))
 
 # needs $new and $nusff
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
