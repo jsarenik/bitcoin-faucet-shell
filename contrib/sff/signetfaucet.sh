@@ -10,6 +10,17 @@ faucetaddr=tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn
 mkdir -p /tmp/sff /tmp/sff-s2 /tmp/sff-s3 /tmp/sffrest
 addr=${1:-$faucetaddr}
 test -r /tmp/sff/$addr && { echo $addr; exit; }
+
+# P2PK
+echo $addr | grep -Eq '^[0-9a-f]+$' && {
+  echo $addr | grep -Eq '^[0-9a-f]{66}$' || exit 1
+  kl=$(printf "%02x" $((${#addr}/2)) )
+  klp=$(printf "%02x" $((0x$kl+2)) )
+  echo "$klp ${kl}${addr}ac" | safecat.sh /tmp/sffrest/$addr
+  echo $addr
+  exit 0
+}
+
 cd $HOME/.bitcoin/signet/wallets/ae
 #spk=$(gai.sh ${addr} | grep -m1 '^  "scriptPubKey":' \
 #  | grep -m1 '^  "scriptPubKey":' \
