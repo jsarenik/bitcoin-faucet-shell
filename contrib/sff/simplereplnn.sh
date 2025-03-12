@@ -36,8 +36,6 @@ mymv() {
 
 sertl() {
   : > $errf
-  cd $myp
-  mtxid=$(drt.sh < $shf | jq -r .txid)
   {
   cat
   echo 0
@@ -166,7 +164,7 @@ gmep=/tmp/sff-gme.sh
 hf=/tmp/replnhex
 grt.sh $txid | safecat.sh $hf
 test -s $hf || myexit 1 "grt hf"
-sert.sh < $hf
+sertl < $hf
 grep '^03' $hf && myexit 1 "V3 no more"
 
 : > $gmef
