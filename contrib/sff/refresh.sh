@@ -46,6 +46,9 @@ myim "sh(wpkh($privkeyo))"
 myim "wsh(pkh($privkeyo))"
 myim "tr($privkeyo)"
 
+myim "tr($lmabi)"
+myim "pk($uncom)"
+
 A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
 bch.sh importdescriptors $A
 . /dev/shm/UpdateTip-signet
