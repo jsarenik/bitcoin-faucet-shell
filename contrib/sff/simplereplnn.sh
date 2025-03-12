@@ -232,19 +232,20 @@ dotx() {
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
 
-  examples=$((613 + 1985 + 240 + 2016 + 1913 + 1971))
+  examples=$((613 + 2*1985 + 240 + 2016 + 1913 + 1971))
   hhasum=$(($outsum + $base - $examples - ${max:-0} + $rest))
   echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
   hha=$(hex $hhasum - 16 | ce.sh)
   #echo 020000
   cat $hf-uo
-  printouts $((8+$newouts))
+  printouts $((9+$newouts))
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
   finta=$(printf " | %4d" $newoutso | xxd -p)
   echo 00000000000000001d6a1b616c742e7369676e65746661756365742e636f6d$finta
   echo 65020000000000000451024e73
   {
   echo f0000000000000000451024e73
+  echo c107000000000000220020398768eb513b341a1edc047831fc4de06bb2ad766e833ba2cc0797474b3f1dea
   echo e007000000000000232102a8c3fa3dbc022ca7c9a2214c5e673833317b3cff37c0fc170fc347f1a2f6b6e2ac
   echo 79070000000000001976a9143e86ad893c4e77121edbadc39aca0c83f5a694dd88ac
   echo b30700000000000017a914e61bce8049c560a60590ed7574ee41cad20d6a1987
