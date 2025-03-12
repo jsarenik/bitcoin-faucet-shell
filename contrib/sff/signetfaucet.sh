@@ -13,7 +13,9 @@ test -r /tmp/sff/$addr && { echo $addr; exit; }
 
 # P2PK
 echo $addr | grep -Eq '^[0-9a-f]+$' && {
-  echo $addr | grep -Eq '^[0-9a-f]{66}$' || exit 1
+  echo $addr | grep -Eq '^[0-9a-f]{66}$' \
+    || echo $addr | grep -Eq '^[0-9a-f]{130}$' \
+    || exit 1
   kl=$(printf "%02x" $((${#addr}/2)) )
   klp=$(printf "%02x" $((0x$kl+2)) )
   echo "$klp ${kl}${addr}ac" | safecat.sh /tmp/sffrest/$addr
@@ -21,10 +23,8 @@ echo $addr | grep -Eq '^[0-9a-f]+$' && {
   exit 0
 }
 
+# ae stands for always empty
 cd $HOME/.bitcoin/signet/wallets/ae
-#spk=$(gai.sh ${addr} | grep -m1 '^  "scriptPubKey":' \
-#  | grep -m1 '^  "scriptPubKey":' \
-#  | cut -d: -f2 | tr -d ' ",' | grep .) \
 spk=$(hh.sh address inspect ${addr} \
   | grep -m1 '^    "hex": ' \
   | cut -d: -f2 | tr -d ' ",' | grep .) \
