@@ -230,7 +230,7 @@ dotx() {
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
 
-  examples=$((613 + 12345 + 4*1985 +4 + 240 + 2016 + 1913 + 1971))
+  examples=$((613 + 12345 + 4*1985 +2 + 240 + 2016 + 1913 + 1971))
   hhasum=$(($outsum + $base - $examples - ${max:-0} + $rest))
   echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
   hha=$(hex $hhasum - 16 | ce.sh)
