@@ -31,7 +31,7 @@ mymv() {
   from=${from:-/dev/null}
   to=${last:-/dev/null}
   find $from -maxdepth 1 -type f \
-    | sed "s/^/mv /;s|$| $to|" | sh -s
+    | xargs mv -t $to 2>/dev/null
 }
 
 sertl() {
@@ -91,8 +91,9 @@ cd $myp/newnew
 cd $myp
 rm -rf /tmp/sff-s3/0*
 d=/tmp/sffrest
+cd $d
 mymv /tmp/sff-s2 /tmp/sff-s3 $d
-  cat /tmp/sffgt | (cd $d; sed 's/^/rm -rf /' | sh -s)
+  cat /tmp/sffgt | xargs rm -rf
 
 l=/tmp/mylist
 lpr=/tmp/l123p
@@ -131,8 +132,9 @@ test -d /tmp/sffnewblock && myexit 1 "new block again"
 
 d=/tmp/sffrest
 mymv /tmp/sff $d
+cd $d
   ls -t1 "$d" \
-    | head -n 2016 | sed 's/^/mv /;s|$| /tmp/sff/|' | (cd $d; sh -s)
+    | head -n 1800 | xargs mv -t /tmp/sff
 }
 ##############################
 ##############################
@@ -193,14 +195,15 @@ mkdir -p $d
 randomone=$(($RANDOM%2))
 ls -1 /tmp/sff/ | grep -q . || {
 d=/tmp/sffrest
-  ls -t1 "$d" 2>/dev/null | head -n $((((100000-$vsize)/52)-$randomone)) \
-    | sed 's/^/mv /;s|$| /tmp/sff/|' | (cd $d; sh -s)
+cd $d
+  ls -t1 2>/dev/null | head -n $((((98000-$vsize-51)/52)+$randomone)) \
+    | xargs mv -t /tmp/sff/
 }
 
-ls -1 /tmp/sff >&2
+ls -1 /tmp/sff | grep -q . || myexit 1 "no new outputs"
 find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 -type f 2>/dev/null \
-  | sed 's/^/cat /' | sh -s \
-  | sort -u | shuf | safecat.sh $nusff
+  | xargs cat \
+  | safecat.sh $nusff
 
 newouts=$(wc -l < $nusff)
 test "$newouts" -ne "0" || myexit 1 "no new outputs"
