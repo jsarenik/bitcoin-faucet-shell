@@ -162,6 +162,7 @@ txid=${tx%% *}
 test "$txid" = "" && myexit 1 "empty TXID"
 gmef=/tmp/sff-gme
 gmep=/tmp/sff-gme.sh
+gtof=/tmp/sff-gtot
 
 hf=/tmp/replnhex
 grt.sh $txid | safecat.sh $hf
@@ -172,6 +173,18 @@ grep '^03' $hf && myexit 1 "V3 no more"
 : > $gmef
 : > $gmep
 gme.sh $txid | safecat.sh $gmef
+depends=$(jq -r .depends[0] < $gmef)
+dce=$(echo $depends | ce.sh)
+echo 0200000001${dce}0000000000fdffffff | safecat.sh $hf-uo
+cd $myp/newnew
+bch.sh gettransaction $depends \
+  | grep -m1 '^      "amount": [0-9]' \
+  | tr -d '{} \t",.' \
+  | tr : = \
+  | sed 's/=0\+/=/' \
+  | safecat.sh $gtof
+. $gtof
+value=$amount
 test -s $gmef || myexit 1 "missing $gmef"
 jq -r .spentby[] < $gmef | grep -q . && myexit 1 "FOREIGN CHILD SPEND"
 
@@ -185,8 +198,7 @@ tr -d '{} \t",.' < $gmef \
 . $gmep
 test "$vsize" -lt 99999 || myexit 1 "early TOO BIG vsize $vsize"
 
-outsum=$(cat $hf | nd-outs.sh | cut -b-16 | ce.sh | fold -w 16 \
-	| while read l; do echo $((0x$l)); done | paste -d+ -s | bc)
+outsum=$(($value-$base))
 mkdir -p /tmp/sff-s2
 mkdir -p /tmp/sff-s3
 
@@ -226,7 +238,6 @@ newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
 { cat $nusff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
   | sed "s/^/$newh/" | safecat.sh $of
 
-cat $hf | nd-untilout.sh | safecat.sh $hf-uo
 
 dotx() {
   . /dev/shm/UpdateTip-signet
