@@ -213,7 +213,6 @@ newouts=$(($newouts+$newoutsadd))
 max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
 test $max -gt 330 || myexit 1 "low max $max"
-test $max -gt 52330902625 && max=52330902625
 new=$(($max/102/$newouts))
 test "$new" -gt 330 || myexit 1 "new $new is too low"
 rest=$(($max-$new*$newouts))
@@ -324,7 +323,7 @@ sats=$(( $base + $vsizenew ))
   }
 dvs=$sats
 
-  new=$(( $max/(152+(50-$height%50))/$newouts ))
+  new=$(( $max/(256+(50-$height%50))/$newouts ))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($max-$dvs-$new*$newouts))
 
