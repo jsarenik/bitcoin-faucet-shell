@@ -197,7 +197,7 @@ tr -d '{} \t",.' < $gmef \
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
-test "$vsize" -lt 99999 || myexit 1 "early TOO BIG vsize $vsize"
+test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 
 outsum=$(($value-$base))
 mkdir -p /tmp/sff-s2
@@ -298,11 +298,12 @@ dvs=$vsize
 cd $myp/newnew
 dotx | safecat.sh /tmp/us
 
+cd $myp/newnew
 cat /tmp/us | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 vsizenew=$(fee.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
-test $(($ancestorsize-$vsize+$vsizenew)) -lt 100000 || myexit 1 "TOO BIG"
+test $vsizenew -le 100000 || myexit 1 "TOO BIG"
 
 #########################################################
 echo stage 3 >&2
