@@ -2,12 +2,12 @@
 
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jsarenik/bitcoin-faucet-shell)
 
-**I This is a test network. Coins have no value. I**
+*** This is a test network. Coins have no value. ***
 
-**I alt.signetfaucet is intended for education purposes
+*** alt.signetfaucet is intended for education purposes
     in controlled environment with free testing sats.
     The learned skills may be used with real Bitcoin
-    main network. I**
+    main network. ***
 
 A POSIX shell implementation of a Bitcoin faucet
 intended for use with [Busybox](https://busybox.net).
