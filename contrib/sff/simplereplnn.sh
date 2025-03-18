@@ -159,7 +159,9 @@ printouts() {
 tx=$(head -1 /tmp/mylist | grep .) || myexit 1 "main loop tx issue"
 tx=${1:-$tx}
 txid=${tx%% *}
+
 test "$txid" = "" && myexit 1 "empty TXID"
+
 gmef=/tmp/sff-gme
 gmep=/tmp/sff-gme.sh
 gtof=/tmp/sff-gtot
