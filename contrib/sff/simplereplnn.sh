@@ -177,7 +177,6 @@ grep '^03' $hf && myexit 1 "V3 no more"
 gme.sh $txid | safecat.sh $gmef
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
-echo 0200000001${dce}0000000000fdffffff | safecat.sh $hf-uo
 cd $myp/newnew
 bch.sh gettransaction $depends \
   | grep -m1 '^      "amount": [0-9]' \
@@ -245,26 +244,14 @@ dotx() {
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
 
-  examples=$((613 + 12345 + 4*1985 +2 + 240 + 2016 + 1913 + 1971))
-  hhasum=$(($outsum + $base - $examples - ${max:-0} + $rest))
+  hhasum=$(($outsum + $base - ${max:-0} + $rest))
   echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
   hha=$(hex $hhasum - 16 | ce.sh)
-  #echo 020000
-  cat $hf-uo
-  printouts $((12+$newouts))
+  echo 0200000001${dce}0000000000fdffffff
+  printouts $((2+$newouts))
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
   finta=$(printf " | %4d" $newoutso | xxd -p)
   echo 00000000000000001d6a1b616c742e7369676e65746661756365742e636f6d$finta
-  echo 65020000000000000451024e73
-  echo f0000000000000000451024e73
-  echo 3930000000000000434104a8c3fa3dbc022ca7c9a2214c5e673833317b3cff37c0fc170fc347f1a2f6b6e2a53db4d023387f89209de481cd014a44040e1b09c3226d40fed02c0bc8d0f548ac
-  echo e007000000000000232102a8c3fa3dbc022ca7c9a2214c5e673833317b3cff37c0fc170fc347f1a2f6b6e2ac
-  echo 79070000000000001976a9143e86ad893c4e77121edbadc39aca0c83f5a694dd88ac
-  echo b30700000000000017a914e61bce8049c560a60590ed7574ee41cad20d6a1987
-  echo c007000000000000160014447fde1e37d97255b5821d2dee816e8f18f6bac9
-  echo c107000000000000220020398768eb513b341a1edc047831fc4de06bb2ad766e833ba2cc0797474b3f1dea
-  echo c20700000000000017a91417c558e6fb1e4747ad2752d94e8e5d7d33b1263987
-  echo c3070000000000002200200e609ab734d0d2cd57c53129bee76220d1d98017f038dd2e52a2e6f29fb0fbe6
   cat $of
   hex $height - 8 | ce.sh
 }
