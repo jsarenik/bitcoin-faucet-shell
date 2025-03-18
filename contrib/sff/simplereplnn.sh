@@ -100,7 +100,7 @@ lpr=/tmp/l123p
 cd $myp/newnew
   fee=$(awklist-all.sh -d $otra < /tmp/mylist \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -fm -d $otra < /tmp/mylist  \
+  awklist-all.sh -f $fee -d $otra < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf | grep -q . || break
 for i in $(seq 25)
@@ -118,7 +118,7 @@ do
   test "$hold" = "$height" || break
   fee=$(awklist-all.sh -d $otra < /tmp/mylist \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -fm -d $otra < /tmp/mylist  \
+  awklist-all.sh -f $fee -d $otra < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf | grep -q .
 # || break
