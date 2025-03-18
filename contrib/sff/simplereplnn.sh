@@ -223,6 +223,7 @@ test "$newouts" -ne "0" || myexit 1 "no new outputs"
 test $newouts -gt $sfsn && mkdir -p $sfs
 newoutso=$newouts
 newoutsadd=$((210-$newouts))
+newoutsadd=0
 test $newoutsadd -lt 0 && newoutsadd=0
 echo NEWOUTSADD $newoutsadd >&2
 newouts=$(($newouts+$newoutsadd))
@@ -327,7 +328,9 @@ sats=$(( $base + $vsizenew ))
   }
 dvs=$sats
 
-  new=$(( $max/(256+(50-$height%50))/$newouts ))
+dividend=$(($max/1000/1000/100/7))
+echo DIVIDEND is $dividend >&2
+  new=$(( ($max/($dividend+24)/2016) - ($newouts%12) ))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($max-$dvs-$new*$newouts))
 
