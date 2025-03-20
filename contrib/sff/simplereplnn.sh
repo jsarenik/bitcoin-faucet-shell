@@ -105,7 +105,13 @@ cd $myp/newnew
   awklist-all.sh -f $fee -d $otra < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
-  grep -q . $sfl || { mkdir /tmp/sffnewblock; myexit 1 "early 25-chain"; }
+  read -r last < $sfl
+until
+  list.sh | grep "^$last"
+do
+  sleep 0.2
+done
+
 for i in $(seq 25)
 do
   test -s "$lpr" && {
@@ -124,7 +130,7 @@ do
   awklist-all.sh -f $fee -d $otra < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
-  grep -q . $sfl || myexit 1 "in-25-chain"
+  grep -q . $sfl || break
   cp $l $lpr
 done
 
