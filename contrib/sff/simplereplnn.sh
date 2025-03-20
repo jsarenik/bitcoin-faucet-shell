@@ -8,6 +8,7 @@ mkdir $lock || exit 1
 export HOME=/home/nsm
 sfs=/tmp/sff-sfs # sff-flag-slowdown
 sfsn=2000
+l=/tmp/mylist
 errf=/tmp/sff-err
 nusff=/tmp/nosff
 sfl=/tmp/sfflast
@@ -80,11 +81,11 @@ mkdir -p $d
 mymv /tmp/sff $d
 
 cd $myp/newnew
-list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh /tmp/mylist
+list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 # was: clean-sff.sh
-tx=$(cat /tmp/mylist | head -1 | grep .) || myexit 1 "EARLY newblock tx"
+tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
 txid=${tx%% *}
 cd $myp/newnew
   bch.sh gettransaction $txid | jq -r .details[].address \
@@ -96,12 +97,12 @@ cd $d
 mymv /tmp/sff-s2 /tmp/sff-s3 $d
   cat /tmp/sffgt | xargs rm -rf
 
-l=/tmp/mylist
 lpr=/tmp/l123p
+rm -rf $lpr
 cd $myp/newnew
-  fee=$(awklist-all.sh -d $otra < /tmp/mylist \
+  fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -d $otra < /tmp/mylist  \
+  awklist-all.sh -f $fee -d $otra < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   grep -q . $sfl || { mkdir /tmp/sffnewblock; myexit 1 "early 25-chain"; }
@@ -118,9 +119,9 @@ do
   }
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || break
-  fee=$(awklist-all.sh -d $otra < /tmp/mylist \
+  fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -d $otra < /tmp/mylist  \
+  awklist-all.sh -f $fee -d $otra < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   grep -q . $sfl || myexit 1 "in-25-chain"
@@ -142,11 +143,8 @@ cd $d
 ##############################
 ##############################
 
-l=/tmp/mylist
-cd $myp/newnew
-
 cd $myp/newnew || myexit 1 "early cd newnew"
-list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh /tmp/mylist
+list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 printouts() {
@@ -158,7 +156,7 @@ printouts() {
 #set -o errexit
 #set -o pipefail
 #set +o pipefail
-tx=$(head -1 /tmp/mylist | grep .) || myexit 1 "main loop tx issue"
+tx=$(head -1 $l | grep .) || myexit 1 "main loop tx issue"
 tx=${1:-$tx}
 txid=${tx%% *}
 
@@ -233,7 +231,7 @@ newoutsadd=0
 test $newoutsadd -lt 0 && newoutsadd=0
 echo NEWOUTSADD $newoutsadd >&2
 newouts=$(($newouts+$newoutsadd))
-max=$(cat /tmp/mylist | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
+max=$(cat $l | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
 test $max -gt 330 || myexit 1 "low max $max"
 new=$(($max/102/$newouts))
