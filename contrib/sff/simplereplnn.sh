@@ -36,6 +36,7 @@ mymv() {
 
 sertl() {
   : > $errf
+  : > $sfl
   {
   cat
   echo 0
@@ -102,7 +103,8 @@ cd $myp/newnew
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   awklist-all.sh -f $fee -d $otra < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf | grep -q . || break
+  sertl <$shf
+  grep -q . $sfl || { mkdir /tmp/sffnewblock; myexit 1 "early 25-chain"; }
 for i in $(seq 25)
 do
   test -s "$lpr" && {
@@ -120,8 +122,8 @@ do
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   awklist-all.sh -f $fee -d $otra < /tmp/mylist  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf | grep -q .
-# || break
+  sertl <$shf
+  grep -q . $sfl || myexit 1 "in-25-chain"
   cp $l $lpr
 done
 
