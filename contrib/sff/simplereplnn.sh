@@ -105,7 +105,7 @@ cd $myp/newnew
   sertl <$shf | grep -q . || break
 for i in $(seq 25)
 do
-  test -s $lpr && {
+  test -s "$lpr" && {
   until
     cd $myp/newnew
     list.sh | grep " true$" | safecat.sh $l
@@ -168,14 +168,17 @@ gtof=/tmp/sff-gtot
 
 hf=/tmp/replnhex
 grt.sh $txid | safecat.sh $hf
-test -s $hf || myexit 1 "grt hf"
+test -s "$hf" || myexit 1 "grt hf"
 sertl < $hf
 grep '^03' $hf && myexit 1 "V3 no more"
 
 : > $gmef
 : > $gmep
+cd $myp
 gme.sh $txid | safecat.sh $gmef
 depends=$(jq -r .depends[0] < $gmef)
+test "$depends" = "null" && myexit 1 null
+
 dce=$(echo $depends | ce.sh)
 cd $myp/newnew
 bch.sh gettransaction $depends \
@@ -186,7 +189,7 @@ bch.sh gettransaction $depends \
   | safecat.sh $gtof
 . $gtof
 value=$amount
-test -s $gmef || myexit 1 "missing $gmef"
+test -s "$gmef" || myexit 1 "missing $gmef"
 jq -r .spentby[] < $gmef | grep -q . && myexit 1 "FOREIGN CHILD SPEND"
 
 tr -d '{} \t",.' < $gmef \
