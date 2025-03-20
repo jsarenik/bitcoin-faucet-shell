@@ -161,6 +161,7 @@ tx=${1:-$tx}
 txid=${tx%% *}
 
 test "$txid" = "" && myexit 1 "empty TXID"
+echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
 
 gmef=/tmp/sff-gme
 gmep=/tmp/sff-gme.sh
