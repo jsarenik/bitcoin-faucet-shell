@@ -302,7 +302,6 @@ satsl() {
 ########################################################
 ########################################################
 ########################################################
-echo stage 1 >&2
 
 dvs=$vsize
 
@@ -317,7 +316,6 @@ echo vsize $vsize vsizenew $vsizenew >&2
 test $vsizenew -le 100000 || myexit 1 "TOO BIG"
 
 #########################################################
-echo stage 3 >&2
 
 dvs=$(( $vsizenew+$base ))
 test "$vsizenew" = "$vsize" && myexit 1 "no change"
@@ -329,7 +327,6 @@ cd $sdi
 # stage 4
 ############
 
-echo stage 4 >&2
 sats=$(( $base + $vsizenew ))
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
