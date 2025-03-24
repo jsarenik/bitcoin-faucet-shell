@@ -14,9 +14,13 @@ sfs=/tmp/sff-sfs
 now=signet25
 rest=bublina.eu.org
 myfull=$now.$rest
-test "$HTTP_REFERER" = "https://$myfull/" \
-  -a "$HTTP_HOST" = "$myfull" \
-  -a "$HTTP_REFERER" = "https://$HTTP_X_FORWARDED_HOST/" \
+set | safecat.sh /tmp/GETset
+echo "$HTTP_REFERER" | grep -q "^https://$myfull/" \
+  && echo "$HTTP_REFERER" | grep -q "^https://$HTTP_X_FORWARDED_HOST/" \
+  && test "$HTTP_HOST" = "$myfull" \
+    -a "$HTTP_X_FORWARDED_HOST" = "$myfull" \
+    -a "$HTTP_X_FORWARDED_PROTO" = 'https' \
+    -a "$HTTP_CF_VISITOR" = '{"scheme":"https"}' \
   || {
   res 429 "Try again" application/json '{"message":"Try again. Here is the other cheek."}'
 }
