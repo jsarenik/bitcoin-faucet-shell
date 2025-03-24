@@ -30,7 +30,9 @@ test "$cfts" = "" && {
 }
 
 xff=${HTTP_X_FORWARDED_FOR%%,*}
-xip=${xff:-"$REMOTE_ADDR"}
+test "$xff" = "$HTTP_CF_CONNECTING_IP" \
+  && xip=${xff:-"$REMOTE_ADDR"} \
+  || res 429 "unknown address"
 # Set the directory where the rate-limiting data is stored.
 # It can be overriden by a global inherited environment variable.
 WHERE=${WHERE:-/tmp/faucet}
