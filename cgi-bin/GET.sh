@@ -49,7 +49,7 @@ seckey=2x0000000000000000000000000000000AA
 curl -sSL 'https://challenges.cloudflare.com/turnstile/v0/siteverify' \
   --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
   | tr -d " " | grep -q '"success":true,' || {
-  res 429 "Not good" application/json '{"message":"Not good. Here is the other cheek."}'
+  res 429 "Not good" application/json '{"message":"Not good turnstile."}'
   }
 set cftsOK=1
 
