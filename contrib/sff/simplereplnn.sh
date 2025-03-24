@@ -71,32 +71,7 @@ bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 # are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
-##############################
-### from blocknotify-signet.sh
-rmdir /tmp/sffnewblock 2>/dev/null || test "$1" = "-f" && {
-rm -rf $sfs
-test "$1" = "-f" && shift
-d=/tmp/sffrest
-mkdir -p $d
-mymv /tmp/sff $d
-
-cd $myp/newnew
-list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
-cd $myp
-
-# was: clean-sff.sh
-tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
-txid=${tx%% *}
-cd $myp/newnew
-  bch.sh gettransaction $txid | jq -r .details[].address \
-    | sort -u | safecat.sh /tmp/sffgt
-cd $myp
-rm -rf /tmp/sff-s3/0*
-d=/tmp/sffrest
-cd $d
-mymv /tmp/sff-s2 /tmp/sff-s3 $d
-  cat /tmp/sffgt | xargs rm -rf
-
+dothetf() {
 lpr=/tmp/l123p
 rm -rf $lpr
 cd $myp/newnew
@@ -133,6 +108,37 @@ do
   grep -q . $sfl || break
   cp $l $lpr
 done
+}
+
+##############################
+### from blocknotify-signet.sh
+rmdir /tmp/sffnewblock 2>/dev/null || test "$1" = "-f" && {
+rm -rf $sfs
+test "$1" = "-f" && shift
+d=/tmp/sffrest
+mkdir -p $d
+mymv /tmp/sff $d
+
+cd $myp/newnew
+list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
+cd $myp
+
+# was: clean-sff.sh
+tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
+txid=${tx%% *}
+cd $myp/newnew
+  bch.sh gettransaction $txid | jq -r .details[].address \
+    | sort -u | safecat.sh /tmp/sffgt
+cd $myp
+rm -rf /tmp/sff-s3/0*
+d=/tmp/sffrest
+cd $d
+mymv /tmp/sff-s2 /tmp/sff-s3 $d
+  cat /tmp/sffgt | xargs rm -rf
+
+dothetf
+
+
 
 cd $myp
 signetcatapultleftovers.sh
@@ -184,7 +190,7 @@ grep '^03' $hf && myexit 1 "V3 no more"
 cd $myp
 gme.sh $txid | safecat.sh $gmef
 depends=$(jq -r .depends[0] < $gmef)
-test "$depends" = "null" && myexit 1 null
+test "$depends" = "null" && dothetf
 
 dce=$(echo $depends | ce.sh)
 cd $myp/newnew
