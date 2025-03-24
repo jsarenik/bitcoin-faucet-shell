@@ -77,16 +77,26 @@ section {
 <p>Or also any of the special:</p>
 
 <ul>
-<li>pk, uncompressed public key - not an address, P2PK: <span style="font-size: xx-small;" class="word-wrap"><code>04a8c3fa3dbc022ca7c9a2214c5e673833317b3cff37c0fc170fc347f1a2f6b6e2a53db4d023387f89209de481cd014a44040e1b09c3226d40fed02c0bc8d0f548</code></span></li>
-<li>pk, compressed public key - not an address, P2PK: <span style="font-size: xx-small;" class="word-wrap"><code>02a8c3fa3dbc022ca7c9a2214c5e673833317b3cff37c0fc170fc347f1a2f6b6e2</code></span></li>
+<li>pk<sub>un</sub>, uncompressed public key*, P2PK: <span style="font-size: xx-small;" class="word-wrap"><code>04a8c3fa3dbc022ca7c9a2214c5e673833317b3cff37c0fc170fc347f1a2f6b6e2a53db4d023387f89209de481cd014a44040e1b09c3226d40fed02c0bc8d0f548</code></span></li>
+<li>pk<sub>un</sub> in sh, uncompressed public key in script hash, P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>2N3GGimXafJbZuJwmiuzrCMvL5kA3xFRkZn</code></span></li>
+<li>pk, compressed public key*, P2PK: <span style="font-size: xx-small;" class="word-wrap"><code>02a8c3fa3dbc022ca7c9a2214c5e673833317b3cff37c0fc170fc347f1a2f6b6e2</code></span></li>
 <li>pk in sh, P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>2MuQuwdCzGQhD6EDrqvq3SRwSvuBuDyu8Ma</code></span></li>
 <li>pk in wsh, P2WSH: <span style="font-size: xx-small;" class="word-wrap"><code>tb1qpesf4de56rfv6479xy5maemzyrganqqh7qud6tjj5tn098asl0nqjxmzsl</code></span></li>
 <li>pkh in sh, P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>mmm9RVs6hnPE2XADd8HZWxmcFPeAvtEveo</code></span></li>
+<li>pkh in wsh in sh, P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>2N4VyXvqpvBRPYkkPUmbJ8j6Gkhjz2zAuqo</code></span></li>
 <li>sortedmulti in wsh, 2of2: <span style="font-size: xx-small;" class="word-wrap"><code>tb1q8xrk36638v6p58kuq3urrlzdup4m9ttkd6pnhgkvq7t5wjelrh4qn4aml2</code></span></li>
 </ul>
 
+<p>
+* the public keys, no matter if compressed or not, can not be generally used
+in place
+of addresses, but this faucet accepts them and sends an output their way;
+just note that spending them is always on the owner of corresponding private
+key; feel free to ask in the discussion if you have any questions
+</p>
+
 <h4>Catapult</h4>
-<p>No. Nothing sent to any of the faucet addresses will be <a href="https://mempool.space/signet/tx/0a583d63b1d0630991e37894345d5f5ca11f96531c5b0c42ed81e06aa69f5a2f">catapulted</a> right now.</p>
+<p>Anything sent to <span style="font-size: xx-small;" class="word-wrap"><code>tb1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqaqh7jw</code></span> will be <a href="https://mempool.space/signet/tx/ecd253a1f20f586c23fcff32d98f0afaefd7f3728b82d1a207286d244678c7f6" target="_blank">catapulted</a>. Use for CPFP testing.</p>
 
 <h4>Learn and experiment</h4>
 <p>The recommended way to play with Signet on a&nbsp;smartphone is to install <a href="https://blockstream.com/green/">Blockstream Green Wallet</a> and follow the <a href="https://github.com/jsarenik/bitcoin-faucet-shell/discussions/10">instructions</a>.</p></p>
