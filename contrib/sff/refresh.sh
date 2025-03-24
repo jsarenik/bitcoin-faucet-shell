@@ -35,11 +35,11 @@ myim "wsh(pk($privkey))"
 myim "pkh($privkey)"
 myim "sh(pkh($privkey))"
 myim "wsh(pkh($privkey))"
+myim "sh(wsh(pkh($privkey)))"
 myim "wpkh($privkey)"
 myim "sh(wpkh($privkey))"
 myim "tr($privkey)"
 myim "wsh(sortedmulti(2,$privkey,$privkeyo))"
-#myim "combo($privkey)"
 
 myim "pkh($privkeyo)"
 myim "sh(wpkh($privkeyo))"
@@ -48,6 +48,8 @@ myim "tr($privkeyo)"
 
 myim "tr($lmabi)"
 myim "pk($uncom)"
+myim "sh(pk($uncom))"
+myim "combo($uncom)"
 
 A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
 bch.sh importdescriptors $A
