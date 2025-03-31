@@ -7,7 +7,7 @@ mkdir $lock || exit 1
 
 export HOME=/home/nsm
 sfs=/tmp/sff-sfs # sff-flag-slowdown
-sfsn=2000
+sfsn=2100
 l=/tmp/mylist
 errf=/tmp/sff-err
 nusff=/tmp/nosff
@@ -112,9 +112,7 @@ done
 
 ##############################
 ### from blocknotify-signet.sh
-rmdir /tmp/sffnewblock 2>/dev/null || test "$1" = "-f" && {
-rm -rf $sfs
-test "$1" = "-f" && shift
+rmdir /tmp/sffnewblock 2>/dev/null && {
 d=/tmp/sffrest
 mkdir -p $d
 mymv /tmp/sff $d
@@ -237,7 +235,7 @@ find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 -type f 2>/dev/null \
 
 newouts=$(wc -l < $nusff)
 test "$newouts" -ne "0" || myexit 1 "no new outputs"
-test $newouts -gt $sfsn && mkdir -p $sfs
+test $newouts -gt $sfsn && mkdir -p $sfs || rm -rf $sfs
 newoutso=$newouts
 newoutsadd=$((210-$newouts))
 newoutsadd=0
