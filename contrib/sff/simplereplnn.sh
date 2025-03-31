@@ -340,11 +340,11 @@ sats=$(( $base + $vsizenew ))
   }
 dvs=$sats
 
-#dividend=$(($max/1000/1000/100/12))
-#echo DIVIDEND is $dividend >&2
-  new=$(( (($max-$sats)/(25+32)/$newouts) ))
+  new=$(( (($max-$sats)/(25+24)/$newouts) ))
   newe=$(((200000000-$sats)/$newouts))
   test $newe -lt $new && new=$newe
+  test $max -gt 22991051601 \
+    && new=$((($newouts*472123-$newouts%91-$sats)/$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($max-$dvs-$new*$newouts))
 
