@@ -84,7 +84,7 @@ cd $myp/newnew
 until
   list.sh | grep "^$last"
 do
-  sleep 0.2
+  usleep 21
 done
 
 for i in $(seq 25)
@@ -95,7 +95,7 @@ do
     list.sh | grep " true$" | safecat.sh $l
     ! cmp $l $lpr
   do
-    sleep 0.2
+    usleep 21
   done
   }
   . /dev/shm/UpdateTip-signet
