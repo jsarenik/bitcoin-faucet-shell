@@ -64,13 +64,14 @@ section {
 <div id="faucet_err" class="notification is-success">Getting balance...</div>
 
 <h4 id="recycle">Please recycle</h4>
-<p>When done testing with the signet coins, please return them to any of the following addresses:</p>
+<p>When done testing with the signet coins, please send them to any of the following addresses:</p>
 
 <ul>
 <li>pkh, legacy, P2PKH: <span style="font-size: xx-small;" class="word-wrap"><code>mmDZXXiHqydn31zgbUaKiLNBxwNCcX6Eam</code></span></li>
-<li>pkh in wsh, P2WSH: <span style="font-size: xx-small;" class="word-wrap"><code>tb1qmfxm38vpvh8m6pngsj79hvyvkrz2mpmvrczvjaqcd0n0gp3z478qmk9zp6</code></span></li>
+<li>sh(pkh), P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>mmm9RVs6hnPE2XADd8HZWxmcFPeAvtEveo</code></span></li>
+<li>wsh(pkh), P2WSH: <span style="font-size: xx-small;" class="word-wrap"><code>tb1qmfxm38vpvh8m6pngsj79hvyvkrz2mpmvrczvjaqcd0n0gp3z478qmk9zp6</code></span></li>
+<li>sh(wpkh), Nested Segwit, P2SH-segwit: <span style="font-size: xx-small;" class="word-wrap"><code>2NEDviSjc3UP8c4VpUPgjyovY1m6KvyJq1m</code></span></li>
 <li>wpkh, bech32, Native Segwit: <span style="font-size: xx-small;" class="word-wrap"><code>tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn</code></span></li>
-<li>wpkh in sh, Nested Segwit, P2SH-segwit: <span style="font-size: xx-small;" class="word-wrap"><code>2NEDviSjc3UP8c4VpUPgjyovY1m6KvyJq1m</code></span></li>
 <li>tr, bech32m, Taproot: <span style="font-size: xx-small;" class="word-wrap"><code>tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4</code></span> (<a href="https://mempool.space/signet/address/tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4" target="_blank">see&nbsp;on&nbsp;mempool.space</a>)</li>
 </ul>
 
@@ -78,13 +79,12 @@ section {
 
 <ul>
 <li>pk<sub>un</sub>, uncompressed public key*, P2PK: <span style="font-size: xx-small;" class="word-wrap"><code>04a8c3fa3dbc022ca7c9a2214c5e673833317b3cff37c0fc170fc347f1a2f6b6e2a53db4d023387f89209de481cd014a44040e1b09c3226d40fed02c0bc8d0f548</code></span></li>
-<li>pk<sub>un</sub> in sh, uncompressed public key in script hash, P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>2N3GGimXafJbZuJwmiuzrCMvL5kA3xFRkZn</code></span></li>
+<li>sh(pk<sub>un</sub>), P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>2N3GGimXafJbZuJwmiuzrCMvL5kA3xFRkZn</code></span></li>
 <li>pk, compressed public key*, P2PK: <span style="font-size: xx-small;" class="word-wrap"><code>02a8c3fa3dbc022ca7c9a2214c5e673833317b3cff37c0fc170fc347f1a2f6b6e2</code></span></li>
-<li>pk in sh, P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>2MuQuwdCzGQhD6EDrqvq3SRwSvuBuDyu8Ma</code></span></li>
-<li>pk in wsh, P2WSH: <span style="font-size: xx-small;" class="word-wrap"><code>tb1qpesf4de56rfv6479xy5maemzyrganqqh7qud6tjj5tn098asl0nqjxmzsl</code></span></li>
-<li>pkh in sh, P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>mmm9RVs6hnPE2XADd8HZWxmcFPeAvtEveo</code></span></li>
-<li>pkh in wsh in sh, P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>2N4VyXvqpvBRPYkkPUmbJ8j6Gkhjz2zAuqo</code></span></li>
-<li>sortedmulti in wsh, 2of2: <span style="font-size: xx-small;" class="word-wrap"><code>tb1q8xrk36638v6p58kuq3urrlzdup4m9ttkd6pnhgkvq7t5wjelrh4qn4aml2</code></span></li>
+<li>sh(pk), P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>2MuQuwdCzGQhD6EDrqvq3SRwSvuBuDyu8Ma</code></span></li>
+<li>wsh(pk), P2WSH: <span style="font-size: xx-small;" class="word-wrap"><code>tb1qpesf4de56rfv6479xy5maemzyrganqqh7qud6tjj5tn098asl0nqjxmzsl</code></span></li>
+<li>sh(wsh(pkh)), P2SH: <span style="font-size: xx-small;" class="word-wrap"><code>2N4VyXvqpvBRPYkkPUmbJ8j6Gkhjz2zAuqo</code></span></li>
+<li>wsh(sortedmulti(2, &hellip;)), 2of2, P2WSH: <span style="font-size: xx-small;" class="word-wrap"><code>tb1q8xrk36638v6p58kuq3urrlzdup4m9ttkd6pnhgkvq7t5wjelrh4qn4aml2</code></span></li>
 </ul>
 
 <p>
