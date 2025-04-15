@@ -7,7 +7,7 @@ mkdir $lock || exit 1
 
 export HOME=/home/nsm
 sfs=/tmp/sff-sfs # sff-flag-slowdown
-sfsn=2100
+sfsn=2133
 l=/tmp/mylist
 errf=/tmp/sff-err
 nusff=/tmp/nosff
