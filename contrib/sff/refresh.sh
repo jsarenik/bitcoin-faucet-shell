@@ -54,34 +54,15 @@ myim "combo($uncom)"
 A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
 bch.sh importdescriptors $A
 . /dev/shm/UpdateTip-signet
-bch.sh rescanblockchain $(($height-20))
+bch.sh rescanblockchain $(($height-60))
 sleep 1
 cd ..
 old=$(readlink newnew)
 tmpo=/dev/shm/wallets-$net/$old
 test -d $old && {
 cd $old
-#list.sh | grep " 0 true" \
-#  || list.sh | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sert.sh
-rm -rf /tmp/compare-diff-$net-*
-cdf=/tmp/compare-diff-$net-$$
-touch $cdf
-until
-  list.sh | sort | safecat.sh $cdf
-  (cd ../$neww; list.sh | sort | cmp $cdf )
-do
-  echo waiting for wallet synchronization
-  busybox sleep 10
-  i=$((${i:-0}+1))
-  test $i -gt 10 && {
-    cd ../$neww
-    ulw.sh
-    cd ..
-    rm -rf $neww
-    rm -rf $tmpd
-    exit 1
-  }
-done
+list.sh | grep " 0 true" \
+  || list.sh | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sert.sh
 cd ..
 }
 
