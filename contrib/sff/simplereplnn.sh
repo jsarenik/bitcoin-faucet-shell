@@ -230,7 +230,6 @@ cd $d
 
 ls -1 /tmp/sff | grep -q . || myexit 1 "no new outputs"
 find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 -type f 2>/dev/null \
-  | xargs ls -t1 \
   | xargs cat \
   | safecat.sh $nusff
 
