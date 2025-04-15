@@ -348,7 +348,7 @@ dvs=$sats
   test $max -gt 35991051601 \
     && new=$((($newouts*332123-$newouts*7-$sats)/$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
-  rest=$(($max-$dvs-$new*$newouts))
+  rest=$(($max-$sats-$new*$newouts))
 
 # needs $new and $nusff
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
