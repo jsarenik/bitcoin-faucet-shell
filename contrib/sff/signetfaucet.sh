@@ -11,6 +11,9 @@ mkdir -p /tmp/sff /tmp/sff-s2 /tmp/sff-s3 /tmp/sffrest
 addr=${1:-$faucetaddr}
 test -r /tmp/sff/$addr && { echo $addr; exit; }
 
+grep -qF "$addr" $HOME/.bitcoin/signet/wallets/addresses-* \
+  && exit 1
+
 # P2PK
 echo $addr | grep -Eq '^[0-9a-f]+$' && {
   echo $addr | grep -Eq '^[0-9a-f]{66}$' \
