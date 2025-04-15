@@ -1,7 +1,6 @@
 #!/bin/sh
 #echo $$ >&2
 lockr=/tmp/rsw
-mkdir $lockr || exit 1
 lock=/tmp/locksff
 mkdir $lock || exit 1
 rmdir $lockr

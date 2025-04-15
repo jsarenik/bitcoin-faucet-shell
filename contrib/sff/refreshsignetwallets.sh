@@ -2,12 +2,11 @@
 
 # This is run @hourly by cron
 
-lockr=/tmp/sfflock
-mkdir $lockr || exit 1
-
-lock=/tmp/rsw
+lockr=/tmp/rsw
+lock=/tmp/sfflock
 mkdir $lock || exit 1
 rmdir $lockr
+
 . $HOME/.profile
 mkdir -p /dev/shm/wallets-signet/lnanchor
 jw=optrue
