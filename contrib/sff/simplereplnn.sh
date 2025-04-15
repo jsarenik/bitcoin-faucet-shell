@@ -1,9 +1,10 @@
 #!/bin/sh
 #echo $$ >&2
-lock=/tmp/rsw
-test -d $lock && exit 1
+lockr=/tmp/rsw
+mkdir $lockr || exit 1
 lock=/tmp/locksff
 mkdir $lock || exit 1
+rmdir $lockr
 
 export HOME=/home/nsm
 sfs=/tmp/sff-sfs # sff-flag-slowdown
