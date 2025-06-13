@@ -12,7 +12,7 @@ addr=${1:-$faucetaddr}
 test -r /tmp/sff/$addr && { echo $addr; exit; }
 
 sfs=/tmp/sff-sfs # sff-flag-slowdown
-sfsn=2133
+sfsn=2016
 newouts=$(find /tmp/sff /tmp/sff-s2 /tmp/sff-s3 /tmp/sffrest -mindepth 1 -type f | wc -l)
 test $newouts -gt $sfsn && mkdir -p $sfs || rm -rf $sfs
 

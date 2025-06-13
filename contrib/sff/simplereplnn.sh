@@ -199,7 +199,7 @@ bch.sh gettransaction $depends \
 . $gtof
 value=$amount
 test -s "$gmef" || myexit 1 "missing $gmef"
-jq -r .spentby[] < $gmef | grep -q . && myexit 1 "FOREIGN CHILD SPEND"
+#jq -r .spentby[] < $gmef | grep -q . && myexit 1 "FOREIGN CHILD SPEND"
 
 tr -d '{} \t",.' < $gmef \
   | sed '/^depends/,$d' \
