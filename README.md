@@ -28,12 +28,17 @@ GitHub issues, or via email.
 
 See also `git log`, about.html and https://github.com/jsarenik/bitcoin-faucet-shell/issues/4.
 
-### API not supported
+### API
 
 The original REST API is following:
 
     https://signetfaucet.com/claim/addr/amount/captcha
 
-Since 2025 change, the faucet is intended to be interactively used
-by a human running it in a modern browser (Chromium and Google Chrome
-work for sure, both desktop and mobile).
+Amount is ignored here and captcha is any random string of
+at least 32 characters (the interactive CF turnstille is just
+for show now, not really used on server-side anymore).
+
+Busybox is returning 404 error on non-existent directories
+so it has to be used with Caddy2 to get a backward-compatible
+API. See in-repo `Caddyfile.txt` for an example on how to set
+up the redirects properly.
