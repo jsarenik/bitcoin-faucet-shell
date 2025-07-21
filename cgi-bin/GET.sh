@@ -7,14 +7,15 @@ res() {
 
 	${4:-$2}
 	EOF
+  test -d $sfs || rmdir ${LIMIT:-/tmp/nothing} 2>/dev/null
   exit
 }
 
 sfs=/tmp/sff-sfs
-now=signet25
+now=signet257
 rest=bublina.eu.org
 myfull=$now.$rest
-set | safecat.sh /tmp/GETset
+#set | safecat.sh /tmp/GETset
 echo "$HTTP_REFERER" | grep -q "^https://$myfull/" \
   && echo "$HTTP_REFERER" | grep -q "^https://$HTTP_X_FORWARDED_HOST/" \
   && test "$HTTP_HOST" = "$myfull" \
@@ -33,24 +34,40 @@ xff=${HTTP_X_FORWARDED_FOR%%,*}
 test "$xff" = "$HTTP_CF_CONNECTING_IP" \
   && xip=${xff:-"$REMOTE_ADDR"} \
   || res 429 "unknown address"
+
 # Set the directory where the rate-limiting data is stored.
 # It can be overriden by a global inherited environment variable.
 WHERE=${WHERE:-/tmp/faucet}
 # Set the file name used for rate-limiting.
 LIMIT=$WHERE/.limit/${xip%:*:*:*:*:*}
-uuid=$(uuidgen)
+mkdir -p ${LIMIT%/*}
+#! mkdir $LIMIT 2>/dev/null \
+#  && test -d $sfs && {
+! mkdir $LIMIT 2>/dev/null && {
+  echo $xip 429 >&2
+  res 429 "Slow down" application/json '{"message":"Please slow down"}'
+}
+
+#uuid=$(uuidgen)
 
 # Pre-set Site-key and Secret-key to always-blocking dummy ones from
 # https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 sitkey=2x00000000000000000000AB
+sitkey=1x00000000000000000000AA
 seckey=2x0000000000000000000000000000000AA
+seckey=1x0000000000000000000000000000000AA
 # Override the pre-set keys now if file exists
-. ~/.cfts
-curl -sSL 'https://challenges.cloudflare.com/turnstile/v0/siteverify' \
-  --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
-  | tr -d " " | grep -q '"success":true,' || {
-  res 429 "Not good" application/json '{"message":"Not good turnstile."}'
-  }
+#. ~/.cfts
+sleep 1
+#  --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
+#  --data "secret=$seckey&response=$cfts" \
+#test "${#cfts}" -gt 32 || res 429 "Too short cfts" application/json '{"message":"Too short turnstile response."}'
+#curl -sSL 'https://challenges.cloudflare.com/turnstile/v0/siteverify' \
+#curl -sSL 'https://challenges.cloudflare.com/turnstile/v0/siteverify' \
+#  --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
+#  | tr -d " " | grep -q '"success":true,' || {
+#  res 429 "Not good" application/json '{"message":"Not good turnstile."}'
+#  }
 set cftsOK=1
 
 test "$address" = "" && {
@@ -86,12 +103,6 @@ echo "$address" | grep -qE '^(04[0-9a-f]{128}|0[23][0-9a-f]{64}|tb1pfees9rn5nz|t
 #
 
 test -d $LIMIT && touch $LIMIT
-mkdir -p ${LIMIT%/*}
-! mkdir $LIMIT 2>/dev/null \
-  && test -d $sfs && {
-  echo $xip 429 >&2
-  res 429 "Slow down" application/json '{"message":"Please slow down"}'
-}
 
 #limit=/tmp/faucet/signetlimit
 #test -r $limit && {
