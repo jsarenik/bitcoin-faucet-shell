@@ -42,3 +42,5 @@ Busybox is returning 404 error on non-existent directories
 so it has to be used with Caddy2 to get a backward-compatible
 API. See in-repo `Caddyfile.txt` for an example on how to set
 up the redirects properly.
+
+See `contrib/getcoins.sh` for an example script using wget.
