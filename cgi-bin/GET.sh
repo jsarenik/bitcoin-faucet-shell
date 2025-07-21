@@ -41,8 +41,6 @@ WHERE=${WHERE:-/tmp/faucet}
 # Set the file name used for rate-limiting.
 LIMIT=$WHERE/.limit/${xip%:*:*:*:*:*}
 mkdir -p ${LIMIT%/*}
-#! mkdir $LIMIT 2>/dev/null \
-#  && test -d $sfs && {
 ! mkdir $LIMIT 2>/dev/null && {
   echo $xip 429 >&2
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
