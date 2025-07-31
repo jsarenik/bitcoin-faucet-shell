@@ -1,9 +1,10 @@
 #!/bin/sh
 #echo $$ >&2
-lockr=/tmp/rsw
+#mypref=signet
 lock=/tmp/locksff
 mkdir $lock || exit 1
-rmdir $lockr
+
+signetfaucet.sh -n
 
 export HOME=/home/nsm
 l=/tmp/mylist
@@ -117,6 +118,7 @@ mymv /tmp/sff $d
 
 cd $myp/newnew
 list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
+#list.sh | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 # was: clean-sff.sh
@@ -137,7 +139,7 @@ dothetf
 
 
 cd $myp
-signetcatapultleftovers.sh
+#signetcatapultleftovers.sh
 
 test -d /tmp/sffnewblock && myexit 1 "new block again"
 
@@ -152,7 +154,8 @@ cd $d
 ##############################
 
 cd $myp/newnew || myexit 1 "early cd newnew"
-list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh $l
+#list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh $l
+list.sh | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 printouts() {
@@ -339,9 +342,15 @@ dvs=$sats
   newe=$(((200000000-$sats)/$newouts))
   test $newe -lt $new && new=$newe
   test $max -gt 25991051601 \
-    && new=$((($newouts*102123-$newouts*7-$sats)/$newouts))
+    && new=$((($newouts*42123)/$newouts))
   test $max -gt 35991051601 \
-    && new=$((($newouts*332123-$newouts*7-$sats)/$newouts))
+    && new=$((($newouts*332123)/$newouts))
+  test $max -gt 85991051601 \
+    && new=$((($newouts*732101)/$newouts))
+  #test $max -gt 25991051601 \
+  #  && new=$((($newouts*102123-$newouts*7-$sats)/$newouts))
+  #test $max -gt 35991051601 \
+  #  && new=$((($newouts*332123-$newouts*7-$sats)/$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($max-$sats-$new*$newouts))
 

@@ -7,11 +7,16 @@ res() {
 
 	${4:-$2}
 	EOF
+  test -d $LIMIT && touch $LIMIT
   test -d $sfs || rmdir ${LIMIT:-/tmp/nothing} 2>/dev/null
   exit
 }
 
 sfs=/tmp/sff-sfs
+sfm=/tmp/sff-sfm
+sfo=/tmp/sff-sfo
+test -d $sfo && res 429 "lolio" application/json '{"message":"Overall imit reached."}'
+
 now=signet257
 rest=bublina.eu.org
 myfull=$now.$rest
@@ -27,6 +32,7 @@ echo "$HTTP_REFERER" | grep -q "^https://$myfull/" \
 }
 
 test "$cfts" = "" && {
+  test -d $sfm && res 429 "loli" application/json '{"message":"loli Limit reached."}'
   res 400 "Wait for turnstile"
 }
 
@@ -46,7 +52,7 @@ mkdir -p ${LIMIT%/*}
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
 
-#uuid=$(uuidgen)
+uuid=$(uuidgen)
 
 # Pre-set Site-key and Secret-key to always-blocking dummy ones from
 # https://developers.cloudflare.com/turnstile/troubleshooting/testing/
@@ -55,17 +61,21 @@ sitkey=1x00000000000000000000AA
 seckey=2x0000000000000000000000000000000AA
 seckey=1x0000000000000000000000000000000AA
 # Override the pre-set keys now if file exists
-#. ~/.cfts
-sleep 1
+. ~/.cfts
+if test -d $sfs
+then
 #  --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
 #  --data "secret=$seckey&response=$cfts" \
-#test "${#cfts}" -gt 32 || res 429 "Too short cfts" application/json '{"message":"Too short turnstile response."}'
-#curl -sSL 'https://challenges.cloudflare.com/turnstile/v0/siteverify' \
-#curl -sSL 'https://challenges.cloudflare.com/turnstile/v0/siteverify' \
-#  --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
-#  | tr -d " " | grep -q '"success":true,' || {
-#  res 429 "Not good" application/json '{"message":"Not good turnstile."}'
-#  }
+curl -sSL 'https://challenges.cloudflare.com/turnstile/v0/siteverify' \
+  --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
+  | tr -d " " | grep -q '"success":true' || {
+  res 429 "Not good" application/json '{"message":"Not good turnstile."}'
+  }
+else
+  test -d $sfm && res 429 "loli2" application/json '{"message":"loli2 Limit reached."}'
+  sleep 4
+fi
+
 set cftsOK=1
 
 test "$address" = "" && {

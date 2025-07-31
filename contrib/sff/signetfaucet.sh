@@ -12,9 +12,17 @@ addr=${1:-$faucetaddr}
 test -r /tmp/sff/$addr && { echo $addr; exit; }
 
 sfs=/tmp/sff-sfs # sff-flag-slowdown
+sfm=/tmp/sff-sfm # max
+sfo=/tmp/sff-sfo # overall
 sfsn=2016
+sfsm=4032
+sfso=6079
 newouts=$(find /tmp/sff /tmp/sff-s2 /tmp/sff-s3 /tmp/sffrest -mindepth 1 -type f | wc -l)
 test $newouts -gt $sfsn && mkdir -p $sfs || rm -rf $sfs
+test $newouts -gt $sfsm && mkdir -p $sfm || rm -rf $sfm
+test $newouts -gt $sfso && mkdir -p $sfo || rm -rf $sfo
+
+test "$1" = "-n" && exit
 
 grep -qF "$addr" $HOME/.bitcoin/signet/wallets/addresses-* \
   && exit 1
