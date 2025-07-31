@@ -342,11 +342,12 @@ dvs=$sats
   newe=$(((200000000-$sats)/$newouts))
   test $newe -lt $new && new=$newe
   test $max -gt 25991051601 \
-    && new=$((($newouts*42123)/$newouts))
+    && new=40000
   test $max -gt 35991051601 \
-    && new=$((($newouts*332123)/$newouts))
+    && new=300000
   test $max -gt 85991051601 \
-    && new=$((($newouts*732101)/$newouts))
+    && new=800000
+  new=$(($new+$newouts))
   #test $max -gt 25991051601 \
   #  && new=$((($newouts*102123-$newouts*7-$sats)/$newouts))
   #test $max -gt 35991051601 \
