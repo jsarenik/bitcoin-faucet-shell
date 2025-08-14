@@ -14,7 +14,7 @@ test -r /tmp/sff/$addr && { echo $addr; exit; }
 sfs=/tmp/sff-sfs # sff-flag-slowdown
 sfm=/tmp/sff-sfm # max
 sfo=/tmp/sff-sfo # overall
-sfsn=2016
+sfsn=3016
 sfsm=4032
 sfso=6079
 newouts=$(find /tmp/sff /tmp/sff-s2 /tmp/sff-s3 /tmp/sffrest -mindepth 1 -type f | wc -l)

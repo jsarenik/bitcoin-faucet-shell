@@ -54,7 +54,7 @@ myexit() {
     mymv /tmp/sff /tmp/sffrest
   }
   mymv /tmp/sff-s2 /tmp/sff-s3
-  ls -t1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
+  ls -1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
   myrest=$(ls -1 /tmp/sffrest/ | wc -l)
   myst=$(ls -1 /tmp/sff-s3/ | wc -l)
   echo rest $myrest stage3 $myst >&2
@@ -71,6 +71,11 @@ bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
 dothetf() {
+cd $myp/newnew
+#list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
+list.sh | sort -rn -k3 | safecat.sh $l
+cd $myp
+
 lpr=/tmp/l123p
 rm -rf $lpr
 cd $myp/newnew
@@ -91,7 +96,8 @@ do
   test -s "$lpr" && {
   until
     cd $myp/newnew
-    list.sh | grep " true$" | safecat.sh $l
+    #list.sh | grep " true$" | safecat.sh $l
+    list.sh | safecat.sh $l
     ! cmp $l $lpr
   do
     usleep 21
@@ -117,8 +123,8 @@ mkdir -p $d
 mymv /tmp/sff $d
 
 cd $myp/newnew
-list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
-#list.sh | sort -rn -k3 | safecat.sh $l
+#list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
+list.sh | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 # was: clean-sff.sh
@@ -146,7 +152,7 @@ test -d /tmp/sffnewblock && myexit 1 "new block again"
 d=/tmp/sffrest
 mymv /tmp/sff $d
 cd $d
-  ls -t1 "$d" \
+  ls -1 "$d" \
     | head -n 1800 | xargs mv -t /tmp/sff
 }
 ##############################
@@ -224,7 +230,7 @@ randomone=$(($RANDOM%2))
 ls -1 /tmp/sff/ | grep -q . || {
 d=/tmp/sffrest
 cd $d
-  ls -t1 2>/dev/null | head -n $((((98000-$vsize-51)/52)+$randomone)) \
+  ls -1 2>/dev/null | head -n $((((98000-$vsize-51)/52)+$randomone)) \
     | xargs mv -t /tmp/sff/
 }
 
@@ -265,7 +271,7 @@ dotx() {
   printouts $((2+$newouts))
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
   finta=$(printf " | %4d" $newoutso | xxd -p)
-  echo 00000000000000001d6a1b616c742e7369676e65746661756365742e636f6d$finta
+  echo 00000000000000001d6a1b416c74205369676e657420466175636574202020$finta
   cat $of
   hex $height - 8 | ce.sh
 }
