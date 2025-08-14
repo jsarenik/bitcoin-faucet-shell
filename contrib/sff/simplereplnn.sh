@@ -81,12 +81,15 @@ rm -rf $lpr
 cd $myp/newnew
   fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
+  echo $fee > /tmp/fee
   awklist-all.sh -f $fee -d $otra < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r last < $sfl
+
 until
-  list.sh | grep "^$last"
+  cd $myp/newnew
+  list.sh | grep -q "^$last"
 do
   usleep 21
 done
@@ -105,6 +108,7 @@ do
   }
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || break
+  cd $myp/newnew
   fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   awklist-all.sh -f $fee -d $otra < $l  \
@@ -190,12 +194,21 @@ test -s "$hf" || myexit 1 "grt hf"
 sertl < $hf
 grep '^03' $hf && myexit 1 "V3 no more"
 
-: > $gmef
 : > $gmep
+: > $gmef
 cd $myp
 gme.sh $txid | safecat.sh $gmef
 depends=$(jq -r .depends[0] < $gmef)
-test "$depends" = "null" && dothetf
+#test "$depends" = "null" && {
+#  dothetf
+#  myexit 1 "dothetf null"
+#  read -r txid < $sfl
+#  : > $gmef
+#  : > $gmep
+#  cd $myp
+#  gme.sh $txid | safecat.sh $gmef
+#  depends=$(jq -r .depends[0] < $gmef)
+#}
 
 dce=$(echo $depends | ce.sh)
 cd $myp/newnew
@@ -218,9 +231,26 @@ tr -d '{} \t",.' < $gmef \
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
+test "$ancestorcount" = "25" || dothetf
+test "$descendantcount" = "1" && dothetf
 test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 
-outsum=$(($value-$base))
+outsum=$(($value-${base:-0}))
+read -r txid < $sfl
+: > $gmep
+: > $gmef
+cd $myp/newnew
+list.sh | sort -rn -k3 | safecat.sh $l
+cd $myp
+
+# was: clean-sff.sh
+tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
+txid=${tx%% *}
+gme.sh $txid | safecat.sh $gmef
+depends=$(jq -r .depends[0] < $gmef)
+dce=$(echo $depends | ce.sh)
+
+outsum=$(($value-${base:-0}))
 mkdir -p /tmp/sff-s2
 mkdir -p /tmp/sff-s3
 
