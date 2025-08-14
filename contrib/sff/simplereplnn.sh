@@ -232,7 +232,6 @@ tr -d '{} \t",.' < $gmef \
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
 test "$ancestorcount" = "25" || dothetf
-test "$descendantcount" = "1" && dothetf
 test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 
 outsum=$(($value-${base:-0}))
