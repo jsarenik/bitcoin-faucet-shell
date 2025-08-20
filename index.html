@@ -98,6 +98,12 @@ function eb() {
     sendButton.innerHTML = "Press (ENTER) to receive";
     sendButton.disabled = false;
   }
+  if (x){
+    $("#address").val(x);
+  //let addressel = document.getElementById('address');
+  //   addressel.focus();
+  //   addressel.value = "vv Please wait vv";
+  }
 }
 function _turnstileCb() {
     turnstile.render('#cftsWidget', {
@@ -181,6 +187,17 @@ function fillburger() {
     });
   }
 }
+
+  const queryString = window.location.search;
+  //console.log(queryString);
+  // ?product=troussers&color=black&newuser&size=s
+  const urlParams = new URLSearchParams(queryString);
+  if (urlParams.has('x'))
+    var x = urlParams.get('x');
+  else
+    var x = "";
+  //console.log(x);
+
     </script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=_turnstileCb"></script>
 </body>
