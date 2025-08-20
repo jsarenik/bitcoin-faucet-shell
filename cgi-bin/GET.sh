@@ -13,9 +13,8 @@ res() {
 }
 
 sfs=/tmp/sff-sfs
-sfm=/tmp/sff-sfm
 sfo=/tmp/sff-sfo
-test -d $sfo && res 429 "lolio" application/json '{"message":"Overall imit reached."}'
+test -d $sfo && res 429 "lolio" application/json '{"message":"Overall limit reached. Wait a block."}'
 
 now=signet257
 rest=bublina.eu.org
@@ -31,8 +30,7 @@ echo "$HTTP_REFERER" | grep -q "^https://$myfull/" \
   res 429 "Try again" application/json '{"message":"Try again. Here is the other cheek."}'
 }
 
-test "$cfts" = "" && {
-  test -d $sfm && res 429 "loli" application/json '{"message":"loli Limit reached."}'
+test ${#cfts} -gt 512 || {
   res 400 "Wait for turnstile"
 }
 
@@ -62,19 +60,11 @@ seckey=2x0000000000000000000000000000000AA
 seckey=1x0000000000000000000000000000000AA
 # Override the pre-set keys now if file exists
 . ~/.cfts
-if test -d $sfs
-then
-#  --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
-#  --data "secret=$seckey&response=$cfts" \
 curl -sSL 'https://challenges.cloudflare.com/turnstile/v0/siteverify' \
   --data "secret=$seckey&response=$cfts&remoteip=$xip&idempotency_key=$uuid" \
   | tr -d " " | grep -q '"success":true' || {
   res 429 "Not good" application/json '{"message":"Not good turnstile."}'
   }
-else
-  test -d $sfm && res 429 "loli2" application/json '{"message":"loli2 Limit reached."}'
-  sleep 4
-fi
 
 set cftsOK=1
 
