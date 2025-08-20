@@ -34,9 +34,7 @@ The original REST API is following:
 
     https://signetfaucet.com/claim/addr/amount/captcha
 
-Amount is ignored here and captcha is any random string of
-at least 32 characters (the interactive CF turnstille is just
-for show now, not really used on server-side anymore).
+API access is disabled as of 2025-08-19
 
 Busybox is returning 404 error on non-existent directories
 so it has to be used with Caddy2 to get a backward-compatible
