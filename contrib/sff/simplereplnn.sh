@@ -39,7 +39,7 @@ sertl() {
   : > $sfl
   {
   cat
-  echo 0
+  echo 0.21
   } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
       2>$errf >$sfl
 }
