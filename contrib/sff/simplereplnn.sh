@@ -225,6 +225,7 @@ tr -d '{} \t",.' < $gmef \
   | sed '/^fees/d; $d' | tr : = \
   | sed 's/=0\+/=/' \
   | safecat.sh $gmep
+
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
@@ -245,6 +246,14 @@ txid=${tx%% *}
 gme.sh $txid | safecat.sh $gmef
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
+
+tr -d '{} \t",.' < $gmef \
+  | sed '/^depends/,$d' \
+  | sed '/^fees/d; $d' | tr : = \
+  | sed 's/=0\+/=/' \
+  | safecat.sh $gmep
+
+. $gmep
 
 outsum=$(($value-${base:-0}))
 mkdir -p /tmp/sff-s2
@@ -370,13 +379,13 @@ sats=$(( $base + $vsizenew ))
   }
 dvs=$sats
 
-  new=10000
+  new=1000
   test $max -gt 25991051601 \
     && new=40000
   test $max -gt 35991051601 \
-    && new=300000
+    && new=80000
   test $max -gt 85991051601 \
-    && new=800000
+    && new=200000
   new=$(($new+$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($max-$sats-$new*$newouts))
