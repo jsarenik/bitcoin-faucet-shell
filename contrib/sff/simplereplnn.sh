@@ -72,10 +72,10 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
 dothetf() {
 cd $myp/newnew
-#list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
-list.sh | sort -rn -k3 | safecat.sh $l
+list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
+gmm-gen.sh
 lpr=/tmp/l123p
 rm -rf $lpr
 cd $myp/newnew
@@ -99,8 +99,7 @@ do
   test -s "$lpr" && {
   until
     cd $myp/newnew
-    #list.sh | grep " true$" | safecat.sh $l
-    list.sh | safecat.sh $l
+    list.sh | grep " true$" | safecat.sh $l
     ! cmp $l $lpr
   do
     usleep 21
@@ -127,8 +126,7 @@ mkdir -p $d
 mymv /tmp/sff $d
 
 cd $myp/newnew
-#list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
-list.sh | sort -rn -k3 | safecat.sh $l
+list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 # was: clean-sff.sh
@@ -164,8 +162,7 @@ cd $d
 ##############################
 
 cd $myp/newnew || myexit 1 "early cd newnew"
-#list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh $l
-list.sh | sort -rn -k3 | safecat.sh $l
+list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 printouts() {
@@ -239,7 +236,7 @@ read -r txid < $sfl
 : > $gmep
 : > $gmef
 cd $myp/newnew
-list.sh | sort -rn -k3 | safecat.sh $l
+list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 # was: clean-sff.sh
