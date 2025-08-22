@@ -29,6 +29,7 @@ mkdir $tmpd
 ln -s $tmpd .
 bch.sh -named createwallet wallet_name=$neww blank=true
 cd $neww
+
 myim "pk($privkey)"
 myim "sh(pk($privkey))"
 myim "wsh(pk($privkey))"
@@ -53,9 +54,7 @@ myim "combo($uncom)"
 
 A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
 bch.sh importdescriptors $A
-. /dev/shm/UpdateTip-signet
-bch.sh rescanblockchain $(($height-60))
-sleep 1
+
 cd ..
 old=$(readlink newnew)
 tmpo=/dev/shm/wallets-$net/$old
