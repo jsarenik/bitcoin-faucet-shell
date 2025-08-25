@@ -380,12 +380,12 @@ sats=$(( $base + $vsizenew ))
 dvs=$sats
 
   new=1000
-  test $max -gt 25991051601 \
-    && new=40000
-  test $max -gt 35991051601 \
-    && new=80000
-  test $max -gt 85991051601 \
-    && new=200000
+  test $max -gt 25991051601 && new=40000
+  test $max -gt 35991051601 && new=80000
+  test $max -gt 85991051601 && new=200000
+  test $max -gt 105991051601 && new=300000
+  test $max -gt 115991051601 && new=500000
+  test $max -gt 125991051601 && new=1100000
   new=$(($new+$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($max-$sats-$new*$newouts))
