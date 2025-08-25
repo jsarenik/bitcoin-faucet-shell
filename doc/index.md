@@ -17,7 +17,7 @@ The faucet depends on a sustainable inflow of sats which is quite easy
 to do on a bitcoin signet test-network. This faucet receives 100 test
 bitcoins on a global default signet network every 50 blocks.
 
-Faucet's advatage is the use of [Cloudflare Turnstile](
+Faucet's advantage is the use of [Cloudflare Turnstile](
 https://cloudflare.com/application-services/products/turnstile/), the
 use of 25-long in-mempool chain of transactions which helps to keep
 the balance big enough with a buffer and wallet refreshing which makes
