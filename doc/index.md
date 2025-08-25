@@ -27,7 +27,7 @@ sure the wallet of the faucet is very small and fast.
 
 The Turnstile helps to limit the rate of requests by requiring the unique
 token be used in each request and verifying it with [Siteverify API](
-https://developers.cloudflare.com/turnstile/get-started/server-side-verification).
+https://developers.cloudflare.com/turnstile/get-started/server-side-validation).
 
 Behind the scenes there is also a mechanism implemented inside `GET.sh`
 script which allows only one request from one IP address at the same time.
