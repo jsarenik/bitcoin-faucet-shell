@@ -306,7 +306,7 @@ dotx() {
   printouts $((2+$newouts))
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
   finta=$(printf " | %4d" $newoutso | xxd -p)
-  echo 00000000000000001d6a1b416c74205369676e657420466175636574202020$finta
+  echo 00000000000000001d6a1b616c742e7369676e65746661756365742e636f6d $finta
   cat $of
   hex $height - 8 | ce.sh
 }
