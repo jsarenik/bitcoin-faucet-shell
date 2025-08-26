@@ -14,7 +14,6 @@ sfl=/tmp/sfflast
 shf=/tmp/sffhex
 phf=/tmp/sffphf
 pkf=/tmp/sffpkf
-addmyf=$HOME/.bitcoin/signet/wallets/addmy
 sdi=$HOME/.bitcoin/signet
 myp=$sdi/wallets
 otra=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
@@ -271,16 +270,12 @@ cd $d
 
 ls -1 /tmp/sff | grep -q . || myexit 1 "no new outputs"
 find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 -type f 2>/dev/null \
+  | sort -u \
   | xargs cat \
   | safecat.sh $nusff
 
 newouts=$(wc -l < $nusff)
 test "$newouts" -ne "0" || myexit 1 "no new outputs"
-newoutso=$newouts
-newoutsadd=0
-test $newoutsadd -lt 0 && newoutsadd=0
-echo NEWOUTSADD $newoutsadd >&2
-newouts=$(($newouts+$newoutsadd))
 max=$(cat $l | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
 test $max -gt 330 || myexit 1 "low max $max"
@@ -291,8 +286,7 @@ rest=$(($max-$new*$newouts))
 # needs $new and $nusff
 of=/tmp/sff-outs
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
-{ cat $nusff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
-  | sed "s/^/$newh/" | safecat.sh $of
+cat $nusff | sed "s/^/$newh/" | safecat.sh $of
 
 
 dotx() {
@@ -305,7 +299,7 @@ dotx() {
   echo 0200000001${dce}0000000000fdffffff
   printouts $((2+$newouts))
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
-  finta=$(printf " | %4d" $newoutso | xxd -p)
+  finta=$(printf " | %4d" $newouts | xxd -p)
   echo 00000000000000001d6a1b616c742e7369676e65746661756365742e636f6d $finta
   cat $of
   hex $height - 8 | ce.sh
@@ -392,8 +386,7 @@ dvs=$sats
 
 # needs $new and $nusff
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
-{ cat $nusff; test "$newoutsadd" -gt 0 && head -n $newoutsadd $addmyf; } \
-  | sed "s/^/$newh/" | safecat.sh $of
+cat $nusff | sed "s/^/$newh/" | safecat.sh $of
 
 cd $myp/newnew
 dotx | txcat.sh | srt.sh | safecat.sh $shf
