@@ -54,6 +54,9 @@ myim "combo($uncom)"
 
 A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
 bch.sh importdescriptors $A
+. /dev/shm/UpdateTip-signet
+bch.sh rescanblockchain $(($height-60))
+sleep 1
 
 cd ..
 old=$(readlink newnew)
