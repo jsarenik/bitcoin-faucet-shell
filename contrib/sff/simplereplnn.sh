@@ -1,4 +1,6 @@
 #!/bin/sh
+a="/$0"; a="${a%/*}"; a="${a:-.}"; a="${a##/}/"; BINDIR=$(cd "$a" || true; pwd)
+
 #echo $$ >&2
 #mypref=signet
 lock=/tmp/locksff
