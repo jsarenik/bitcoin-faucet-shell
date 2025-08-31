@@ -1,22 +1,23 @@
 #!/bin/sh
 a="/$0"; a="${a%/*}"; a="${a:-.}"; a="${a##/}/"; BINDIR=$(cd "$a" || true; pwd)
 
-#echo $$ >&2
-#mypref=signet
-lock=/tmp/locksff
+test "$1" = "-c" && { conf=$2; shift 2; }
+test "$conf" = "" || . $conf
+fdir=${fdir:-/tmp}
+sdi=${sdi:-$HOME/.bitcoin/signet}
+
+lock=$fdir/locksff
 mkdir $lock || exit 1
 
 signetfaucet.sh -n
 
-export HOME=/home/nsm
-l=/tmp/mylist
-errf=/tmp/sff-err
-nusff=/tmp/nosff
-sfl=/tmp/sfflast
-shf=/tmp/sffhex
-phf=/tmp/sffphf
-pkf=/tmp/sffpkf
-sdi=$HOME/.bitcoin/signet
+l=$fdir/mylist
+errf=$fdir/sff-err
+nusff=$fdir/nosff
+sfl=$fdir/sfflast
+shf=$fdir/sffhex
+phf=$fdir/sffphf
+pkf=$fdir/sffpkf
 myp=$sdi/wallets
 otra=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
 xdna=tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn
@@ -47,17 +48,17 @@ sertl() {
 
 myexit() {
   ret=${1:-$?}
-  d=/tmp/sffrest
+  d=$fdir/sffrest
   #test -s $sfl && cat $sfl
   test "$ret" = "0" && {
-    mymv /tmp/sff /tmp/sff-s2
+    mymv $fdir/sff $fdir/sff-s2
   } || {
-    mymv /tmp/sff /tmp/sffrest
+    mymv $fdir/sff $fdir/sffrest
   }
-  mymv /tmp/sff-s2 /tmp/sff-s3
+  mymv $fdir/sff-s2 $fdir/sff-s3
   ls -1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
-  myrest=$(ls -1 /tmp/sffrest/ | wc -l)
-  myst=$(ls -1 /tmp/sff-s3/ | wc -l)
+  myrest=$(ls -1 $fdir/sffrest/ | wc -l)
+  myst=$(ls -1 $fdir/sff-s3/ | wc -l)
   echo rest $myrest stage3 $myst >&2
 
   echo ${2:-"SUCCESS $ret"} >&2
@@ -77,12 +78,12 @@ list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 gmm-gen.sh
-lpr=/tmp/l123p
+lpr=$fdir/l123p
 rm -rf $lpr
 cd $myp/newnew
   fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  echo $fee > /tmp/fee
+  echo $fee > $fdir/fee
   awklist-all.sh -f $fee -d $otra < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
@@ -121,10 +122,10 @@ done
 
 ##############################
 ### from blocknotify-signet.sh
-rmdir /tmp/sffnewblock 2>/dev/null && {
-d=/tmp/sffrest
+rmdir $fdir/sffnewblock 2>/dev/null && {
+d=$fdir/sffrest
 mkdir -p $d
-mymv /tmp/sff $d
+mymv $fdir/sff $d
 
 cd $myp/newnew
 list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
@@ -135,13 +136,13 @@ tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
 txid=${tx%% *}
 cd $myp/newnew
   bch.sh gettransaction $txid | jq -r .details[].address \
-    | sort -u | safecat.sh /tmp/sffgt
+    | sort -u | safecat.sh $fdir/sffgt
 cd $myp
-rm -rf /tmp/sff-s3/0*
-d=/tmp/sffrest
+rm -rf $fdir/sff-s3/0*
+d=$fdir/sffrest
 cd $d
-mymv /tmp/sff-s2 /tmp/sff-s3 $d
-  cat /tmp/sffgt | xargs rm -rf
+mymv $fdir/sff-s2 $fdir/sff-s3 $d
+  cat $fdir/sffgt | xargs rm -rf
 
 dothetf
 
@@ -150,13 +151,13 @@ dothetf
 cd $myp
 #signetcatapultleftovers.sh
 
-test -d /tmp/sffnewblock && myexit 1 "new block again"
+test -d $fdir/sffnewblock && myexit 1 "new block again"
 
-d=/tmp/sffrest
-mymv /tmp/sff $d
+d=$fdir/sffrest
+mymv $fdir/sff $d
 cd $d
   ls -1 "$d" \
-    | head -n 1800 | xargs mv -t /tmp/sff
+    | head -n 1800 | xargs mv -t $fdir/sff
 }
 ##############################
 ##############################
@@ -182,11 +183,11 @@ txid=${tx%% *}
 test "$txid" = "" && myexit 1 "empty TXID"
 echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
 
-gmef=/tmp/sff-gme
-gmep=/tmp/sff-gme.sh
-gtof=/tmp/sff-gtot
+gmef=$fdir/sff-gme
+gmep=$fdir/sff-gme.sh
+gtof=$fdir/sff-gtot
 
-hf=/tmp/replnhex
+hf=$fdir/replnhex
 grt.sh $txid | safecat.sh $hf
 test -s "$hf" || myexit 1 "grt hf"
 sertl < $hf
@@ -257,21 +258,21 @@ tr -d '{} \t",.' < $gmef \
 . $gmep
 
 outsum=$(($value-${base:-0}))
-mkdir -p /tmp/sff-s2
-mkdir -p /tmp/sff-s3
+mkdir -p $fdir/sff-s2
+mkdir -p $fdir/sff-s3
 
-d=/tmp/sffrest
+d=$fdir/sffrest
 mkdir -p $d
 randomone=$(($RANDOM%2))
-ls -1 /tmp/sff/ | grep -q . || {
-d=/tmp/sffrest
+ls -1 $fdir/sff/ | grep -q . || {
+d=$fdir/sffrest
 cd $d
   ls -1 2>/dev/null | head -n $((((98000-$vsize-51)/52)+$randomone)) \
-    | xargs mv -t /tmp/sff/
+    | xargs mv -t $fdir/sff/
 }
 
-ls -1 /tmp/sff | grep -q . || myexit 1 "no new outputs"
-find /tmp/sff/ /tmp/sff-s2/ /tmp/sff-s3/ -mindepth 1 -type f 2>/dev/null \
+ls -1 $fdir/sff | grep -q . || myexit 1 "no new outputs"
+find $fdir/sff/ $fdir/sff-s2/ $fdir/sff-s3/ -mindepth 1 -type f 2>/dev/null \
   | sort -u \
   | xargs cat \
   | safecat.sh $nusff
@@ -286,7 +287,7 @@ test "$new" -gt 330 || myexit 1 "new $new is too low"
 rest=$(($max-$new*$newouts))
 
 # needs $new and $nusff
-of=/tmp/sff-outs
+of=$fdir/sff-outs
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
 cat $nusff | sed "s/^/$newh/" | safecat.sh $of
 
@@ -346,10 +347,10 @@ satsl() {
 dvs=$vsize
 
 cd $myp/newnew
-dotx | safecat.sh /tmp/us
+dotx | safecat.sh $fdir/us
 
 cd $myp/newnew
-cat /tmp/us | txcat.sh | srt.sh | safecat.sh $shf
+cat $fdir/us | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 vsizenew=$(fee.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
