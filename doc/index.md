@@ -17,10 +17,14 @@ The faucet depends on a sustainable inflow of sats which is quite easy
 to do on a bitcoin signet test-network. This faucet receives 100 test
 bitcoins on a global default signet network every 50 blocks.
 
-Faucet's advantage is the use of [Cloudflare Turnstile](
-https://cloudflare.com/application-services/products/turnstile/), the
+Faucet's advantage are:
+
+ 1. the use of [Cloudflare Turnstile](
+https://cloudflare.com/application-services/products/turnstile/)
+ 2. the
 use of 25-long in-mempool chain of transactions which helps to keep
-the balance big enough with a buffer and wallet refreshing which makes
+the balance big enough with a buffer
+ 3. wallet refreshing which makes
 sure the wallet of the faucet is very small and fast.
 
 ## Turnstile
@@ -52,6 +56,9 @@ spent until confirmed in a block. Helps with attempts to drain faucet's
 balance by quickly spending an incoming UTXO while the transaction is still
 in the mempool.
 
+Helps a lot with regular RBF every 30 seconds.
+See [...dent4 LIVE on mempool.space/signet](https://mempool.space/signet/address/tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4)
+
 
 ## Refreshing wallets
 
@@ -66,3 +73,8 @@ Linux filesystem). Currently there are three wallets:
 Current stats for the wallet can be seen in the end of [`sffrest.txt`](
 https://signet257.bublina.eu.org/sffrest.txt) and the raw size of the wallets
 in kilobytes is shown there.
+
+
+# See also
+
+https://delvingbitcoin.org/t/signet-faucet-using-25-long-tx-chain-rbf/1426
