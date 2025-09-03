@@ -19,6 +19,7 @@ shf=$fdir/sffhex
 phf=$fdir/sffphf
 pkf=$fdir/sffpkf
 myp=$sdi/wallets
+dent=tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4
 otra=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
 xdna=tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn
 feea=tb1pfees9rn5nz
@@ -74,17 +75,17 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
 dothetf() {
 cd $myp/newnew
-list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
+list.sh | grep -v " 0 true$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 gmm-gen.sh
 lpr=$fdir/l123p
 rm -rf $lpr
 cd $myp/newnew
-  fee=$(awklist-all.sh -d $otra < $l \
+  fee=$(awklist-all.sh -d $dent < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   echo $fee > $fdir/fee
-  awklist-all.sh -f $fee -d $otra < $l  \
+  awklist-all.sh -f $fee -d $dent < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r last < $sfl
