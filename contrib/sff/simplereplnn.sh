@@ -75,17 +75,17 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
 dothetf() {
 cd $myp/newnew
-list.sh | grep -v " 0 false$" | sort -rn -k3 | safecat.sh $l
+list.sh | grep -v " false$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 gmm-gen.sh
 lpr=$fdir/l123p
 rm -rf $lpr
 cd $myp/newnew
-  fee=$(awklist-all.sh -d $dent < $l \
+  fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   echo $fee > $fdir/fee
-  awklist-all.sh -f $fee -d $dent < $l  \
+  awklist-all.sh -f $fee -d $otra < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r last < $sfl
