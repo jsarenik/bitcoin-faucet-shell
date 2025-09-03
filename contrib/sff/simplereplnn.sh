@@ -75,7 +75,7 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
 dothetf() {
 cd $myp/newnew
-list.sh | grep -v " 0 true$" | sort -rn -k3 | safecat.sh $l
+list.sh | grep -v " 0 false$" | sort -rn -k3 | safecat.sh $l
 cd $myp
 
 gmm-gen.sh
