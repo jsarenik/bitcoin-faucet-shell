@@ -337,7 +337,6 @@ test $vsizenew -le 100000 || { mkdir $fdir/_toomany; myexit 1 "TOO BIG"; }
 #########################################################
 
 dvs=$(( $vsizenew+$base ))
-test "$vsizenew" = "$vsize" && myexit 1 "no change"
 cd $myp/newnew
 dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
