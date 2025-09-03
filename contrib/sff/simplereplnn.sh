@@ -151,7 +151,7 @@ dothetf
 
 
 cd $myp
-#signetcatapultleftovers.sh
+signetcatapultleftovers.sh
 
 test -d $fdir/sffnewblock && myexit 1 "new block again"
 
