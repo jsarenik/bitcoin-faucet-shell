@@ -140,6 +140,7 @@ cd $myp/newnew
     | sort -u | safecat.sh $fdir/sffgt
 cd $myp
 rm -rf $fdir/sff-s3/0*
+rm -rf $fdir/_toomany
 d=$fdir/sffrest
 cd $d
 mymv $fdir/sff-s2 $fdir/sff-s3 $d
@@ -238,12 +239,15 @@ mkdir -p $fdir/sff-s3
 d=$fdir/sffrest
 mkdir -p $d
 randomone=$(($RANDOM%2))
-ls -1 $fdir/sff/ | grep -q . || {
+ls -1 $fdir/sff/ | grep -q . || { ####
 d=$fdir/sffrest
+
+test -d $fdir/_toomany || {
 cd $d
   ls -1 2>/dev/null | head -n $((((98000-$vsize-51)/52)+$randomone)) \
     | xargs mv -t $fdir/sff/
 }
+} # ls above
 
 find $fdir/sff/ $fdir/sff-s2/ $fdir/sff-s3/ -mindepth 1 -type f 2>/dev/null \
   | sort -u \
@@ -327,7 +331,8 @@ cat $fdir/us | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 vsizenew=$(fee.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
-test $vsizenew -le 100000 || myexit 1 "TOO BIG"
+test $vsizenew -le 100000 || { mkdir $fdir/_toomany; myexit 1 "TOO BIG"; }
+#test $vsizenew -le 100000 || myexit 1 "TOO BIG"
 
 #########################################################
 
