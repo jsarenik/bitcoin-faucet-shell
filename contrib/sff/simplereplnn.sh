@@ -1,6 +1,8 @@
 #!/bin/sh
 a="/$0"; a="${a%/*}"; a="${a:-.}"; a="${a##/}/"; BINDIR=$(cd "$a" || true; pwd)
 
+hashe=$(sha256sum $0 | cut -b 58-64)
+
 test "$1" = "-c" && { conf=$2; shift 2; }
 test "$conf" = "" || . $conf
 fdir=${fdir:-/tmp}
@@ -317,8 +319,11 @@ dotx() {
   echo 0200000001${dce}0000000000fdffffff
   printouts $((2+$newouts))
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
-  finta=$(printf " | %4d" $newouts | xxd -p)
-  echo 00000000000000001d6a1b616c742e7369676e65746661756365742e636f6d $finta
+  msg=$(printf "alt.signetfaucet.com | %4d | $hashe" $newouts | xxd -p)
+  lend=$((${#msg}/2))
+  len=$(printf "%02x" $lend)
+  leno=$(printf "%02x" $(($lend+2)))
+  echo 0000000000000000 $leno 6a$len $msg
   cat $of
   hex $height - 8 | ce.sh
 }
