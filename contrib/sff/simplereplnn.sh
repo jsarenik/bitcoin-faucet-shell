@@ -12,6 +12,7 @@ lock=$fdir/locksff
 mkdir $lock || exit 1
 
 signetfaucet.sh -n
+gmm-gen.sh
 
 l=$fdir/mylist
 errf=$fdir/sff-err
@@ -96,7 +97,6 @@ dolisto() {
 dothetf() {
 dolisto
 
-gmm-gen.sh
 lpr=$fdir/l123p
 rm -rf $lpr
 cd $myp/newnew
