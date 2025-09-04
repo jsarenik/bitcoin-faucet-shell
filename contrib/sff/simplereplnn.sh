@@ -73,10 +73,26 @@ bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 # are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
+mylist() {
+  bch.sh listunspent ${1:-0} \
+    | grep -w -e txid -e vout -e amount -e confirmations -e safe \
+    | tr -d ' ,"' \
+    | cut -d: -f2 \
+    | paste -d " " - - - - -
+}
+
+dolist() {
+  cd $myp/newnew
+  mylist | grep -v " false$" | sort -rn -k3
+  cd $myp
+}
+
+dolisto() {
+  dolist | safecat.sh $l
+}
+
 dothetf() {
-cd $myp/newnew
-list.sh | grep -v " false$" | sort -rn -k3 | safecat.sh $l
-cd $myp
+dolisto
 
 gmm-gen.sh
 lpr=$fdir/l123p
@@ -91,8 +107,7 @@ cd $myp/newnew
   read -r last < $sfl
 
 until
-  cd $myp/newnew
-  list.sh | grep -q "^$last"
+  dolist | grep -q "^$last"
 do
   usleep 21
 done
@@ -101,15 +116,14 @@ for i in $(seq 25)
 do
   test -s "$lpr" && {
   until
-    cd $myp/newnew
-    list.sh | grep " true$" | safecat.sh $l
+    dolisto
     ! cmp $l $lpr
   do
     usleep 21
   done
   }
   . /dev/shm/UpdateTip-signet
-  test "$hold" = "$height" || break
+  test "$hold" = "$height" || myexit 1 holdheight
   cd $myp/newnew
   fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
@@ -128,9 +142,7 @@ d=$fdir/sffrest
 mkdir -p $d
 mymv $fdir/sff $d
 
-cd $myp/newnew
-list.sh | grep "[1-9] true$" | sort -rn -k3 | safecat.sh $l
-cd $myp
+dolisto
 
 # was: clean-sff.sh
 tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
@@ -165,9 +177,7 @@ cd $d
 ##############################
 ##############################
 
-cd $myp/newnew || myexit 1 "early cd newnew"
-list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh $l
-cd $myp
+dolisto
 
 printouts() {
   test ${1:-1} -lt 252 \
@@ -242,9 +252,7 @@ outsum=$(($value-${base:-0}))
 read -r txid < $sfl
 : > $gmep
 : > $gmef
-cd $myp/newnew
-list.sh | grep " 0 true$" | sort -rn -k3 | safecat.sh $l
-cd $myp
+dolisto
 
 # was: clean-sff.sh
 tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
