@@ -12,7 +12,7 @@ lock=$fdir/locksff
 mkdir $lock || exit 1
 
 signetfaucet.sh -n
-gmm-gen.sh
+#gmm-gen.sh is in blocknotify-signet.sh now
 
 l=$fdir/mylist
 errf=$fdir/sff-err
