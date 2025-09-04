@@ -16,12 +16,12 @@ myim() {
 dt=/home/nsm/.bitcoin/signet/wallets/pokus202412-dt.txt
 
 while
-  add=$RANDOM
-  add=my$add
-  neww=new$add
+  add=$(date -u +%H%M)
+  neww=newmy$add
   test -d $neww
 do
   echo Existing dir $neww
+  sleep 1m
 done
 
 tmpd=/dev/shm/wallets-$net/$neww
