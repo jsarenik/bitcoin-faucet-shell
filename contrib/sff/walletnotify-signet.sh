@@ -10,6 +10,4 @@ height=$4
 #test "$wall" = "lnanchor" && signetcatapultlna.sh
 test "$wall" = "optrue" && ( cd wallets/optrue; sh spend.sh )
 
-gmm-gen.sh
-#gen-sfb.sh >/dev/null
 true

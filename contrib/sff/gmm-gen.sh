@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# I need a way to subtract both from bytes
+# and from total_fee the current Pinning
+# Faucet transaction values so that it does
+# not influence the next fee guesses.
+
 net=$(hnet.sh)
 gmif=/tmp/gmif-$net
 gmi.sh | tr -d ', ".' | tr : = \
