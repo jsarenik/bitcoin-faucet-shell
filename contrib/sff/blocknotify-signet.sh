@@ -9,7 +9,8 @@ WHERE=/tmp/faucet
 busybox find $WHERE/.limit -mindepth 1 -type d -delete
 
 ut.sh signet
-gmm-gen.sh
+#gmm-genm.sh
+nextmin.sh | awk '{print $3}' | safecat.sh /tmp/gmm-signet
 all-sums.sh signet
 gen-sfb.sh
 
