@@ -90,7 +90,7 @@ mylist() {
 }
 
 dolist() {
-  cd $myp/newnew
+  cd $wd
   mylist | grep -v " false$" | sort -rn -k3
   cd $myp
 }
@@ -104,7 +104,7 @@ dolisto
 
 lpr=$fdir/l123p
 rm -rf $lpr
-cd $myp/newnew
+cd $wd
   fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   echo $fee > $fdir/fee
@@ -131,7 +131,7 @@ do
   }
   . /dev/shm/UpdateTip-signet
   test "$hold" = "$height" || myexit 1 holdheight
-  cd $myp/newnew
+  cd $wd
   fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   awklist-all.sh -f $fee -d $otra < $l  \
@@ -180,7 +180,7 @@ dolisto
 # was: clean-sff.sh
 tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
 txid=${tx%% *}
-cd $myp/newnew
+cd $wd
   bch.sh gettransaction $txid | jq -r .details[].address \
     | sort -u | safecat.sh $fdir/sffgt
 cd $myp
@@ -398,10 +398,10 @@ satsl() {
 
 dvs=$vsize
 
-cd $myp/newnew
+cd $wd
 dotx | safecat.sh $fdir/us
 
-cd $myp/newnew
+cd $wd
 cat $fdir/us | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 vsizenew=$(fee.sh < $shf | grep .) || myexit 1 "missing vsizenew"
@@ -412,7 +412,7 @@ test $vsizenew -le 100000 || { mkdir $fdir/_toomany; myexit 1 "TOO BIG"; }
 #########################################################
 
 dvs=$(( $vsizenew+$base ))
-cd $myp/newnew
+cd $wd
 dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 
@@ -443,7 +443,7 @@ dvs=$sats
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
 cat $nusff | sed "s/^/$newh/" | safecat.sh $of
 
-cd $myp/newnew
+cd $wd
 dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 sertl <$shf
