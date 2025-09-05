@@ -29,9 +29,6 @@ otra=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
 xdna=tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn
 feea=tb1pfees9rn5nz
 
-. /dev/shm/UpdateTip-signet
-hold=$height
-
 mymv() {
   all=$*
   last=${all##* }
@@ -129,8 +126,6 @@ do
     usleep 21
   done
   }
-  . /dev/shm/UpdateTip-signet
-  test "$hold" = "$height" || myexit 1 holdheight
   cd $wd
   fee=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
@@ -210,8 +205,6 @@ cd $d
 ##############################
 ##############################
 
-dolisto
-
 printouts() {
   test ${1:-1} -lt 252 \
     && { hex ${1:-1} - 2 | grep .; } \
@@ -221,87 +214,53 @@ printouts() {
 #set -o errexit
 #set -o pipefail
 #set +o pipefail
-tx=$(head -1 $l | grep .) || myexit 1 "main loop tx issue"
-tx=${1:-$tx}
-txid=${tx%% *}
-
-test "$txid" = "" && myexit 1 "empty TXID"
-echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
 
 gmef=$fdir/sff-gme
 gmep=$fdir/sff-gme.sh
 gtof=$fdir/sff-gtot
 
-hf=$fdir/replnhex
-: > $hf
-grt.sh $txid | safecat.sh $hf
-test -s "$hf" || dothetf
-sertl < $hf
-grep '^03' $hf && myexit 1 "V3 no more"
-
+gengmep() {
 : > $gmep
 : > $gmef
 cd $myp
 gme.sh $txid | safecat.sh $gmef
-depends=$(jq -r .depends[0] < $gmef)
-
-test "$depends" = "null" && {
-  dothetf
-#  myexit 1 "dothetf null"
-#  read -r txid < $sfl
-#  : > $gmef
-#  : > $gmep
-#  cd $myp
-#  gme.sh $txid | safecat.sh $gmef
-#  depends=$(jq -r .depends[0] < $gmef)
-}
-
-dce=$(echo $depends | ce.sh)
-cd $myp/newnew
-bch.sh gettransaction $depends \
-  | grep -m1 '^      "amount": [0-9]' \
-  | tr -d '{} \t",.' \
-  | tr : = \
-  | sed 's/=0\+/=/' \
-  | safecat.sh $gtof
-. $gtof
-value=$amount
-test -s "$gmef" || myexit 1 "missing $gmef"
-#jq -r .spentby[] < $gmef | grep -q . && myexit 1 "FOREIGN CHILD SPEND"
-
 tr -d '{} \t",.' < $gmef \
   | sed '/^depends/,$d' \
   | sed '/^fees/d; $d' | tr : = \
   | sed 's/=0\+/=/' \
   | safecat.sh $gmep
+}
 
-# sets vsize weight time height descendantcount descendantsize
-# ancestorcount ancestorsize wtxid base modified ancestor descendant
-. $gmep
-test "$ancestorcount" = "25" || dothetf
-test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
-
-outsum=$(($value-${base:-0}))
-read -r txid < $sfl
-: > $gmep
-: > $gmef
 dolisto
 
 # was: clean-sff.sh
 tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
 txid=${tx%% *}
+test "$txid" = "" && myexit 1 "empty TXID"
+echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
 
-gme.sh $txid | safecat.sh $gmef
+gengmep
+test -s "$gmef" || myexit 1 "missing $gmef"
+# sets vsize weight time height descendantcount descendantsize
+# ancestorcount ancestorsize wtxid base modified ancestor descendant
+. $gmep
+test "$ancestorcount" = "25" || dothetf
+test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
 
-tr -d '{} \t",.' < $gmef \
-  | sed '/^depends/,$d' \
-  | sed '/^fees/d; $d' | tr : = \
-  | sed 's/=0\+/=/' \
-  | safecat.sh $gmep
-
-. $gmep
+getamount() {
+  cd $wd
+  bch.sh gettransaction $depends \
+    | grep -m1 '^      "amount": [0-9]' \
+    | tr -d '{} \t",.' \
+    | tr : = \
+    | sed 's/=0\+/=/' \
+    | safecat.sh $gtof
+  . $gtof
+  echo $amount
+}
+value=$(getamount)
 outsum=$(($value-${base:-0}))
 
 mkdir -p $fdir/sff-s2
@@ -341,9 +300,6 @@ cat $nusff | sed "s/^/$newh/" | safecat.sh $of
 
 
 dotx() {
-  . /dev/shm/UpdateTip-signet
-  test "$hold" = "$height" || myexit 1 "$hold $height new block in the meantime"
-
   hhasum=$(($outsum + $base - ${max:-0} + $rest))
   echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
   hha=$(hex $hhasum - 16 | ce.sh)
