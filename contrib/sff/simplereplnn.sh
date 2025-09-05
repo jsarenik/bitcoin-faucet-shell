@@ -88,7 +88,7 @@ mylist() {
 
 dolist() {
   cd $wd
-  mylist | grep -v " false$" | sort -rn -k3
+  mylist | grep " true$" | sort -rn -k3
   cd $myp
 }
 
@@ -163,9 +163,14 @@ cp $list $prev
 rm -rf ${tmpc}* > /dev/null
 }
 
+isnewb() {
+  cd $wd
+  mylist | grep ' [^0]+ true$'
+}
+
 ##############################
 ### from blocknotify-signet.sh
-rmdir $fdir/sffnewblock 2>/dev/null && {
+isnewb && {
 d=$fdir/sffrest
 mkdir -p $d
 mymv $fdir/sff $d
