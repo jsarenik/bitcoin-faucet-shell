@@ -140,6 +140,7 @@ do
   grep -q . $sfl || break
   cp $l $lpr
 done
+myexit 1 dothetf
 }
 
 catapultleftovers() {
@@ -234,7 +235,7 @@ gtof=$fdir/sff-gtot
 hf=$fdir/replnhex
 : > $hf
 grt.sh $txid | safecat.sh $hf
-test -s "$hf" || { dothetf; myexit 1 "grt dothetf"; }
+test -s "$hf" || dothetf
 sertl < $hf
 grep '^03' $hf && myexit 1 "V3 no more"
 
@@ -246,7 +247,7 @@ depends=$(jq -r .depends[0] < $gmef)
 
 test "$depends" = "null" && {
   dothetf
-  myexit 1 "dothetf null"
+#  myexit 1 "dothetf null"
 #  read -r txid < $sfl
 #  : > $gmef
 #  : > $gmep
@@ -277,7 +278,7 @@ tr -d '{} \t",.' < $gmef \
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
-test "$ancestorcount" = "25" || { dothetf; myexit 1 dothetfIII; }
+test "$ancestorcount" = "25" || dothetf
 test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 
 outsum=$(($value-${base:-0}))
