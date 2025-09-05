@@ -171,6 +171,7 @@ isnewb() {
 ##############################
 ### from blocknotify-signet.sh
 isnewb && {
+rmdir $fdir/sffnewblock
 d=$fdir/sffrest
 mkdir -p $d
 mymv $fdir/sff $d
@@ -245,7 +246,7 @@ test "$txid" = "" && myexit 1 "empty TXID"
 echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
 
 gengmep
-test -s "$gmef" || myexit 1 "missing $gmef"
+test -s "$gmef" || dothetf
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
