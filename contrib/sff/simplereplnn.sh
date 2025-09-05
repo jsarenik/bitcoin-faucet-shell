@@ -22,6 +22,8 @@ shf=$fdir/sffhex
 phf=$fdir/sffphf
 pkf=$fdir/sffpkf
 myp=$sdi/wallets
+net=$(cd $myp; hnet.sh)
+wd=$myp/newnew
 dent=tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4
 otra=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
 xdna=tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn
@@ -137,6 +139,31 @@ do
 done
 }
 
+catapultleftovers() {
+  cd $wd
+
+tmpc=$(mktemp /dev/shm/catapultleft-$net-XXXXXX) || exit 1
+prev=/dev/shm/previosleftovers-$net
+list=$tmpc
+lh=${list}-hex
+
+: > $list
+list.sh | grep " 0 false$" | safecat.sh $list
+cat $list | awk '{print $1}' | safecat.sh ${list}-grep
+test -s $list && {
+num=$(wc -l < $list)
+cd $wd
+
+cat $list | awk '($3<=0.01){print $1, $2, $3}' | while read txid vout amount rest; do
+ echo $txid $vout $amount >&2
+ echo $txid $vout $amount | awklist-allfee.sh \
+  | mktx.sh | crt.sh | srt.sh | sert.sh
+done
+}
+cp $list $prev
+rm -rf ${tmpc}* > /dev/null
+}
+
 ##############################
 ### from blocknotify-signet.sh
 rmdir $fdir/sffnewblock 2>/dev/null && {
@@ -165,7 +192,7 @@ dothetf
 
 
 cd $myp
-signetcatapultleftovers.sh
+catapultleftovers
 
 test -d $fdir/sffnewblock && myexit 1 "new block again"
 
