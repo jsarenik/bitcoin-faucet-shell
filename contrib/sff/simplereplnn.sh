@@ -72,10 +72,13 @@ myexit() {
   exit $ret
 }
 
+# Early checks
+
+## Is bitcoind talking RPC to us (from the wallet dir)?
 cd $myp
 bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 
-# are we online?
+## are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
 mylist() {
