@@ -86,17 +86,30 @@ mylist() {
     | paste -d " " - - - - -
 }
 
+doinit() {
+  cd $wd
+  mylist | grep -v " 0 [tf][a-z]\+$" | grep " true$" | sort -rn -k3
+  cd $myp
+}
+
+doinito() {
+  : > $l
+  doinit | safecat.sh $l
+}
+
 dolist() {
   cd $wd
-  mylist | grep " true$" | sort -rn -k3
+  mylist | grep " 0 true$" | sort -rn -k3
   cd $myp
 }
 
 dolisto() {
+  : > $l
   dolist | safecat.sh $l
 }
 
 dothetf() {
+isnewb || myexit 1 "isnewb in dothetf"
 dolisto
 
 lpr=$fdir/l123p
@@ -147,8 +160,8 @@ list=$tmpc
 lh=${list}-hex
 
 : > $list
-list.sh | grep " 0 false$" | safecat.sh $list
-cat $list | awk '{print $1}' | safecat.sh ${list}-grep
+cd $wd
+mylist | grep " 0 false$" | safecat.sh $list
 test -s $list && {
 num=$(wc -l < $list)
 cd $wd
@@ -171,39 +184,38 @@ isnewb() {
 ##############################
 ### from blocknotify-signet.sh
 isnewb && {
-rmdir $fdir/sffnewblock
-d=$fdir/sffrest
-mkdir -p $d
-mymv $fdir/sff $d
+  rmdir $fdir/sffnewblock
+  d=$fdir/sffrest
+  mkdir -p $d
+  mymv $fdir/sff $d
 
-dolisto
+  doinito
 
-# was: clean-sff.sh
-tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
-txid=${tx%% *}
-cd $wd
+  # was: clean-sff.sh
+  tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
+  txid=${tx%% *}
+  cd $wd
   bch.sh gettransaction $txid | jq -r .details[].address \
     | sort -u | safecat.sh $fdir/sffgt
-cd $myp
-rm -rf $fdir/sff-s3/0*
-rm -rf $fdir/_toomany
-d=$fdir/sffrest
-cd $d
-mymv $fdir/sff-s2 $fdir/sff-s3 $d
+  cd $myp
+  rm -rf $fdir/sff-s3/0*
+  rm -rf $fdir/_toomany
+  d=$fdir/sffrest
+  cd $d
+  mymv $fdir/sff-s2 $fdir/sff-s3 $d
   cat $fdir/sffgt | xargs rm -rf
+  : > $fdir/sffgt
 
-dothetf
+  dothetf
 
+  cd $myp
+  catapultleftovers
 
+  test -d $fdir/sffnewblock && myexit 1 "new block again"
 
-cd $myp
-catapultleftovers
-
-test -d $fdir/sffnewblock && myexit 1 "new block again"
-
-d=$fdir/sffrest
-mymv $fdir/sff $d
-cd $d
+  d=$fdir/sffrest
+  mymv $fdir/sff $d
+  cd $d
   ls -1 "$d" \
     | head -n 1800 | xargs mv -t $fdir/sff
 }
@@ -226,15 +238,15 @@ gmep=$fdir/sff-gme.sh
 gtof=$fdir/sff-gtot
 
 gengmep() {
-: > $gmep
-: > $gmef
-cd $myp
-gme.sh $txid | safecat.sh $gmef
-tr -d '{} \t",.' < $gmef \
-  | sed '/^depends/,$d' \
-  | sed '/^fees/d; $d' | tr : = \
-  | sed 's/=0\+/=/' \
-  | safecat.sh $gmep
+  : > $gmep
+  : > $gmef
+  cd $myp
+  gme.sh $txid | safecat.sh $gmef
+  tr -d '{} \t",.' < $gmef \
+    | sed '/^depends/,$d' \
+    | sed '/^fees/d; $d' | tr : = \
+    | sed 's/=0\+/=/' \
+    | safecat.sh $gmep
 }
 
 dolisto
