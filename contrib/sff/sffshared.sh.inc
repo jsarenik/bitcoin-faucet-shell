@@ -28,3 +28,4 @@ feea=tb1pfees9rn5nz
 gmef=$fdir/sff-gme
 gmep=$fdir/sff-gme.sh
 gtof=$fdir/sff-gtot
+lpr=$fdir/l123p

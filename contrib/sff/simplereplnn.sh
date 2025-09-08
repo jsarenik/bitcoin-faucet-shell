@@ -1,73 +1,9 @@
 #!/bin/sh
 a="/$0"; a="${a%/*}"; a="${a:-.}"; a="${a##/}/"; BINDIR=$(cd "$a" || true; pwd)
+. $BINDIR/sffshared.sh.inc
+. $BINDIR/sffunk.sh.inc
 
-hashe=$(sha256sum $0 | cut -b 57-64)
-
-test "$1" = "-c" && { conf=$2; shift 2; }
-test "$conf" = "" || . $conf
-fdir=${fdir:-/tmp}
-sdi=${sdi:-$HOME/.bitcoin/signet}
-
-lock=$fdir/locksff
-mkdir $lock || exit 1
-
-signetfaucet.sh -n
-#gmm-gen.sh is in blocknotify-signet.sh now
-
-l=$fdir/mylist
-errf=$fdir/sff-err
-nusff=$fdir/nosff
-sfl=$fdir/sfflast
-shf=$fdir/sffhex
-phf=$fdir/sffphf
-pkf=$fdir/sffpkf
-myp=$sdi/wallets
-net=$(cd $myp; hnet.sh)
-wd=$myp/newnew
-dent=tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4
-otra=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
-xdna=tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn
-feea=tb1pfees9rn5nz
-
-mymv() {
-  all=$*
-  last=${all##* }
-  from=${all% *}
-  from=${from:-/dev/null}
-  to=${last:-/dev/null}
-  find $from -maxdepth 1 -type f \
-    | xargs mv -t $to 2>/dev/null
-}
-
-sertl() {
-  : > $errf
-  : > $sfl
-  {
-  cat
-  echo 0.21
-  } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
-      2>$errf >$sfl
-}
-
-myexit() {
-  ret=${1:-$?}
-  d=$fdir/sffrest
-  #test -s $sfl && cat $sfl
-  test "$ret" = "0" && {
-    mymv $fdir/sff $fdir/sff-s2
-  } || {
-    mymv $fdir/sff $fdir/sffrest
-  }
-  mymv $fdir/sff-s2 $fdir/sff-s3
-  ls -1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
-  myrest=$(ls -1 $fdir/sffrest/ | wc -l)
-  myst=$(ls -1 $fdir/sff-s3/ | wc -l)
-  echo rest $myrest stage3 $myst >&2
-
-  echo ${2:-"SUCCESS $ret"} >&2
-  rmdir $lock 2>/dev/null
-  exit $ret
-}
+hashe="76$(sha256sum $0 | cut -b 59-64)"
 
 # Early checks
 
@@ -78,58 +14,16 @@ bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 ## are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
-mylist() {
-  bch.sh listunspent ${1:-0} \
-    | grep -w -e txid -e vout -e amount -e confirmations -e safe \
-    | tr -d ' ,"' \
-    | cut -d: -f2 \
-    | paste -d " " - - - - -
-}
-
-doinit() {
-  cd $wd
-  mylist | grep -v " 0 [tf][a-z]\+$" | grep " true$" | sort -rn -k3
-  cd $myp
-}
-
-doinito() {
-  : > $l
-  doinit | safecat.sh $l
-}
-
-dolist() {
-  cd $wd
-  mylist | grep " 0 true$" | sort -rn -k3
-  cd $myp
-}
-
-dolisto() {
-  : > $l
-  dolist | safecat.sh $l
-}
-
+### ############# DO THE 25 ###################
+###
+### do the chain of 25-in-mempool transactions
+###
+### ###########################################
 dothetf() {
-isnewb || myexit 1 "isnewb in dothetf"
-dolisto
+isoldb || myexit 1 "isoldb in dothetf"
 
-lpr=$fdir/l123p
-rm -rf $lpr
-cd $wd
-  fee=$(awklist-all.sh -d $otra < $l \
-    | mktx.sh | crt.sh | srt.sh | fee.sh)
-  echo $fee > $fdir/fee
-  awklist-all.sh -f $fee -d $otra < $l  \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf
-  read -r last < $sfl
-
-until
-  dolist | grep -q "^$last"
-do
-  usleep 21
-done
-
-for i in $(seq 25)
+: > $lpr
+for i in $(seq ${1:-25})
 do
   test -s "$lpr" && {
   until
@@ -151,39 +45,9 @@ done
 myexit 1 dothetf
 }
 
-catapultleftovers() {
-  cd $wd
-
-tmpc=$(mktemp /dev/shm/catapultleft-$net-XXXXXX) || exit 1
-prev=/dev/shm/previosleftovers-$net
-list=$tmpc
-lh=${list}-hex
-
-: > $list
-cd $wd
-mylist | grep " 0 false$" | safecat.sh $list
-test -s $list && {
-num=$(wc -l < $list)
-cd $wd
-
-cat $list | awk '($3<=0.01){print $1, $2, $3}' | while read txid vout amount rest; do
- echo $txid $vout $amount >&2
- echo $txid $vout $amount | awklist-allfee.sh \
-  | mktx.sh | crt.sh | srt.sh | sert.sh
-done
-}
-cp $list $prev
-rm -rf ${tmpc}* > /dev/null
-}
-
-isnewb() {
-  cd $wd
-  mylist | grep ' [^0]+ true$'
-}
-
 ##############################
 ### from blocknotify-signet.sh
-isnewb && {
+isoldb || {
   rmdir $fdir/sffnewblock
   d=$fdir/sffrest
   mkdir -p $d
@@ -191,10 +55,10 @@ isnewb && {
 
   doinito
 
-  # was: clean-sff.sh
   tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
   txid=${tx%% *}
   cd $wd
+  : > $fdir/sffgt
   bch.sh gettransaction $txid | jq -r .details[].address \
     | sort -u | safecat.sh $fdir/sffgt
   cd $myp
@@ -204,7 +68,28 @@ isnewb && {
   cd $d
   mymv $fdir/sff-s2 $fdir/sff-s3 $d
   cat $fdir/sffgt | xargs rm -rf
-  : > $fdir/sffgt
+
+  cd $wd
+  feenit=$(awklist-all.sh -d $dent < $l \
+    | mktx.sh | crt.sh | srt.sh | fee.sh)
+  awklist-all.sh -f $feenit -d $dent < $l  \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  sertl <$shf
+  read -r txid < $sfl
+
+  dolisto
+
+  lpr=$fdir/l123p
+  rm -rf $lpr
+
+  cd $wd
+  fee=$(awklist-all.sh -d $otra < $l \
+    | mktx.sh | crt.sh | srt.sh | fee.sh)
+  echo $fee > $fdir/fee
+  awklist-all.sh -f $fee -d $otra < $l  \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  sertl <$shf
+  read -r last < $sfl
 
   dothetf
 
@@ -218,36 +103,11 @@ isnewb && {
   cd $d
   ls -1 "$d" \
     | head -n 1800 | xargs mv -t $fdir/sff
+  myexit 1 "isoldb end"
 }
 ##############################
 ##############################
 ##############################
-
-printouts() {
-  test ${1:-1} -lt 252 \
-    && { hex ${1:-1} - 2 | grep .; } \
-    || { printf "fd"; hex ${1:-1} - 4 | ce.sh; }
-}
-
-#set -o errexit
-#set -o pipefail
-#set +o pipefail
-
-gmef=$fdir/sff-gme
-gmep=$fdir/sff-gme.sh
-gtof=$fdir/sff-gtot
-
-gengmep() {
-  : > $gmep
-  : > $gmef
-  cd $myp
-  gme.sh $txid | safecat.sh $gmef
-  tr -d '{} \t",.' < $gmef \
-    | sed '/^depends/,$d' \
-    | sed '/^fees/d; $d' | tr : = \
-    | sed 's/=0\+/=/' \
-    | safecat.sh $gmep
-}
 
 dolisto
 
@@ -262,22 +122,11 @@ test -s "$gmef" || dothetf
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
-test "$ancestorcount" = "25" || dothetf
+test "$ancestorcount" = "25" || dothetf $((25-$ancestorcount))
 test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
 
-getamount() {
-  cd $wd
-  bch.sh gettransaction $depends \
-    | grep -m1 '^      "amount": [0-9]' \
-    | tr -d '{} \t",.' \
-    | tr : = \
-    | sed 's/=0\+/=/' \
-    | safecat.sh $gtof
-  . $gtof
-  echo $amount
-}
 value=$(getamount)
 outsum=$(($value-${base:-0}))
 
@@ -303,6 +152,7 @@ find $fdir/sff/ $fdir/sff-s2/ $fdir/sff-s3/ -mindepth 1 -type f 2>/dev/null \
   | safecat.sh $nusff
 
 newouts=$(wc -l < $nusff)
+echo $newouts | safecat.sh $fdir/newouts
 test "$newouts" -ne "0" || myexit 1 "no new outputs"
 max=$(cat $l | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
@@ -315,56 +165,6 @@ rest=$(($max-$new*$newouts))
 of=$fdir/sff-outs
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
 cat $nusff | sed "s/^/$newh/" | safecat.sh $of
-
-
-dotx() {
-  hhasum=$(($outsum + $base - ${max:-0} + $rest))
-  echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
-  hha=$(hex $hhasum - 16 | ce.sh)
-  echo 0200000001${dce}0000000000fdffffff
-  printouts $((2+$newouts))
-  echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
-  msg=$(printf "alt.signetfaucet.com | %4d | " $newouts | xxd -p)
-  msg="${msg}$hashe"
-  lend=$((${#msg}/2))
-  len=$(printf "%02x" $lend)
-  leno=$(printf "%02x" $(($lend+2)))
-  echo 0000000000000000 $leno 6a$len $msg
-  cat $of
-  hex $height - 8 | ce.sh
-}
-
-feer() {
-  # Fee-rate $abs_sats_fee $divisor_vsize
-  mysats=$1
-  mydiv=$2
-  fr=$(((1000*$mysats+$mydiv-1)/$mydiv))
-  echo $fr
-}
-
-feerl() {
-  # Fee-rate (low end) $abs_sats_fee $divisor_vsize
-  mysats=$1
-  mydiv=${2:-100}
-  fr=$((1000*$mysats/$mydiv))
-  echo $fr
-}
-
-sats() {
-  # Absolute_sats_fee $feer $divisor_vsize
-  myfeer=$1
-  mydiv=$2
-  out=$(( (($myfeer*$mydiv)+999)/1000 ))
-  echo $out
-}
-
-satsl() {
-  # Absolute_sats_fee (low end) $feer $divisor_vsize
-  myfeer=$1
-  mydiv=$2
-  out=$(($myfeer*$mydiv/1000))
-  echo $out
-}
 
 ########################################################
 ########################################################
@@ -399,6 +199,7 @@ sats=$(( $base + $vsizenew ))
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test $feer -lt $ofeer && {
     sats=$(sats $(($ofeer+1)) $vsizenew)
+    feer=$(feer $sats $vsizenew)
   }
 dvs=$sats
 
@@ -422,8 +223,7 @@ dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 sertl <$shf
 ret=$?
-echo feer4 $feer sats $sats >&2
-echo ofeer $ofeer feer $feer >&2
+echo ofeer $ofeer feer4 $feer sats $sats >&2
 echo max $max fee-rate $feer base $base vsize $vsizenew >&2
 
 myexit $ret "finn"

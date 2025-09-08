@@ -10,18 +10,17 @@ mymv() {
 
 sertl() {
   : > $errf
-  : > $sfl
   {
   cat
   echo 0.21
   } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
-      2>$errf >$sfl
+      2>$errf | safecat.sh $sfl
 }
 
 myexit() {
   ret=${1:-$?}
   d=$fdir/sffrest
-  #test -s $sfl && cat $sfl
+  test -s $sfl && cat $sfl
   test "$ret" = "0" && {
     mymv $fdir/sff $fdir/sff-s2
   } || {
@@ -72,26 +71,21 @@ dolisto() {
 catapultleftovers() {
   cd $wd
 
-tmpc=$(mktemp /dev/shm/catapultleft-$net-XXXXXX) || exit 1
-prev=/dev/shm/previosleftovers-$net
-list=$tmpc
-lh=${list}-hex
+  tmpc=$(mktemp /dev/shm/catapultleft-$net-XXXXXX) || exit 1
+  list=$tmpc
+  lh=${list}-hex
 
-: > $list
-cd $wd
-mylist | grep " 0 false$" | safecat.sh $list
-test -s $list && {
-num=$(wc -l < $list)
-cd $wd
+  : > $list
+  cd $wd
+  mylist | grep " 0 false$" | safecat.sh $list
+  test -s $list || return
+  num=$(wc -l < $list)
+  cd $wd
 
-cat $list | awk '($3<=0.01){print $1, $2, $3}' | while read txid vout amount rest; do
- echo $txid $vout $amount >&2
- echo $txid $vout $amount | awklist-allfee.sh \
-  | mktx.sh | crt.sh | srt.sh | sert.sh
-done
-}
-cp $list $prev
-rm -rf ${tmpc}* > /dev/null
+  cat $list | awk '($3<=0.01){print $1, $2, $3}' \
+    | awklist-allfee.sh \
+    | mktx.sh | crt.sh | srt.sh | sert.sh
+  rm -rf ${tmpc}* > /dev/null
 }
 
 isnewb() {
