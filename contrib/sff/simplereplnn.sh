@@ -70,9 +70,9 @@ isoldb || {
   cat $fdir/sffgt | xargs rm -rf
 
   cd $wd
-  feenit=$(awklist-all.sh -d $dent < $l \
+  feenit=$(awklist-all.sh -d $otra < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $feenit -d $dent < $l  \
+  awklist-all.sh -f $feenit -d $otra < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r txid < $sfl
