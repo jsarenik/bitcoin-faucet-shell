@@ -3,21 +3,26 @@
 ### async now
 # was mkdir /tmp/signetfaucet || exit 1
 
+test "$1" = "-c" && { conf=$2; shift 2; }
+test "$conf" = "" || . $conf
+fdir=${fdir:-/tmp}
+sdi=${sdi:-$HOME/.bitcoin/signet}
+
 faucetaddr=tb1pupx8xare6jwl87nu058lc4ckqrrd3ugd9q6czxz9my8c49s085pq54ayff 
 faucetaddr=tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4
 faucetaddr=tb1qg3lau83hm9e9tdvzr5k7aqtw3uv0dwkfct4xdn
 
-mkdir -p /tmp/sff /tmp/sff-s2 /tmp/sff-s3 /tmp/sffrest
+mkdir -p $fdir/sff $fdir/sff-s2 $fdir/sff-s3 $fdir/sffrest
 addr=${1:-$faucetaddr}
-test -r /tmp/sff/$addr && { echo $addr; exit; }
+test -r $fdir/sff/$addr && { echo $addr; exit; }
 
-sfs=/tmp/sff-sfs # sff-flag-slowdown
-sfm=/tmp/sff-sfm # max
-sfo=/tmp/sff-sfo # overall
+sfs=$fdir/sff-sfs # sff-flag-slowdown
+sfm=$fdir/sff-sfm # max
+sfo=$fdir/sff-sfo # overall
 sfsn=2016
 sfsm=4032
 sfso=6079
-newouts=$(find /tmp/sff /tmp/sff-s2 /tmp/sff-s3 /tmp/sffrest -mindepth 1 -type f | wc -l)
+read -r newouts < $fdir/newouts
 test $newouts -gt $sfsn && mkdir -p $sfs || rm -rf $sfs
 test $newouts -gt $sfsm && mkdir -p $sfm || rm -rf $sfm
 test $newouts -gt $sfso && mkdir -p $sfo || rm -rf $sfo
@@ -34,7 +39,7 @@ echo $addr | grep -Eq '^[0-9a-f]+$' && {
     || exit 1
   kl=$(printf "%02x" $((${#addr}/2)) )
   klp=$(printf "%02x" $((0x$kl+2)) )
-  echo "$klp ${kl}${addr}ac" | safecat.sh /tmp/sffrest/$addr
+  echo "$klp ${kl}${addr}ac" | safecat.sh $fdir/sffrest/$addr
   echo $addr
   exit 0
 }
@@ -44,9 +49,9 @@ cd $HOME/.bitcoin/signet/wallets/ae
 spk=$(hh.sh address inspect ${addr} \
   | grep -m1 '^    "hex": ' \
   | cut -d: -f2 | tr -d ' ",' | grep .) \
-  && { echo "$(hex $((${#spk}/2)) - 2) $spk" | safecat.sh /tmp/sffrest/$addr; }
+  && { echo "$(hex $((${#spk}/2)) - 2) $spk" | safecat.sh $fdir/sffrest/$addr; }
 
 # Just a historical lock, make sure it's not there
-rmdir /tmp/signetfaucet 2>/dev/null || true
+rmdir $fdir/signetfaucet 2>/dev/null || true
 
 echo $addr
