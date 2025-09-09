@@ -188,14 +188,16 @@ function fillburger() {
   }
 }
 
+  var x = "";
+  if (window.location.hash) {
+    x = window.location.hash.match(/([0-9a-zA-Z]+)/)[1];
+  }
   const queryString = window.location.search;
   //console.log(queryString);
   // ?product=troussers&color=black&newuser&size=s
   const urlParams = new URLSearchParams(queryString);
   if (urlParams.has('x'))
     var x = urlParams.get('x');
-  else
-    var x = "";
   if (x){
     let addressel = document.getElementById('address');
     addressel.focus();
