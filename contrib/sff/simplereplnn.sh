@@ -109,6 +109,13 @@ isoldb || {
 ##############################
 ##############################
 
+skipround() {
+  # quickfix
+  cd $wd
+  mylist | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sertl
+  cd $myp
+}
+
 dolisto
 
 # was: clean-sff.sh
@@ -122,7 +129,17 @@ test -s "$gmef" || dothetf
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
-test "$ancestorcount" = "25" || dothetf $((25-$ancestorcount))
+test "$ancestorcount" = "25" || {
+  if
+    test "$ancestorcount" = "1"
+  then
+    dothetf $((25-$ancestorcount))
+  else
+    skipround
+    myexit 1 skipround
+  fi
+}
+test "$descendantcount" = "1" || myexit 1 "descendantcount"
 test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
@@ -153,7 +170,6 @@ find $fdir/sff/ $fdir/sff-s2/ $fdir/sff-s3/ -mindepth 1 -type f 2>/dev/null \
 
 newouts=$(wc -l < $nusff)
 echo $newouts | safecat.sh $fdir/newouts
-test "$newouts" -ne "0" || myexit 1 "no new outputs"
 max=$(cat $l | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
 test $max -gt 330 || myexit 1 "low max $max"
