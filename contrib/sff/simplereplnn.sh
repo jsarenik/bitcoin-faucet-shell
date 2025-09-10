@@ -45,6 +45,22 @@ done
 myexit 1 dothetf
 }
 
+cleanupr() {
+  intx=$1
+
+  : > $fdir/sffgt
+  cd $wd
+  bch.sh gettransaction $intx | jq -r .details[].address \
+    | sort -u | safecat.sh $fdir/sffgt
+  cd $myp
+  rm -rf $fdir/sff-s3/0*
+  rm -rf $fdir/_toomany
+  d=$fdir/sffrest
+  cd $d
+  mymv $fdir/sff-s2 $fdir/sff-s3 $d
+  cat $fdir/sffgt | xargs rm -rf
+}
+
 ##############################
 ### from blocknotify-signet.sh
 isoldb || {
@@ -55,19 +71,10 @@ isoldb || {
 
   doinito
 
-  tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
+  tx=$(cat $l | head -1 | grep .) || myexit 1 "isoldb newblock tx"
   txid=${tx%% *}
-  cd $wd
-  : > $fdir/sffgt
-  bch.sh gettransaction $txid | jq -r .details[].address \
-    | sort -u | safecat.sh $fdir/sffgt
-  cd $myp
-  rm -rf $fdir/sff-s3/0*
-  rm -rf $fdir/_toomany
-  d=$fdir/sffrest
-  cd $d
-  mymv $fdir/sff-s2 $fdir/sff-s3 $d
-  cat $fdir/sffgt | xargs rm -rf
+
+  cleanupr $txid
 
   cd $wd
   feenit=$(awklist-all.sh -d $otra < $l \
@@ -111,6 +118,13 @@ isoldb || {
 
 skipround() {
   # quickfix
+  dolisto
+
+  tx=$(cat $l | head -1 | grep .) || myexit 1 "skipround newblock tx"
+  txid=${tx%% *}
+
+  cleanupr $txid
+
   cd $wd
   mylist | grep " 0 true$" | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sertl
   cd $myp
