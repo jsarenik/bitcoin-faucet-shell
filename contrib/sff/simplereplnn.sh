@@ -112,7 +112,7 @@ isoldb || {
 skipround() {
   # quickfix
   cd $wd
-  mylist | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sertl
+  mylist | grep " 0 true$" | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sertl
   cd $myp
 }
 
