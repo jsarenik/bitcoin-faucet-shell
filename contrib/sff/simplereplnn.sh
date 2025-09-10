@@ -51,7 +51,7 @@ cleanupr() {
   : > $fdir/sffgt
   cd $wd
   bch.sh gettransaction $intx | jq -r .details[].address \
-    | sort -u | safecat.sh $fdir/sffgt
+    | safecat.sh $fdir/sffgt
   cd $myp
   rm -rf $fdir/sff-s3/0*
   rm -rf $fdir/_toomany
