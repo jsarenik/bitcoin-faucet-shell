@@ -62,11 +62,7 @@ cd ..
 old=$(readlink newnew) || old=/dev/null
 tmpo=/dev/shm/wallets-$net/$old
 test -d $old && {
-cd $old
-list.sh | grep " 0 true" \
-  || list.sh | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sert.sh
-cd ..
-du -hs $old/
+  du -hs $old/
 }
 
 ln -nsf $neww newnew
@@ -74,10 +70,6 @@ du -hs newnew/
 
 cd $old || rm -rf "$tmpo"
 ulw.sh && cd .. && rm -rfv "$old"
-
-#fee=$(list.sh | awklist-all.sh -f 111 | mktx.sh | crt.sh | srt.sh | fee.sh 1)
-#list.sh | awklist-all.sh -f $fee | mktx.sh | crt.sh | srt.sh | sert.sh
-#bch.sh unloadwallet && cd .. && rm -rf $neww
 
 #echo old was $tmpo
 test -d "$tmpo" && rm -rf "$tmpo"
