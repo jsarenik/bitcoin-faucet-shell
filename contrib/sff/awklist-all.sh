@@ -13,7 +13,7 @@ gmm=${gmm:-1000}
 #gmm=$(($gmm*4))
 #test $gmm -gt 5000 && gmm=5000
 #feerate=$(($gmm*42/3))
-feerate=$(($gmm*16/13))
+feerate=$(($gmm*2*16/13))
 test "$1" = "-f" && { vsize=$2; shift 2; }
 test "$1" = "-fr" && { feerate=$gmm; shift; }
 test "$1" = "-fm" && { feerate=1000; shift; }
