@@ -21,9 +21,8 @@ Faucet's advantage are:
 
  1. the use of [Cloudflare Turnstile](
 https://cloudflare.com/application-services/products/turnstile/)
- 2. the
-use of 25-long in-mempool chain of transactions which helps to keep
-the balance big enough with a buffer
+ 2. the use of 25-long in-mempool chain of transactions which helps
+to keep the balance big enough with a buffer
  3. wallet refreshing which makes
 sure the wallet of the faucet is very small and fast.
 
