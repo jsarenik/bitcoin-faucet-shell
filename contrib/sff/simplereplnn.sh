@@ -126,7 +126,7 @@ skipround() {
   cleanupr $txid
 
   cd $wd
-  mylist | grep " 0 true$" | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sertl
+  mylist | grep " 0 true$" | awklist-all.sh -f 500 | mktx.sh | crt.sh | srt.sh | sertl
   cd $myp
 }
 
