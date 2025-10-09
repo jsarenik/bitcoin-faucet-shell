@@ -110,6 +110,13 @@ txid=${tx%% *}
 test "$txid" = "" && myexit 1 "empty TXID"
 echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
 
+gengmep
+test -s "$gmep" || myexit 1 "missing gmep"
+# sets vsize weight time height descendantcount descendantsize
+# ancestorcount ancestorsize wtxid base modified ancestor descendant
+. $gmep
+test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
+
 test "$ancestorcount" = "25" || {
   cleanupr $txid
   skipround
@@ -122,13 +129,6 @@ test "$ancestorcount" = "25" || {
   test -s "$gmep" || myexit 1 "missing gmep II"
   . $gmep
 }
-
-gengmep
-test -s "$gmep" || myexit 1 "missing gmep"
-# sets vsize weight time height descendantcount descendantsize
-# ancestorcount ancestorsize wtxid base modified ancestor descendant
-. $gmep
-test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
