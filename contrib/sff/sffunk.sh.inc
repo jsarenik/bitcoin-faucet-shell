@@ -117,9 +117,8 @@ gengmep() {
 }
 
 getamount() {
-  gatx=${1:-$depends}
   cd $wd
-  bch.sh gettransaction $gatx \
+  bch.sh gettransaction $depends \
     | grep -m1 '^      "amount": [0-9]' \
     | tr -d '{} \t",.' \
     | tr : = \

@@ -14,6 +14,37 @@ bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 ## are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
+### ############# DO THE 25 ###################
+###
+### do the chain of 25-in-mempool transactions
+###
+### ###########################################
+dothetf() {
+isoldb || myexit 1 "isoldb in dothetf"
+
+: > $lpr
+for i in $(seq ${1:-25})
+do
+  test -s "$lpr" && {
+  until
+    dolisto
+    ! cmp $l $lpr
+  do
+    usleep 21
+  done
+  }
+  cd $wd
+  fee=$(awklist-all.sh -d $otra < $l \
+    | mktx.sh | crt.sh | srt.sh | fee.sh)
+  awklist-all.sh -f $fee -d $otra < $l  \
+    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  sertl <$shf
+  grep -q . $sfl || break
+  cp $l $lpr
+done
+myexit 1 dothetf
+}
+
 cleanupr() {
   intx=$1
 
@@ -67,6 +98,8 @@ isoldb || {
   sertl <$shf
   read -r last < $sfl
 
+  dothetf
+
   cd $myp
   catapultleftovers
 
@@ -92,13 +125,8 @@ skipround() {
 
   cleanupr $txid
 
-  dolisto
   cd $wd
-  fee=$(awklist-all.sh -d $dent < $l \
-    | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -d $dent < $l  \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf
+  mylist | grep " 0 true$" | awklist-all.sh -f 50000 | mktx.sh | crt.sh | srt.sh | sertl
   cd $myp
 }
 
@@ -111,27 +139,26 @@ test "$txid" = "" && myexit 1 "empty TXID"
 echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
 
 gengmep
-test -s "$gmep" || myexit 1 "missing gmep"
+test -s "$gmef" || dothetf
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
-test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
-
 test "$ancestorcount" = "25" || {
-  skipround
-
-  dolisto
-  gengmep
-  test -s "$gmep" || myexit 1 "missing gmep II"
-  . $gmep
-  tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
-  txid=${tx%% *}
+  if
+    test "$ancestorcount" = "1"
+  then
+    dothetf $((25-$ancestorcount))
+  else
+    test "$ancestorcount" -lt "24" && skipround
+    myexit 1 skipround
+  fi
 }
-
+test "$descendantcount" = "1" || myexit 1 "descendantcount"
+test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
 
-value=$(getamount $txid)
+value=$(getamount)
 outsum=$(($value-${base:-0}))
 
 mkdir -p $fdir/sff-s2
