@@ -118,25 +118,20 @@ test -s "$gmep" || myexit 1 "missing gmep"
 test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 
 test "$ancestorcount" = "25" || {
-  cleanupr $txid
   skipround
 
   dolisto
-
-  tx=$(cat $l | head -1 | grep .) # || myexit 1 "skipround newblock tx"
-  txid=${tx%% *}
   gengmep
   test -s "$gmep" || myexit 1 "missing gmep II"
   . $gmep
+  tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
+  txid=${tx%% *}
 }
 
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
 
-#depends=$txid
-#dce=$(echo $depends | ce.sh)
-
-value=$(getamount)
+value=$(getamount $txid)
 outsum=$(($value-${base:-0}))
 
 mkdir -p $fdir/sff-s2
