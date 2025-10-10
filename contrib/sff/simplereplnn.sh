@@ -108,8 +108,6 @@ dolisto() {
 }
 
 catapultleftovers() {
-  cd $wd
-
   tmpc=$(mktemp /dev/shm/catapultleft-$net-XXXXXX) || exit 1
   list=$tmpc
   lh=${list}-hex
