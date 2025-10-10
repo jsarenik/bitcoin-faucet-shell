@@ -5,7 +5,7 @@ a="/$0"; a="${a%/*}"; a="${a:-.}"; a="${a##/}/"; BINDIR=$(cd "$a" || true; pwd)
 
 # optional configuration file (see signetfaucet.conf)
 test "$1" = "-c" && { conf=$2; shift 2; }
-test "$conf" = "" || . $conf
+test "$conf" = "" || { test -r $conf && . $conf; }
 fdir=${fdir:-/tmp}
 sdi=${sdi:-$HOME/.bitcoin/signet}
 
