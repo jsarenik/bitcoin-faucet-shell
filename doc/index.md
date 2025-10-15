@@ -41,7 +41,7 @@ the current overall number of requests reaches 2016 given the address
 used is not the same as in previous requests inside the same payout batch.
 
 Example: One asks the faucet to send sats to [tb1pfees9rn5nz](
-https://signet257.bublina.eu.org/?x=tb1pfees9rn5nz) once and the transaction
+https://alt.signetfaucet.com/#tb1pfees9rn5nz) once and the transaction
 will be added to the main faucet payout transaction in about 30 seconds,
 but on another request to the same address there could be two outputs for
 a while but that's the biggest number of payouts to the same address ever
