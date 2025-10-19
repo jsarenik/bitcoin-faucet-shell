@@ -2,10 +2,11 @@
 
 HOME=/home/nsm
 cd $HOME/.bitcoin/signet/wallets
-#ls /tmp/sff | grep -q . \
-#  && {
+for rep in $(seq 180)
+do
   ash repltotal.sh
   date -u
-#  }
-sleep 30
+  sleep 29
+done
+refreshsignetwallets.sh
 exec ash $0
