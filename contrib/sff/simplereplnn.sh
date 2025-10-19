@@ -306,7 +306,7 @@ isoldb || {
   mymv $fdir/sff $d
   cd $d
   ls -1 "$d" \
-    | head -n 1800 | xargs mv -t $fdir/sff
+    | head -n 1800 | xargs mv -t $fdir/sff 2>/dev/null
   myexit 1 "isoldb end"
 }
 ##############################
@@ -370,7 +370,7 @@ d=$fdir/sffrest
 test -d $fdir/_toomany || {
 cd $d
   ls -1 2>/dev/null | head -n $((((98000-$vsize-51)/52)+$randomone)) \
-    | xargs mv -t $fdir/sff/
+    | xargs mv -t $fdir/sff/ 2>/dev/null
 }
 } # ls above
 
