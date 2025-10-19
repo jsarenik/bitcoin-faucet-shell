@@ -12,8 +12,8 @@ myim() {
   }
 }
 
-. $HOME/.testkeys
-dt=/home/nsm/.bitcoin/signet/wallets/pokus202412-dt.txt
+tkf=${tkf:-$HOME/.testkeys}
+test -r $tkf && . $tkf
 
 while
   add=$(date -u +%H%M)
@@ -52,6 +52,7 @@ myim "pk($uncom)"
 myim "sh(pk($uncom))"
 myim "combo($uncom)"
 
+# $dt is set in $tkf
 A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
 bch.sh importdescriptors $A
 . /dev/shm/UpdateTip-signet
