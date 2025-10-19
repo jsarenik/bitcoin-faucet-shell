@@ -190,27 +190,11 @@ feer() {
   echo $fr
 }
 
-feerl() {
-  # Fee-rate (low end) $abs_sats_fee $divisor_vsize
-  mysats=$1
-  mydiv=${2:-100}
-  fr=$((1000*$mysats/$mydiv))
-  echo $fr
-}
-
 sats() {
   # Absolute_sats_fee $feer $divisor_vsize
   myfeer=$1
   mydiv=$2
   out=$(( (($myfeer*$mydiv)+999)/1000 ))
-  echo $out
-}
-
-satsl() {
-  # Absolute_sats_fee (low end) $feer $divisor_vsize
-  myfeer=$1
-  mydiv=$2
-  out=$(($myfeer*$mydiv/1000))
   echo $out
 }
 
