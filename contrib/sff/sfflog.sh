@@ -7,6 +7,8 @@ tail=/tmp/sfflastnew-tail.log
 {
 date -u
 cat /tmp/sfflast
+printf "%d payouts" $(wc -l < /tmp/sff-outs)
+echo
 du -hs /dev/shm/wallets-signet/*
 head -1 /dev/shm/half/bitcoind
 } | safecat.sh $log
