@@ -50,7 +50,7 @@ possible on this faucet.
 
 ## 25-long in-mempool chain
 
-`25` is the default setting for `limitancestorcount` in Bitcoin Core <= 29.0.
+`25` is the default setting for `limitancestorcount` in Bitcoin Core <= 30.0.
 
 This chain of transactions helps with making sure the outputs can not be
 spent until confirmed in a block. Helps with attempts to drain faucet's
