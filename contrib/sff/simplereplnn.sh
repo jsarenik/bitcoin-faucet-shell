@@ -171,7 +171,7 @@ dotx() {
   hha=$(hex $hhasum - 16 | ce.sh)
   echo 0200000001${dce}0000000000fdffffff
 
-  printouts $((2+$newouts))
+  printouts $((2+$newouts)) # increment outputs when enabling more
 
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
 
@@ -182,12 +182,7 @@ dotx() {
   leno=$(printf "%02x" $(($lend+2)))
   echo 0000000000000000 $leno 6a$len $msg
 
-  #msg=$(printf "Please recycle" | xxd -p)
-  #msg="${msg}$hashe"
-  #lend=$((${#msg}/2))
-  #len=$(printf "%02x" $lend)
-  #leno=$(printf "%02x" $(($lend+2)))
-  #echo 0000000000000000 $leno 6a$len $msg
+  #orl.sh "Please recycle"
 
   cat $of
   hex $height - 8 | ce.sh
