@@ -1,6 +1,7 @@
 #!/bin/sh
 
 msg=${1:"test"}
+test "$1" = "" && read -r msg
 
 msg=$(printf "$msg" | xxd -p)
 lend=$((${#msg}/2))
