@@ -8,7 +8,7 @@ if
 then
   cat > $msgf
 else
-  printf "$msg" | xxd -c0 -p > $msgf
+  printf "$msg" > $msgf
 fi
 
 lend=$(stat -c %s $msgf)
