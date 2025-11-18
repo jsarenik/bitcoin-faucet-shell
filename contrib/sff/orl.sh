@@ -1,5 +1,6 @@
 #!/bin/sh
 
+test "$1" = "-r" && { myraw=1; shift; }
 msg=${1:"test"}
 msgf=/tmp/orl-msg
 
@@ -12,6 +13,7 @@ else
 fi
 
 lend=$(stat -c %s $msgf)
+test "$myraw" = "1" && lend=$(($lend/2))
 
 len=$(printf "%02x" $lend)
 leno=$(printf "%02x" $(($lend+2)))
@@ -27,4 +29,4 @@ test $lend -gt $((0xffff)) && {
 }
 
 echo 0000000000000000 $leno 6a$len
-xxd -p < $msgf
+test "$myraw" = "1" && grep . < $msgf || xxd -p < $msgf
