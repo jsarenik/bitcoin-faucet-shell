@@ -175,6 +175,9 @@ dotx() {
 
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
 
+  #echo 40420f0000000000
+  #echo 22 51207160b81728928041c1e339dfa8faeeae44225c143d1c77fd5ca339416a4a7e3a
+
   msg=$(printf "alt.signetfaucet.com | %4d | " $newouts | xxd -p)
   msg="${msg}$hashe"
   lend=$((${#msg}/2))
