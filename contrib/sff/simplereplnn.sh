@@ -62,7 +62,7 @@ myexit() {
   d=$fdir/sffrest
   test -s $sfl && {
     cat $sfl
-    test "$1" = "skipround" && cat $sfl | safecat.sh $skiprf
+    test "$2" = "skipround" && cat $sfl | safecat.sh $skiprf
   }
   test "$ret" = "0" && {
     mymv $fdir/sff $fdir/sff-s2
