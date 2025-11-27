@@ -221,9 +221,10 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 ###
 ### ###########################################
 dothetf() {
-isoldb || myexit 1 "isoldb in dothetf"
+#isoldb || myexit 1 "isoldb in dothetf"
 
 : > $lpr
+dolisto
 for i in $(seq ${1:-25})
 do
   test -s "$lpr" && {
@@ -294,7 +295,7 @@ isoldb || {
   fee=$(awklist-all.sh -d $otra -m isoldb_end < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   echo $fee > $fdir/fee
-  awklist-all.sh -f $fee -d $otra -m isoldb_end < $l  \
+  awklist-all.sh -f $fee -d $otra -m isoldb_before_dothetf < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r last < $sfl
