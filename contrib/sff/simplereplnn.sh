@@ -166,9 +166,7 @@ getamount() {
 }
 
 dotx() {
-  hhasum=$(($outsum + $base - ${max:-0} + $rest))
-  echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
-  hha=$(hex $hhasum - 16 | ce.sh)
+  hha=$(hex ${hhasum:-0} - 16 | ce.sh)
   echo 0200000001${dce}0000000000fdffffff
 
   printouts $((2+$newouts)) # increment outputs when enabling more
@@ -449,6 +447,8 @@ dvs=$sats
   new=$(($new+$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($max-$sats-$new*$newouts))
+  hhasum=$(($outsum + $base - ${max:-0} + $rest))
+  echo ${hhasum:-0} | grep -q -- - && myexit 1 "hhasum ${hhasum:-0}"
 
 # needs $new and $nusff
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
