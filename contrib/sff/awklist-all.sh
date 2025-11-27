@@ -19,8 +19,12 @@ test "$1" = "-fr" && { feerate=$gmm; shift; }
 test "$1" = "-fm" && { feerate=1000; shift; }
 test "$1" = "-o" && { faucet=$2; shift 2; }
 test "$1" = "-d" && { faucet=$2; shift 2; }
+message="NOTE: This is a test network. Coins have no value."
+test "$1" = "-m" && { message="$2"; shift 2; }
+message=$(printf "%s" "$message" | xxd -p -c0)
+
 #amount=$(echo 6${RANDOM}${RANDOM} | cut -b-5)
 #amount=$(($amount+$RANDOM))
 
-awk "{sum+=\$3; print \$1\":\"\$2} END {sum-=(($vsize*$feerate/1000)+$add)/100000000; printf(\"$faucet,%.8f\n\", sum); }"
+awk "{sum+=\$3; print \$1\":\"\$2} END {sum-=(($vsize*$feerate/1000)+$add)/100000000; printf(\"$faucet,%.8f\ndata,\\\"$message\\\"\n\", sum); }"
 #${1}
