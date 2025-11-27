@@ -20,6 +20,7 @@ l=$fdir/mylist
 errf=$fdir/sff-err
 nusff=$fdir/nosff
 sfl=$fdir/sfflast
+skiprf=$fdir/skiprlast
 shf=$fdir/sffhex
 phf=$fdir/sffphf
 pkf=$fdir/sffpkf
@@ -59,7 +60,10 @@ sertl() {
 myexit() {
   ret=${1:-$?}
   d=$fdir/sffrest
-  test -s $sfl && cat $sfl
+  test -s $sfl && {
+    cat $sfl
+    test "$1" = "skipround" && cat $sfl | safecat.sh $skiprf
+  }
   test "$ret" = "0" && {
     mymv $fdir/sff $fdir/sff-s2
   } || {
@@ -166,9 +170,7 @@ getamount() {
 }
 
 dotx() {
-  hhasum=$(($outsum + $base - ${max:-0} + $rest))
-  echo $hhasum | grep -q -- - && myexit 1 "hhasum $hhasum"
-  hha=$(hex $hhasum - 16 | ce.sh)
+  hha=$(hex ${hhasum:-0} - 16 | ce.sh)
   echo 0200000001${dce}0000000000fdffffff
 
   printouts $((2+$newouts)) # increment outputs when enabling more
@@ -240,9 +242,9 @@ do
   done
   }
   cd $wd
-  fee=$(awklist-all.sh -d $otra < $l \
+  fee=$(awklist-all.sh -d $otra -m dothetf < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -d $otra < $l  \
+  awklist-all.sh -f $fee -d $otra -m dothetf < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   grep -q . $sfl || break
@@ -283,9 +285,9 @@ isoldb || {
   cleanupr $txid
 
   cd $wd
-  feenit=$(awklist-all.sh -d $otra < $l \
+  feenit=$(awklist-all.sh -d $otra -m isoldb < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $feenit -d $otra < $l  \
+  awklist-all.sh -f $feenit -d $otra -m isoldb < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r txid < $sfl
@@ -296,10 +298,10 @@ isoldb || {
   rm -rf $lpr
 
   cd $wd
-  fee=$(awklist-all.sh -d $otra < $l \
+  fee=$(awklist-all.sh -d $otra -m isoldb_end < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   echo $fee > $fdir/fee
-  awklist-all.sh -f $fee -d $otra < $l  \
+  awklist-all.sh -f $fee -d $otra -m isoldb_end < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r last < $sfl
@@ -332,7 +334,9 @@ skipround() {
   cleanupr $txid
 
   cd $wd
-  mylist | grep " 0 true$" | awklist-all.sh -f 500 | mktx.sh | crt.sh | srt.sh | sertl
+  mylist | grep " 0 true$" \
+    | awklist-all.sh -f 500 -d $dent -m "skipping round" \
+    | mktx.sh | crt.sh | srt.sh | sertl
   cd $myp
 }
 
@@ -449,6 +453,8 @@ dvs=$sats
   new=$(($new+$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($max-$sats-$new*$newouts))
+  hhasum=$(($outsum + $base - ${max:-0} + $rest))
+  echo ${hhasum:-0} | grep -q -- - && myexit 1 "hhasum ${hhasum:-0}"
 
 # needs $new and $nusff
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
