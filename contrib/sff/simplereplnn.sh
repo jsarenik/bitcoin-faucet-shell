@@ -317,7 +317,7 @@ isoldb || {
   mymv $fdir/sff $d
   cd $d
   ls -1 "$d" \
-    | head -n 1800 | xargs mv -t $fdir/sff 2>/dev/null
+    | head -n 2100 | xargs mv -t $fdir/sff 2>/dev/null
   myexit 1 "isoldb end"
 }
 ##############################
