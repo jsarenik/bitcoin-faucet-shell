@@ -159,14 +159,7 @@ gengmep() {
 
 getamount() {
   cd $wd
-  bch.sh gettransaction $depends \
-    | grep -m1 '^      "amount": [0-9]' \
-    | tr -d '{} \t",.' \
-    | tr : = \
-    | sed 's/=0\+/=/' \
-    | safecat.sh $gtof
-  . $gtof
-  echo $amount
+  grt.sh $depends | drt.sh | jq -r .vout[0].value | tr -d .
 }
 
 dotx() {
@@ -369,7 +362,7 @@ depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
 
 value=$(getamount)
-outsum=$(($value-${base:-0}))
+outsum=$(($value))
 
 mkdir -p $fdir/sff-s2
 mkdir -p $fdir/sff-s3
@@ -452,8 +445,8 @@ dvs=$sats
   test $max -gt 125991051601 && new=1100000
   new=$(($new+$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
-  rest=$(($max-$sats-$new*$newouts))
-  hhasum=$(($outsum + $base - ${max:-0} + $rest))
+  rest=$(($sats+$new*$newouts))
+  hhasum=$(($outsum - $rest))
   echo ${hhasum:-0} | grep -q -- - && myexit 1 "hhasum ${hhasum:-0}"
 
 # needs $new and $nusff
