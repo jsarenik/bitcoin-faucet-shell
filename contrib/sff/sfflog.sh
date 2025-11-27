@@ -18,5 +18,8 @@ head -1 /dev/shm/half/bitcoind
   echo "# txid vout amt conf safe"
   cd ~/.bitcoin/signet/wallets/lnanchor/
   list.sh
+  echo
+  echo Last skipped was
+  cat /tmp/skiprlast
 ) | safeadd.sh $log
 tail -n 25 $log | nicecat.sh $tail
