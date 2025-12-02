@@ -381,8 +381,8 @@ cd $d
 } # ls above
 
 find $fdir/sff/ $fdir/sff-s2/ $fdir/sff-s3/ -mindepth 1 -type f 2>/dev/null \
-  | sort -u \
   | xargs cat \
+  | sort -u \
   | safecat.sh $nusff
 
 newouts=$(wc -l < $nusff)
