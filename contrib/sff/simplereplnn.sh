@@ -1,5 +1,7 @@
 #!/bin/sh
 a="/$0"; a="${a%/*}"; a="${a:-.}"; a="${a##/}/"; BINDIR=$(cd "$a" || true; pwd)
+hashv="$(sha256sum $0 | cut -b 59-64)"
+test "$1" = "-V" && { echo "v$hashv"; exit; }
 
 ##########################################################################
 
@@ -173,8 +175,7 @@ dotx() {
   #echo 40420f0000000000
   #echo 22 51207160b81728928041c1e339dfa8faeeae44225c143d1c77fd5ca339416a4a7e3a
 
-  msg=$(printf "alt.signetfaucet.com | %4d | " $newouts | xxd -p)
-  msg="${msg}$hashe"
+  msg=$(printf "alt.signetfaucet.com | %4d | v%s" $newouts $hashv | xxd -p)
   lend=$((${#msg}/2))
   len=$(printf "%02x" $lend)
   leno=$(printf "%02x" $(($lend+2)))
@@ -203,8 +204,6 @@ sats() {
 }
 
 ##########################################################################
-
-hashe="76$(sha256sum $0 | cut -b 59-64)"
 
 # Early checks
 
