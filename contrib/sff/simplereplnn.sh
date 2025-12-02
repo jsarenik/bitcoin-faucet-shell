@@ -235,9 +235,9 @@ do
   done
   }
   cd $wd
-  fee=$(awklist-all.sh -d $otra -m dothetf < $l \
+  fee=$(awklist-all.sh -d $otra -m "dothetf $i" < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -d $otra -m dothetf < $l  \
+  awklist-all.sh -f $fee -d $otra -m "dothetf $i" < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   grep -q . $sfl || break
