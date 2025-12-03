@@ -7,7 +7,7 @@ echo $tx
 grt.sh $tx | safecat.sh $ml-grt
 vsize=$(cat $ml-grt | fee.sh)
 
-amt=$(drt.sh < $ml-grt | grep -m1 -w '"value"' | tr -cd '[0-9]')
+amt=$(drt.sh < $ml-grt | grep -m1 -w '"value"' | tr -cd '[0-9]' | sed 's/^0\+//')
 oamt=$(hex $amt - 16 | ce.sh)
 
 amt=$(($amt-$vsize))
