@@ -317,6 +317,12 @@ isoldb || {
 ##############################
 ##############################
 
+myminir() {
+  cd $wd
+  minirepl.sh $txid
+  cd $myp
+}
+
 skipround() {
   # quickfix
   dolisto
@@ -325,12 +331,7 @@ skipround() {
   txid=${tx%% *}
 
   cleanupr $txid
-
-  cd $wd
-  mylist | grep " 0 true$" \
-    | awklist-all.sh -f 500 -d $dent -m "skipping round" \
-    | mktx.sh | crt.sh | srt.sh | sertl
-  cd $myp
+  myminir
 }
 
 dolisto
@@ -458,7 +459,10 @@ dotx | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 sertl <$shf
 ret=$?
+
+test "$ret" = "1" && { myminir; ret=$?; } || {
 echo ofeer $ofeer feer4 $feer sats $sats >&2
 echo max $max fee-rate $feer base $base vsize $vsizenew >&2
+}
 
 myexit $ret "finn"
