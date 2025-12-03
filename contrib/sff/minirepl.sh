@@ -2,7 +2,6 @@
 
 ml=/tmp/mr-list
 tx=${1:-$(list.sh | sort -rnk3 | head -1 | safecat.sh $ml; read a b <$ml; echo $a)}
-echo $tx
 
 grt.sh $tx | safecat.sh $ml-grt
 vsize=$(cat $ml-grt | fee.sh)

@@ -318,8 +318,9 @@ isoldb || {
 ##############################
 
 myminir() {
+  : > $errf
   cd $wd
-  minirepl.sh $txid
+  minirepl.sh $txid 2>$errf | safecat.sh $sfl
   cd $myp
 }
 
