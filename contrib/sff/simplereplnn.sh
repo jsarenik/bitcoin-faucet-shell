@@ -354,7 +354,7 @@ test "$ancestorcount" = "25" || {
   then
     dothetf $((25-$ancestorcount))
   else
-    test "$ancestorcount" -lt "24" && skipround
+    test "$ancestorcount" -le "24" && skipround
     myexit 1 skipround
   fi
 }
