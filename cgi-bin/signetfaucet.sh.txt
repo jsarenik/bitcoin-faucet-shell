@@ -1,1 +1,1 @@
-signetfaucet.sh
+../contrib/sff/signetfaucet.sh
