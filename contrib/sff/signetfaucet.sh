@@ -7,6 +7,7 @@ test "$1" = "-c" && { conf=$2; shift 2; }
 test "$conf" = "" || . $conf
 fdir=${fdir:-/tmp}
 sdi=${sdi:-$HOME/.bitcoin/signet}
+myp=$sdi/wallets
 
 faucetaddr=tb1pupx8xare6jwl87nu058lc4ckqrrd3ugd9q6czxz9my8c49s085pq54ayff 
 faucetaddr=tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4
@@ -29,7 +30,7 @@ test $newouts -gt $sfso && mkdir -p $sfo || rm -rf $sfo
 
 test "$1" = "-n" && exit
 
-grep -qF "$addr" $HOME/.bitcoin/signet/wallets/addresses-* \
+grep -qF "$addr" $myp/addresses-* \
   && exit 1
 
 # P2PK
@@ -45,7 +46,7 @@ echo $addr | grep -Eq '^[0-9a-f]+$' && {
 }
 
 # ae stands for always empty
-cd $HOME/.bitcoin/signet/wallets/ae
+cd $myp/ae
 spk=$(hh.sh address inspect ${addr} \
   | grep -m1 '^    "hex": ' \
   | cut -d: -f2 | tr -d ' ",' | grep .) \
