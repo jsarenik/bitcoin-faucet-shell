@@ -5,8 +5,8 @@
 # optional configuration file (see signetfaucet.conf)
 test "$1" = "-c" && { conf=$2; shift 2; }
 test "$conf" = "" || { test -r $conf && . $conf; }
-fdir=${fdir:-/tmp}
-sdi=${sdi:-$HOME/.bitcoin/signet}
+export fdir=${fdir:-/tmp}
+export sdi=${sdi:-$HOME/.bitcoin/signet}
 
 # lock file, used also by refreshsignetwallets.sh
 lock=$fdir/locksff
