@@ -52,11 +52,12 @@ mymv() {
 
 sertl() {
   : > $errf
+  : > $sfl
   {
   cat
   echo 0.21
   } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
-      2>$errf | safecat.sh $sfl
+      2>$errf >$sfl
 }
 
 myexit() {
@@ -319,8 +320,9 @@ isoldb || {
 
 myminir() {
   : > $errf
+  : > $sfl
   cd $wd
-  minirepl.sh $txid 2>$errf | safecat.sh $sfl
+  minirepl.sh 2>$errf >$sfl
   cd $myp
 }
 
