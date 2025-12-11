@@ -417,7 +417,7 @@ cat $fdir/us | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
 vsizenew=$(fee.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
-test $vsizenew -le 100000 || { mkdir $fdir/_toomany; myexit 1 "TOO BIG"; }
+test $vsizenew -le 97200 || mkdir -p $fdir/_toomany
 #test $vsizenew -le 100000 || myexit 1 "TOO BIG"
 
 #########################################################
@@ -463,9 +463,9 @@ cd $sdi
 sertl <$shf
 ret=$?
 
-test "$ret" = "1" && { myminir; ret=$?; } || {
+grep -w error $errf && mkdir -p $fdir/_toomany
+test "$ret" != "0" && { myminir; ret=$?; }
 echo ofeer $ofeer feer4 $feer sats $sats >&2
 echo max $max fee-rate $feer base $base vsize $vsizenew >&2
-}
 
 myexit $ret "finn"
