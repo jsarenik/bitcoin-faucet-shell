@@ -1,5 +1,11 @@
 #!/bin/sh
 
+test "$1" = "-c" && { conf=$2; shift 2; }
+test "$conf" = "" || . $conf
+fdir=${fdir:-/tmp}
+sdi=${sdi:-$HOME/.bitcoin/signet}
+myp=$sdi/wallets
+
 res() {
   cat <<-EOF
 	HTTP/1.1 $1 $2
@@ -12,8 +18,8 @@ res() {
   exit
 }
 
-sfs=/tmp/sff-sfs
-sfo=/tmp/sff-sfo
+sfs=$fdir/sff-sfs
+sfo=$fdir/sff-sfo
 test -d $sfo && res 429 "lolio" application/json '{"message":"Overall limit reached. Wait a block."}'
 
 now=signet257
