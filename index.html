@@ -139,7 +139,7 @@ function faucet_fetch() {
       let comps = data.split("to ");
       // console.log(`comps = ${comps}`);
       if (comps.length === 2) {
-        data = `${comps[0]} to <a href="https://mempool.space/signet/address/${comps[1]}" target="_blank"><code>${comps[1].substr(0, 4)}&nbsp;${comps[1].substr(4, 4)}&nbsp;&ctdot;&nbsp;${comps[1].substr(-7, 4)}&nbsp;${comps[1].substr(-3, 2)}</code></a>`;
+        data = `${comps[0]} to <a href="https://mempool.space/signet/address/${comps[1]}"><code>${comps[1].substr(0, 4)}&nbsp;${comps[1].substr(4, 4)}&nbsp;&ctdot;&nbsp;${comps[1].substr(-7, 4)}&nbsp;${comps[1].substr(-3, 2)}</code></a>`;
       }
       faucet_err(data, "notification is-success");
     },
