@@ -17,6 +17,7 @@ mkdir -p $fdir/sff $fdir/sff-s2 $fdir/sff-s3 $fdir/sffrest
 addr=${1:-$faucetaddr}
 test -r $fdir/sff/$addr && { echo $addr; exit; }
 
+test -d $fdir/_toomany && exit 1
 sfs=$fdir/sff-sfs # sff-flag-slowdown
 sfm=$fdir/sff-sfm # max
 sfo=$fdir/sff-sfo # overall
@@ -48,11 +49,11 @@ echo $addr | grep -Eq '^[0-9a-f]+$' && {
 # ae stands for always empty
 cd $myp/ae
 spk=$(hh.sh address inspect ${addr} \
+  | grep . \
   | grep -m1 '^    "hex": ' \
   | cut -d: -f2 | tr -d ' ",' | grep .) \
-  && { echo "$(hex $((${#spk}/2)) - 2) $spk" | safecat.sh $fdir/sffrest/$addr; }
+  && { echo "$(hex $((${#spk}/2)) - 2) $spk" | nicecat.sh $fdir/sffrest/$addr \
+  | grep -q . && echo $addr; }
 
 # Just a historical lock, make sure it's not there
 rmdir $fdir/signetfaucet 2>/dev/null || true
-
-echo $addr

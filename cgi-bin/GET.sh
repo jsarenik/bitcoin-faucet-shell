@@ -55,6 +55,9 @@ mkdir -p ${LIMIT%/*}
   echo $xip 429 >&2
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
+test -d $fdir/_toomany && {
+  res 429 "Slow down" application/json '{"message":"Please slow down"}'
+}
 
 uuid=$(uuidgen)
 
