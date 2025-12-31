@@ -7,7 +7,8 @@ hash=$3
 height=$4
 
 #echo "$wall" | grep -q "newmy" && signetcatapult.sh
-#test "$wall" = "lnanchor" && signetcatapultlna.sh
+test "$wall" = "lnanchor" && signetcatapultlna.sh
 test "$wall" = "optrue" && ( cd wallets/optrue; sh spend.sh )
+test "$wall" = "ddeployment" && ( cd wallets/ddeployment; sh spend.sh )
 
 true

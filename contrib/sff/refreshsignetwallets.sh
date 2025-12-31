@@ -38,4 +38,15 @@ cd $jw
 bch.sh importdescriptors '[{"desc": "addr(tb1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqaqh7jw)#gtc05zpf","timestamp": "now"}]'
 cd ..
 
+cd ddeployment
+ulw.sh
+# there's a link in place already:
+#  ln -nsf /dev/shm/ddeployment.dat wallet.dat
+rm /dev/shm/ddeployment.dat
+cd ..
+bch.sh createwallet ddeployment false true
+cd ddeployment
+sh importdesc.sh
+cd ..
+
 rmdir $lock
