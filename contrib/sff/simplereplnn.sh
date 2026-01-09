@@ -37,7 +37,7 @@ gmef=$fdir/sff-gme
 gmep=$fdir/sff-gme.sh
 gtof=$fdir/sff-gtot
 lpr=$fdir/l123p
-ad=savingsatoshi.com
+ad=bitcoindevs.xyz
 
 ##########################################################################
 
