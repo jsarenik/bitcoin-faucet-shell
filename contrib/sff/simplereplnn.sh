@@ -323,7 +323,6 @@ isoldb || {
 
 myminir() {
   : > $errf
-  : > $sfl
   cd $wd
   minirepl.sh 2>$errf >$sfl
   cd $myp
@@ -467,6 +466,7 @@ sertl <$shf
 ret=$?
 
 grep -w error $errf && mkdir -p $fdir/_toomany
+echo ret $ret
 test "$ret" != "0" && { myminir; ret=$?; }
 echo ofeer $ofeer feer4 $feer sats $sats >&2
 echo max $max fee-rate $feer base $base vsize $vsizenew >&2
