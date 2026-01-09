@@ -37,6 +37,7 @@ gmef=$fdir/sff-gme
 gmep=$fdir/sff-gme.sh
 gtof=$fdir/sff-gtot
 lpr=$fdir/l123p
+ad=savingsatoshi.com
 
 ##########################################################################
 
@@ -236,9 +237,11 @@ do
   done
   }
   cd $wd
-  fee=$(awklist-all.sh -d $otra -m "dothetf $i" < $l \
+  #fee=$(awklist-all.sh -d $otra -m "$ad $i" < $l \
+  fee=$(awklist-all.sh -d $otra -m "$ad $i" < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $fee -d $otra -m "dothetf $i" < $l  \
+  #awklist-all.sh -f $fee -d $otra -m "$ad $i" < $l  \
+  awklist-all.sh -f $fee -d $otra -m "$ad" < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   grep -q . $sfl || break
@@ -279,9 +282,9 @@ isoldb || {
   cleanupr $txid
 
   cd $wd
-  feenit=$(awklist-all.sh -d $otra -m isoldb < $l \
+  feenit=$(awklist-all.sh -d $otra -m "$ad" < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $feenit -d $otra -m isoldb < $l  \
+  awklist-all.sh -f $feenit -d $otra -m "$ad" < $l \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r txid < $sfl
@@ -292,10 +295,10 @@ isoldb || {
   rm -rf $lpr
 
   cd $wd
-  fee=$(awklist-all.sh -d $otra -m isoldb_end < $l \
+  fee=$(awklist-all.sh -d $otra -m "$ad" < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   echo $fee > $fdir/fee
-  awklist-all.sh -f $fee -d $otra -m isoldb_before_dothetf < $l  \
+  awklist-all.sh -f $fee -d $otra -m "$ad" < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r last < $sfl
