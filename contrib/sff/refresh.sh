@@ -47,7 +47,9 @@ myim "sh(wpkh($privkeyo))"
 myim "wsh(pkh($privkeyo))"
 myim "tr($privkeyo)"
 
+echo "---------------------------------------------------------"
 myim "tr($lmabi)"
+echo "---------------------------------------------------------"
 myim "pk($uncom)"
 myim "sh(pk($uncom))"
 myim "combo($uncom)"
@@ -55,7 +57,8 @@ myim "combo($uncom)"
 # $dt is set in $tkf
 A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
 bch.sh importdescriptors $A
-. /dev/shm/UpdateTip-signet
+utf=/dev/shm/UpdateTip-signet
+test -r $utf && . $utf || height=$(gbc.sh)
 bch.sh rescanblockchain $(($height-60))
 sleep 1
 
