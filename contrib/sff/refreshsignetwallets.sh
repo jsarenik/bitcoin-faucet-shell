@@ -8,6 +8,9 @@ test "$conf" = "" || { test -r $conf && . $conf; }
 export fdir=${fdir:-/tmp}
 export sdi=${sdi:-$HOME/.bitcoin/signet}
 
+balf=/dev/shm/faucet/balance.txt
+test -r $balf || echo 0 > $balf
+
 # lock file, used also by refreshsignetwallets.sh
 lock=$fdir/locksff
 mkdir $lock || exit 1
