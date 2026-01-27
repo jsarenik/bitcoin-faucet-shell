@@ -170,7 +170,7 @@ dotx() {
   hha=$(hex ${hhasum:-0} - 16 | ce.sh)
   echo 0200000001${dce}0000000000fdffffff
 
-  printouts $((2+$newouts)) # increment outputs when enabling more
+  printouts $((2+${newouts:-0})) # increment outputs when enabling more
 
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
 
@@ -352,6 +352,8 @@ test -s "$gmef" || dothetf
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
+depends=$(jq -r .depends[0] < $gmef)
+dce=$(echo $depends | ce.sh)
 test "$ancestorcount" = "25" || {
   if
     test "$ancestorcount" = "1"
@@ -364,8 +366,6 @@ test "$ancestorcount" = "25" || {
 }
 test "$descendantcount" = "1" || myexit 1 "descendantcount"
 test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
-depends=$(jq -r .depends[0] < $gmef)
-dce=$(echo $depends | ce.sh)
 
 value=$(getamount)
 outsum=$(($value))
