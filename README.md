@@ -1,7 +1,5 @@
 # bitcoin-faucet-shell
 
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jsarenik/bitcoin-faucet-shell)
-
 ***This is a test network. Coins have no value.***
 
 **alt.signetfaucet is intended for education purposes
