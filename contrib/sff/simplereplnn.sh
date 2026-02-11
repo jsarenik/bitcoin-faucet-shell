@@ -174,7 +174,7 @@ dotx() {
 
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
 
-  orl.sh "alt.signetfaucet.com | $newouts | v$hashv"
+  orl.sh "alt.signetfaucet.com | $newouts | This is a test network. Coins have no value. | v$hashv"
 
   cat $of
   hex $height - 8 | ce.sh
