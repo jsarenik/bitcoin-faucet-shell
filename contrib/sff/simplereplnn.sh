@@ -184,7 +184,7 @@ feer() {
   # Fee-rate $abs_sats_fee $divisor_vsize
   mysats=$1
   mydiv=$2
-  fr=$(((100*$mysats+$mydiv-1)/$mydiv))
+  fr=$(( (100*$mysats+$mydiv-1)/$mydiv ))
   echo $fr
 }
 
@@ -424,7 +424,7 @@ cd $sdi
 # stage 4
 ############
 
-sats=$(( $base + $vsizenew ))
+sats=$(( $base + ($vsizenew+9)/10 ))
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test $feer -lt $ofeer && {
