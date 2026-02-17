@@ -184,7 +184,7 @@ feer() {
   # Fee-rate $abs_sats_fee $divisor_vsize
   mysats=$1
   mydiv=$2
-  fr=$(((1000*$mysats+$mydiv-1)/$mydiv))
+  fr=$(((100*$mysats+$mydiv-1)/$mydiv))
   echo $fr
 }
 
@@ -192,7 +192,7 @@ sats() {
   # Absolute_sats_fee $feer $divisor_vsize
   myfeer=$1
   mydiv=$2
-  out=$(( (($myfeer*$mydiv)+999)/1000 ))
+  out=$(( (($myfeer*$mydiv)+99)/100 ))
   echo $out
 }
 
@@ -408,7 +408,7 @@ dotx | safecat.sh $fdir/us
 cd $wd
 cat $fdir/us | txcat.sh | srt.sh | safecat.sh $shf
 cd $sdi
-vsizenew=$(fee.sh < $shf | grep .) || myexit 1 "missing vsizenew"
+vsizenew=$(vsize.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
 test $vsizenew -le 97200 || mkdir -p $fdir/_toomany
 #test $vsizenew -le 100000 || myexit 1 "TOO BIG"
