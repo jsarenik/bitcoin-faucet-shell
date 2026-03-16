@@ -38,7 +38,7 @@ gmep=$fdir/sff-gme.sh
 gtof=$fdir/sff-gtot
 lpr=$fdir/l123p
 ad=bitcoindevs.xyz
-mcm=25
+mcm=25 # will be 64 when miner runs clustered mempool
 
 ##########################################################################
 
