@@ -352,7 +352,7 @@ test "$ancestorcount" = "$mcm" || {
   then
     dothetf $(($mcm-$ancestorcount))
   else
-    test "$ancestorcount" -le $(($mcm-1))" && skipround
+    test "$ancestorcount" -le "$(($mcm-1))" && skipround
     myexit 1 skipround
   fi
 }
