@@ -38,6 +38,7 @@ gmep=$fdir/sff-gme.sh
 gtof=$fdir/sff-gtot
 lpr=$fdir/l123p
 ad=bitcoindevs.xyz
+mcm=25
 
 ##########################################################################
 
@@ -207,9 +208,9 @@ bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 ## are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 
-### ############# DO THE 25 ###################
+### ############# DO THE $mcm ###################
 ###
-### do the chain of 25-in-mempool transactions
+### do the chain of $mcm-in-mempool transactions
 ###
 ### ###########################################
 dothetf() {
@@ -217,7 +218,7 @@ dothetf() {
 
 : > $lpr
 dolisto
-for i in $(seq ${1:-25})
+for i in $(seq ${1:-$mcm})
 do
   test -s "$lpr" && {
   until
@@ -345,13 +346,13 @@ test -s "$gmef" || dothetf
 . $gmep
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
-test "$ancestorcount" = "25" || {
+test "$ancestorcount" = "$mcm" || {
   if
     test "$ancestorcount" = "1"
   then
-    dothetf $((25-$ancestorcount))
+    dothetf $(($mcm-$ancestorcount))
   else
-    test "$ancestorcount" -le "24" && skipround
+    test "$ancestorcount" -le $(($mcm-1))" && skipround
     myexit 1 skipround
   fi
 }
