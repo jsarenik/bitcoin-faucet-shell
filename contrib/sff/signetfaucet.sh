@@ -24,6 +24,7 @@ sfo=$fdir/sff-sfo # overall
 sfsn=2016
 sfsm=4032
 sfso=6079
+newouts=0
 read -r newouts < $fdir/newouts
 test $newouts -gt $sfsn && mkdir -p $sfs || rm -rf $sfs
 test $newouts -gt $sfsm && mkdir -p $sfm || rm -rf $sfm
