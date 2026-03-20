@@ -171,11 +171,12 @@ dotx() {
   hha=$(hex ${hhasum:-0} - 16 | ce.sh)
   echo 0200000001${dce}0000000000fdffffff
 
-  printouts $((9+${newouts:-0})) # increment outputs when enabling more
+  printouts $((10+${newouts:-0})) # increment outputs when enabling more
 
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
   orl.sh "alt.signetfaucet.com"
   orl.sh "$newouts payouts"
+  orl.sh "of $new sats"
   orl.sh "This is a test network. Coins have no value. | v$hashv"
   orl.sh "Just don't sh*tcoin"
   orl.sh "How many?"
