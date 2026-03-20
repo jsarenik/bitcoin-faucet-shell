@@ -171,7 +171,7 @@ dotx() {
   hha=$(hex ${hhasum:-0} - 16 | ce.sh)
   echo 0200000001${dce}0000000000fdffffff
 
-  printouts $((10+${newouts:-0})) # increment outputs when enabling more
+  printouts $((12+${newouts:-0})) # increment outputs when enabling more
 
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
   orl.sh "alt.signetfaucet.com"
@@ -181,7 +181,9 @@ dotx() {
   orl.sh "Just don't sh*tcoin"
   orl.sh "How many?"
   orl.sh "There's only one"
-  orl.sh "Bitcoin"
+  orl.sh "Bitcoin since 2009"
+  echo f000000000000000 04 51024e73 # LN Anchor
+  orl.sh "Learn. Here."
   echo f000000000000000 04 51024e73 # LN Anchor
 
   cat $of
@@ -450,7 +452,7 @@ dvs=$sats
   test $max -gt 125991051601 && new=1100000
   new=$(($new+$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
-  rest=$(($sats+$new*$newouts+240))
+  rest=$(($sats+$new*$newouts+480))
   hhasum=$(($outsum - $rest))
   echo ${hhasum:-0} | grep -q -- - && myexit 1 "hhasum ${hhasum:-0}"
 
