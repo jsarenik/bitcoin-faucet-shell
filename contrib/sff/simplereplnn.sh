@@ -227,7 +227,7 @@ dothetf() {
 
 : > $lpr
 dolisto
-for i in $(seq ${1:-$mcm})
+for i in $(seq 3 ${1:-$mcm})
 do
   test -s "$lpr" && {
   until
@@ -242,7 +242,7 @@ do
   fee=$(awklist-all.sh -d $otra -m "$ad $i" < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   #awklist-all.sh -f $fee -d $otra -m "$ad $i" < $l  \
-  awklist-all.sh -f $fee -d $otra -m "$ad" < $l  \
+  awklist-all.sh -f $fee -d $otra -m "$ad $i" < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   grep -q . $sfl || break
@@ -296,10 +296,10 @@ isoldb || {
   rm -rf $lpr
 
   cd $wd
-  fee=$(awklist-all.sh -d $otra -m "$ad" < $l \
+  fee=$(awklist-all.sh -d $otra -m "$ad 2" < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
   echo $fee > $fdir/fee
-  awklist-all.sh -f $fee -d $otra -m "$ad" < $l  \
+  awklist-all.sh -f $fee -d $otra -m "$ad 2" < $l  \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   read -r last < $sfl
