@@ -175,6 +175,7 @@ dotx() {
 
   echo $hha 22 5120aac35fe91f20d48816b3c83011d117efa35acd2414d36c1e02b0f29fc3106d90
   orl.sh "alt.signetfaucet.com"
+  #orl.sh "alt.signetfaucet.com | $newouts payouts | This is a test network. Coins have no value. | v$hashv | Bitcoin since 2009"
   orl.sh "$newouts payouts"
   orl.sh "of $new sats"
   orl.sh "This is a test network. Coins have no value. | v$hashv"
@@ -183,7 +184,7 @@ dotx() {
   orl.sh "There's only one"
   orl.sh "Bitcoin since 2009"
   echo f000000000000000 04 51024e73 # LN Anchor
-  orl.sh "Learn. Here."
+  orl.sh "Play. Here."
   echo f000000000000000 04 51024e73 # LN Anchor
 
   cat $of
