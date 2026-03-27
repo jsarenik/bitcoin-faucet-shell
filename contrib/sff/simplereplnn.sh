@@ -249,7 +249,6 @@ do
   grep -q . $sfl || break
   cp $l $lpr
 done
-myexit 1 dothetf
 }
 
 cleanupr() {
@@ -317,7 +316,6 @@ isoldb || {
   cd $d
   ls -1 "$d" \
     | head -n 2100 | xargs mv -t $fdir/sff 2>/dev/null
-  myexit 1 "isoldb end"
 }
 ##############################
 ##############################
@@ -350,7 +348,8 @@ test "$txid" = "" && myexit 1 "empty TXID"
 echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
 
 gengmep
-test -s "$gmef" || dothetf
+test -s "$gmef" || myexit 1 "gmef missing"
+
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
