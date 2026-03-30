@@ -275,6 +275,7 @@ cleanupr() {
   cd $d
   mymv $fdir/sff-s2 $fdir/sff-s3 $d
   cat $fdir/sffgt | xargs rm -rf
+  : > $nusff
 }
 
 ##############################
@@ -379,6 +380,9 @@ cd $d
 
 find $fdir/sff/ $fdir/sff-s2/ $fdir/sff-s3/ -mindepth 1 -type f 2>/dev/null \
   | xargs cat \
+  | safecat.sh $nusff-add
+
+cat $nusff $nusff-add \
   | sort -u \
   | safecat.sh $nusff
 
