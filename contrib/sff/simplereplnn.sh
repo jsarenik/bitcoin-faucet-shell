@@ -71,11 +71,10 @@ myexit() {
     cat $sfl
   }
   test "$ret" = "0" && {
-    mymv $fdir/sff $fdir/sff-s2
+    mymv $fdir/sff $fdir/sff-s3
   } || {
     mymv $fdir/sff $fdir/sffrest
   }
-  mymv $fdir/sff-s2 $fdir/sff-s3
   ls -1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
   myrest=$(ls -1 $fdir/sffrest/ | wc -l)
   myst=$(ls -1 $fdir/sff-s3/ | wc -l)
@@ -378,7 +377,7 @@ cd $d
 }
 } # ls above
 
-find $fdir/sff/ $fdir/sff-s2/ $fdir/sff-s3/ -mindepth 1 -type f 2>/dev/null \
+find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
   | xargs cat \
   | safecat.sh $nusff-add
 
