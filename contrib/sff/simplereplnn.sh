@@ -22,6 +22,7 @@ l=$fdir/mylist
 errf=$fdir/sff-err
 nusff=$fdir/nosff
 sfl=$fdir/sfflast
+sfp=$fdir/sfflastprev
 skiprf=$fdir/skiprlast
 shf=$fdir/sffhex
 phf=$fdir/sffphf
@@ -54,6 +55,7 @@ mymv() {
 
 sertl() {
   : > $errf
+  cat $sfl | safecat.sh $sfp
   : > $sfl
   {
   cat
@@ -67,7 +69,6 @@ myexit() {
   d=$fdir/sffrest
   test -s $sfl && {
     cat $sfl
-    test "$2" = "skipround" && cat $sfl | safecat.sh $skiprf
   }
   test "$ret" = "0" && {
     mymv $fdir/sff $fdir/sff-s2
@@ -337,6 +338,8 @@ skipround() {
 
   cleanupr $txid
   myminir
+  cat $sfl | safecat.sh $skiprf
+  cat $sfp | safecat.sh $skiprf-prev
 }
 
 dolisto
@@ -361,8 +364,8 @@ test "$ancestorcount" = "$mcm" || {
   then
     dothetf $(($mcm-$ancestorcount))
   else
-    test "$ancestorcount" -le "$(($mcm-1))" && skipround
-    myexit 1 skipround
+    skipround
+    dothetf $(($mcm-$ancestorcount))
   fi
 }
 test "$descendantcount" = "1" || myexit 1 "descendantcount"
