@@ -227,9 +227,19 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 dothetf() {
 #isoldb || myexit 1 "isoldb in dothetf"
 
+cd $wd
+feenit=$(awklist-all.sh -d $otra -m "$ad   " < $l \
+  | mktx.sh | crt.sh | srt.sh | fee.sh)
+echo $feenit > $fdir/feenit
+awklist-all.sh -f $feenit -d $otra -m "$ad   " < $l \
+  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+sertl <$shf
+
+lpr=$fdir/l123p
+rm -rf $lpr
 : > $lpr
 dolisto
-for i in $(seq 3 ${1:-$mcm})
+for i in $(seq -w 02 ${1:-$mcm})
 do
   test -s "$lpr" && {
   until
@@ -240,11 +250,10 @@ do
   done
   }
   cd $wd
-  #fee=$(awklist-all.sh -d $otra -m "$ad $i" < $l \
   fee=$(awklist-all.sh -d $otra -m "$ad $i" < $l \
     | mktx.sh | crt.sh | srt.sh | fee.sh)
-  #awklist-all.sh -f $fee -d $otra -m "$ad $i" < $l  \
-  awklist-all.sh -f $fee -d $otra -m "$ad $i" < $l  \
+  echo $fee > $fdir/fee
+  awklist-all.sh -f $fee -d $otra -m "$ad $i" < $l \
     | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
   sertl <$shf
   grep -q . $sfl || break
@@ -282,28 +291,6 @@ isoldb || {
   txid=${tx%% *}
 
   cleanupr $txid
-
-  cd $wd
-  feenit=$(awklist-all.sh -d $otra -m "$ad" < $l \
-    | mktx.sh | crt.sh | srt.sh | fee.sh)
-  awklist-all.sh -f $feenit -d $otra -m "$ad" < $l \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf
-  read -r txid < $sfl
-
-  dolisto
-
-  lpr=$fdir/l123p
-  rm -rf $lpr
-
-  cd $wd
-  fee=$(awklist-all.sh -d $otra -m "$ad 2" < $l \
-    | mktx.sh | crt.sh | srt.sh | fee.sh)
-  echo $fee > $fdir/fee
-  awklist-all.sh -f $fee -d $otra -m "$ad 2" < $l  \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-  sertl <$shf
-  read -r last < $sfl
 
   dothetf
 
