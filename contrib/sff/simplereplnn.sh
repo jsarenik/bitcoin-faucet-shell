@@ -379,11 +379,7 @@ cd $d
 
 find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
   | xargs cat \
-  | safecat.sh $nusff-add
-
-cat $nusff $nusff-add \
-  | sort -u \
-  | safecat.sh $nusff
+  | safeadd.sh $nusff
 
 newouts=$(wc -l < $nusff)
 echo $newouts | safecat.sh $fdir/newouts
