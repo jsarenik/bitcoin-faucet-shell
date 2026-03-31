@@ -234,6 +234,8 @@ awklist-all.sh -f $feenit -d $otra -m "$ad   " < $l \
   | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
 sertl <$shf
 
+  test "$1" -gt "1" && {
+
 lpr=$fdir/l123p
 rm -rf $lpr
 : > $lpr
@@ -258,6 +260,7 @@ do
   grep -q . $sfl || break
   cp $l $lpr
 done
+  }
 }
 
 cleanupr() {
@@ -292,7 +295,7 @@ isoldb || {
 
   cleanupr $txid
 
-  dothetf
+  dothetf $mcm
 
   cd $myp
   catapultleftovers
