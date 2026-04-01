@@ -243,7 +243,7 @@ do
     dolisto
     ! cmp $l $lpr
   do
-    usleep 21
+    :
   done
   }
   cd $wd
