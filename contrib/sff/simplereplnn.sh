@@ -324,7 +324,6 @@ skipround() {
   tx=$(cat $l | head -1 | grep .) || myexit 1 "skipround newblock tx"
   txid=${tx%% *}
 
-  cleanupr $txid
   myminir
 }
 
