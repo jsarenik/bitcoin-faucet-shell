@@ -74,6 +74,7 @@ myexit() {
     mymv $fdir/sff $fdir/sffrest
   }
   echo stage3 $newouts >&2
+  echo $newouts > $fdir/sffnewouts
 
   echo ${2:-"SUCCESS $ret"} >&2
   rmdir $lock 2>/dev/null
