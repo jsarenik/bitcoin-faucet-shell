@@ -224,21 +224,13 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 dothetf() {
 #isoldb || myexit 1 "isoldb in dothetf"
 
-cd $wd
-feenit=$(awklist-all.sh -d $otra -m "$ad   " < $l \
-  | mktx.sh | crt.sh | srt.sh | fee.sh)
-echo $feenit > $fdir/feenit
-awklist-all.sh -f $feenit -d $otra -m "$ad   " < $l \
-  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
-sertl <$shf
-
-  test "$1" -gt "1" && {
+  test "$1" -ge "1" && {
 
 lpr=$fdir/l123p
 rm -rf $lpr
 : > $lpr
 dolisto
-for i in $(seq -w 02 ${1:-$mcm})
+for i in $(seq -w 01 ${1:-$mcm} | tac)
 do
   test -s "$lpr" && {
   until
