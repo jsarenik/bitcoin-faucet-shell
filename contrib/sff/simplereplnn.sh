@@ -349,14 +349,8 @@ test -s "$gmef" || myexit 1 "gmef missing"
 depends=$(jq -r .depends[0] < $gmef)
 dce=$(echo $depends | ce.sh)
 test "$ancestorcount" = "$mcm" || {
-  if
-    test "$ancestorcount" = "1"
-  then
-    dothetf $(($mcm-$ancestorcount))
-  else
-    skipround
-    dothetf $(($mcm-$ancestorcount))
-  fi
+  skipround
+  dothetf $(($mcm-$ancestorcount))
 }
 test "$descendantcount" = "1" || myexit 1 "descendantcount"
 test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
