@@ -22,7 +22,6 @@ l=$fdir/mylist
 errf=$fdir/sff-err
 nusff=$fdir/nosff
 sfl=$fdir/sfflast
-sfp=$fdir/sfflastprev
 skiprf=$fdir/skiprlast
 shf=$fdir/sffhex
 phf=$fdir/sffphf
@@ -55,7 +54,6 @@ mymv() {
 
 sertl() {
   : > $errf
-  cat $sfl | safecat.sh $sfp
   : > $sfl
   {
   cat
@@ -328,8 +326,6 @@ skipround() {
 
   cleanupr $txid
   myminir
-  cat $sfl | safecat.sh $skiprf
-  cat $sfp | safecat.sh $skiprf-prev
 }
 
 dolisto
