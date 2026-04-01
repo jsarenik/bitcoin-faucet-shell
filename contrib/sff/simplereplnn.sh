@@ -73,10 +73,7 @@ myexit() {
   } || {
     mymv $fdir/sff $fdir/sffrest
   }
-  ls -1 "$d" | wc -l | safecat.sh /dev/shm/sffrest.txt
-  myrest=$(ls -1 $fdir/sffrest/ | wc -l)
-  myst=$(ls -1 $fdir/sff-s3/ | wc -l)
-  echo rest $myrest stage3 $myst >&2
+  echo stage3 $newouts >&2
 
   echo ${2:-"SUCCESS $ret"} >&2
   rmdir $lock 2>/dev/null
