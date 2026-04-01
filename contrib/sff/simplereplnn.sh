@@ -258,7 +258,7 @@ cleanupr() {
 
   : > $fdir/sffgt
   cd $wd
-  bch.sh gettransaction $intx | jq -r .details[].address \
+  bch.sh gettransaction $intx | jq -r '.details[].address' \
     | safecat.sh $fdir/sffgt
   cd $myp
   rm -rf $fdir/sff-s3/0*
