@@ -23,6 +23,7 @@ errf=$fdir/sff-err
 nusff=$fdir/nosff
 sfl=$fdir/sfflast
 skiprf=$fdir/skiprlast
+sfr=$fdir/sffrest
 shf=$fdir/sffhex
 phf=$fdir/sffphf
 pkf=$fdir/sffpkf
@@ -64,14 +65,13 @@ sertl() {
 
 myexit() {
   ret=${1:-$?}
-  d=$fdir/sffrest
   test -s $sfl && {
     cat $sfl
   }
   test "$ret" = "0" && {
     mymv $fdir/sff $fdir/sff-s3
   } || {
-    mymv $fdir/sff $fdir/sffrest
+    mymv $fdir/sff $sfr
   }
   echo stage3 $newouts >&2
   echo $newouts > $fdir/sffnewouts
@@ -222,13 +222,21 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 dothetf() {
 #isoldb || myexit 1 "isoldb in dothetf"
 
-  test "$1" -ge "1" && {
+cd $wd
+feenit=$(awklist-all.sh -d $otra -m "$ad   " < $l \
+  | mktx.sh | crt.sh | srt.sh | fee.sh)
+echo $feenit > $fdir/feenit
+awklist-all.sh -f $feenit -d $otra -m "$ad   " < $l \
+  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+sertl <$shf
+
+  test "$1" -gt "1" && {
 
 lpr=$fdir/l123p
 rm -rf $lpr
 : > $lpr
 dolisto
-for i in $(seq -w 01 ${1:-$mcm} | tac)
+for i in $(seq -w 02 ${1:-$mcm})
 do
   test -s "$lpr" && {
   until
@@ -261,9 +269,8 @@ cleanupr() {
   cd $myp
   rm -rf $fdir/sff-s3/0*
   rm -rf $fdir/_toomany
-  d=$fdir/sffrest
-  cd $d
-  mymv $fdir/sff-s2 $fdir/sff-s3 $d
+  cd $sfr
+  mymv $fdir/sff-s2 $fdir/sff-s3 $sfr
   cat $fdir/sffgt | xargs rm -rf
   : > $nusff
 }
@@ -272,9 +279,8 @@ cleanupr() {
 ### from blocknotify-signet.sh
 isoldb || {
   rmdir $fdir/sffnewblock
-  d=$fdir/sffrest
-  mkdir -p $d
-  mymv $fdir/sff $d
+  mkdir -p $sfr
+  mymv $fdir/sff $sfr
 
   doinito
 
@@ -290,10 +296,9 @@ isoldb || {
 
   test -d $fdir/sffnewblock && myexit 1 "new block again"
 
-  d=$fdir/sffrest
-  mymv $fdir/sff $d
-  cd $d
-  ls -1 "$d" \
+  mymv $fdir/sff $sfr
+  cd $sfr
+  ls -1 "$sfr" \
     | head -n 2100 | xargs mv -t $fdir/sff 2>/dev/null
 }
 ##############################
@@ -346,17 +351,15 @@ outsum=$(($value))
 mkdir -p $fdir/sff-s2
 mkdir -p $fdir/sff-s3
 
-d=$fdir/sffrest
-mkdir -p $d
+mkdir -p $sfr
 randomone=$(($RANDOM%2))
 ls -1 $fdir/sff/ | grep -q . || { ####
-d=$fdir/sffrest
 
-test -d $fdir/_toomany || {
-cd $d
+test -d $fdir/_toomany || (
+cd $sfr
   ls -1 2>/dev/null | head -n $((((98000-$vsize-51)/52)+$randomone)) \
     | xargs mv -t $fdir/sff/ 2>/dev/null
-}
+)
 } # ls above
 
 find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
