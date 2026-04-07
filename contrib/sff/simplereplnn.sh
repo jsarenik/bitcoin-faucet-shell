@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 a="/$0"; a="${a%/*}"; a="${a:-.}"; a="${a##/}/"; BINDIR=$(cd "$a" || true; pwd)
 hashv="$(sha256sum $0 | cut -b 59-64)"
 test "$1" = "-V" && { echo "v$hashv"; exit; }
