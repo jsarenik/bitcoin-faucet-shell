@@ -422,7 +422,5 @@ ret=$?
 grep -w error $errf && mkdir -p $fdir/_toomany
 echo ret $ret
 test "$ret" != "0" && { myminir; ret=$?; }
-echo ofeer $ofeer feer4 $feer sats $sats >&2
-echo max $max fee-rate $feer base $base vsize $vsizenew >&2
 
 myexit $ret "finn"
