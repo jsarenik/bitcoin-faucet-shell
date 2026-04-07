@@ -90,10 +90,8 @@ mylist() {
 }
 
 doinit() {
-  cd $wd
   #mylist | grep -v " 0 [tf][a-z]\+$" | grep " true$" | sort -rn -k3
   mylist | grep " true$" | sort -rn -k3
-  cd $myp
 }
 
 doinito() {
@@ -102,14 +100,19 @@ doinito() {
 }
 
 dolist() {
-  cd $wd
   mylist | grep " 0 true$" | sort -rn -k3
-  cd $myp
 }
 
 dolisto() {
   : > $l
   dolist | safecat.sh $l
+}
+
+mysrt() {
+  bch.sh -stdin signrawtransactionwithwallet \
+    | grep '"hex"' \
+    | cut -d: -f2- \
+    | tr -d ' ,"'
 }
 
 catapultleftovers() {
@@ -118,25 +121,21 @@ catapultleftovers() {
   lh=${list}-hex
 
   : > $list
-  cd $wd
   mylist | grep " 0 false$" | safecat.sh $list
   test -s $list || return
   num=$(wc -l < $list)
-  cd $wd
 
   cat $list | awk '($3<=0.01){print $1, $2, $3}' \
     | awklist-allfee.sh \
-    | mktx.sh | crt.sh | srt.sh | sert.sh
+    | mktx.sh | crt.sh | mysrt | sert.sh
   rm -rf ${tmpc}* > /dev/null
 }
 
 isnewb() {
-  cd $wd
   mylist | grep ' [^0]+ true$'
 }
 
 isoldb() {
-  cd $wd
   mylist | grep ' 0 true$'
 }
 
@@ -149,7 +148,6 @@ printouts() {
 gengmep() {
   : > $gmep
   : > $gmef
-  cd $myp
   gme.sh $txid | safecat.sh $gmef
   tr -d '{} \t",.' < $gmef \
     | sed '/^depends/,$d' \
@@ -210,6 +208,7 @@ sats() {
 ## Is bitcoind talking RPC to us (from the wallet dir)?
 cd $myp
 bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
+cd $wd
 
 ## are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
@@ -222,12 +221,11 @@ ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
 dothetf() {
 #isoldb || myexit 1 "isoldb in dothetf"
 
-cd $wd
 feenit=$(awklist-all.sh -d $otra -m "$ad   " < $l \
-  | mktx.sh | crt.sh | srt.sh | fee.sh)
+  | mktx.sh | crt.sh | mysrt | fee.sh)
 echo $feenit > $fdir/feenit
 awklist-all.sh -f $feenit -d $otra -m "$ad   " < $l \
-  | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+  | mktx.sh | crt.sh | mysrt | safecat.sh $shf
 sertl <$shf
 
   test "$1" -gt "1" && {
@@ -246,12 +244,11 @@ do
     :
   done
   }
-  cd $wd
   fee=$(awklist-all.sh -d $otra -m "$ad $i" < $l \
-    | mktx.sh | crt.sh | srt.sh | fee.sh)
+    | mktx.sh | crt.sh | mysrt | fee.sh)
   echo $fee > $fdir/fee
   awklist-all.sh -f $fee -d $otra -m "$ad $i" < $l \
-    | mktx.sh | crt.sh | srt.sh | safecat.sh $shf
+    | mktx.sh | crt.sh | mysrt | safecat.sh $shf
   sertl <$shf
   grep -q . $sfl || break
   cp $l $lpr
@@ -263,13 +260,10 @@ cleanupr() {
   intx=$1
 
   : > $fdir/sffgt
-  cd $wd
   bch.sh gettransaction $intx | jq -r '.details[].address' \
     | safecat.sh $fdir/sffgt
-  cd $myp
   rm -rf $fdir/sff-s3/0*
   rm -rf $fdir/_toomany
-  cd $sfr
   mymv $fdir/sff-s2 $fdir/sff-s3 $sfr
   cat $fdir/sffgt | xargs rm -rf
   : > $nusff
@@ -291,13 +285,11 @@ isoldb || {
 
   dothetf $mcm
 
-  cd $myp
   catapultleftovers
 
   test -d $fdir/sffnewblock && myexit 1 "new block again"
 
   mymv $fdir/sff $sfr
-  cd $sfr
   ls -1 "$sfr" \
     | head -n 2100 | xargs mv -t $fdir/sff 2>/dev/null
 }
@@ -307,9 +299,7 @@ isoldb || {
 
 myminir() {
   : > $errf
-  cd $wd
   minirepl.sh 2>$errf >$sfl
-  cd $myp
 }
 
 skipround() {
@@ -386,12 +376,7 @@ cat $nusff | sed "s/^/$newh/" | safecat.sh $of
 
 dvs=$vsize
 
-cd $wd
-dotx | safecat.sh $fdir/us
-
-cd $wd
-cat $fdir/us | txcat.sh | srt.sh | safecat.sh $shf
-cd $sdi
+dotx | txcat.sh | mysrt | safecat.sh $shf
 vsizenew=$(vsize.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
 test $vsizenew -le 97200 || mkdir -p $fdir/_toomany
@@ -400,9 +385,6 @@ test $vsizenew -le 97200 || mkdir -p $fdir/_toomany
 #########################################################
 
 dvs=$(( $vsizenew+$base ))
-cd $wd
-dotx | txcat.sh | srt.sh | safecat.sh $shf
-cd $sdi
 
 ############
 # stage 4
@@ -434,9 +416,7 @@ dvs=$sats
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
 cat $nusff | sed "s/^/$newh/" | safecat.sh $of
 
-cd $wd
-dotx | txcat.sh | srt.sh | safecat.sh $shf
-cd $sdi
+dotx | txcat.sh | mysrt | safecat.sh $shf
 sertl <$shf
 ret=$?
 
