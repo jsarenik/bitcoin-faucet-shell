@@ -157,8 +157,7 @@ gengmep() {
 }
 
 getamount() {
-  cd $wd
-  grt.sh $depends | drt.sh | jq -r .vout[0].value | tr -d .
+  grt.sh $depends | drt.sh | jq -r '.vout[0].value' | tr -d .
 }
 
 dotx() {
@@ -326,7 +325,7 @@ test -s "$gmef" || myexit 1 "gmef missing"
 # sets vsize weight time height descendantcount descendantsize
 # ancestorcount ancestorsize wtxid base modified ancestor descendant
 . $gmep
-depends=$(jq -r .depends[0] < $gmef)
+depends=$(jq -r '.depends[0]' < $gmef)
 dce=$(echo $depends | ce.sh)
 test "$ancestorcount" = "$mcm" || {
   skipround
