@@ -264,7 +264,7 @@ cleanupr() {
   rm -rf $fdir/sff-s3/0*
   rm -rf $fdir/_toomany
   mymv $fdir/sff-s2 $fdir/sff-s3 $sfr
-  cat $fdir/sffgt | xargs rm -rf
+  cat $fdir/sffgt | (cd $sfr; xargs rm -rf)
   : > $nusff
 }
 
