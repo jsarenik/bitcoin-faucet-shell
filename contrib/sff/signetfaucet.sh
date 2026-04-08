@@ -17,17 +17,20 @@ mkdir -p $fdir/sff $fdir/sff-s2 $fdir/sff-s3 $fdir/sffrest
 addr=${1:-$faucetaddr}
 test -r $fdir/sff/$addr && { echo $addr; exit; }
 
-test -d $fdir/_toomany && exit 1
+tm=$fdir/_toomany
+tmr=$fdir/_toomanyr
+test -d $tm && exit 1
 sfs=$fdir/sff-sfs # sff-flag-slowdown
 sfm=$fdir/sff-sfm # max
 sfo=$fdir/sff-sfo # overall
-sfsn=2016
-sfsm=4032
+sfsn=916
+sfsm=2016
 sfso=6079
 newouts=0
 read -r newouts < $fdir/newouts
 test $newouts -gt $sfsn && mkdir -p $sfs || rm -rf $sfs
 test $newouts -gt $sfsm && mkdir -p $sfm || rm -rf $sfm
+test $newouts -gt $sfsm && mkdir -p $tm || rm -rf $tm
 test $newouts -gt $sfso && mkdir -p $sfo || rm -rf $sfo
 
 test "$1" = "-n" && exit

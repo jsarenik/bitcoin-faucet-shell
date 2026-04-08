@@ -374,7 +374,7 @@ dvs=$vsize
 dotx | txcat.sh | mysrt | safecat.sh $shf
 vsizenew=$(vsize.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
-test $vsizenew -le 97200 || mkdir -p $fdir/_toomany
+test $vsizenew -le 100000 || mkdir -p $fdir/_toomanyr
 #test $vsizenew -le 100000 || myexit 1 "TOO BIG"
 
 #########################################################
