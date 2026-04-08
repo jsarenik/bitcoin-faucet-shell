@@ -288,7 +288,7 @@ isoldb || {
   test -d $fdir/sffnewblock && myexit 1 "new block again"
 
   mymv $fdir/sff $sfr
-  ls -1 "$sfr" \
+  find "$sfr" -type f 2>/dev/null \
     | head -n 2100 | xargs mv -t $fdir/sff 2>/dev/null
 }
 ##############################
