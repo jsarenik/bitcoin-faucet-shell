@@ -262,7 +262,6 @@ cleanupr() {
   bch.sh gettransaction $intx | jq -r '.details[].address' \
     | safecat.sh $fdir/sffgt
   rm -rf $fdir/sff-s3/0*
-  rm -rf $fdir/_toomany
   mymv $fdir/sff-s2 $fdir/sff-s3 $sfr
   cat $fdir/sffgt | (cd $sfr; xargs rm -rf)
   : > $nusff
@@ -418,9 +417,8 @@ cat $nusff | sed "s/^/$newh/" | safecat.sh $of
 dotx | txcat.sh | mysrt | safecat.sh $shf
 sertl <$shf
 ret=$?
-
-grep -w error $errf && mkdir -p $fdir/_toomany
 echo ret $ret
+
 test "$ret" != "0" && { myminir; ret=$?; }
 
 myexit $ret "finn"
