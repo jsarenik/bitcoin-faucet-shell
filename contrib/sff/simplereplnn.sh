@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/sh
 a="/$0"; a="${a%/*}"; a="${a:-.}"; a="${a##/}/"; BINDIR=$(cd "$a" || true; pwd)
 hashv="$(sha256sum $0 | cut -b 59-64)"
 test "$1" = "-V" && { echo "v$hashv"; exit; }
@@ -338,16 +338,11 @@ outsum=$(($value))
 
 mkdir -p $fdir/sff-s2
 mkdir -p $fdir/sff-s3
-
 mkdir -p $sfr
-randomone=$(($RANDOM%2))
-ls -1 $fdir/sff/ | grep -q . || { ####
 
-test -d $fdir/_toomany || (
-cd $sfr
-  ls -1 2>/dev/null | head -n $((((98000-$vsize-51)/52)+$randomone)) \
+ls -1 $fdir/sff/ | grep -q . || { ####
+  find $sfr -type f 2>/dev/null | head -n $((((98000-$vsize-51)/52))) \
     | xargs mv -t $fdir/sff/ 2>/dev/null
-)
 } # ls above
 
 find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
