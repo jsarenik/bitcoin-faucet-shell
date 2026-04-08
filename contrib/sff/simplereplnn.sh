@@ -296,6 +296,7 @@ isoldb || {
 ##############################
 
 myminir() {
+  echo Replacing the same >&2
   : > $errf
   minirepl.sh 2>$errf >$sfl
 }
