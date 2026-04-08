@@ -73,8 +73,8 @@ myexit() {
   } || {
     mymv $fdir/sff $sfr
   }
-  echo stage3 $newouts >&2
-  echo $newouts > $fdir/sffnewouts
+  test "$newouts" = "" && read -r newouts < $fdir/newouts
+  echo newouts $newouts >&2
 
   echo ${2:-"SUCCESS $ret"} >&2
   rmdir $lock 2>/dev/null
@@ -356,6 +356,7 @@ find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
   | safeadd.sh $nusff
 
 newouts=$(wc -l < $nusff)
+test "$newouts" = "0" && newouts=1
 echo $newouts | safecat.sh $fdir/newouts
 max=$(cat $l | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
@@ -405,7 +406,6 @@ dvs=$sats
   test $max -gt 105991051601 && new=300000
   test $max -gt 115991051601 && new=500000
   test $max -gt 125991051601 && new=1100000
-  new=$(($new+$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$(($sats+$new*$newouts+480))
   hhasum=$(($outsum - $rest))
