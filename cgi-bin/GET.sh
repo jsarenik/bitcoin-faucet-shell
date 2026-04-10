@@ -6,6 +6,9 @@ fdir=${fdir:-/tmp}
 sdi=${sdi:-$HOME/.bitcoin/signet}
 myp=$sdi/wallets
 
+sfs=$fdir/sff-sfs
+tm=$fdir/_toomany
+
 res() {
   cat <<-EOF
 	HTTP/1.1 $1 $2
@@ -18,9 +21,7 @@ res() {
   exit
 }
 
-sfs=$fdir/sff-sfs
-sfo=$fdir/sff-sfo
-test -d $sfo && res 429 "lolio" application/json '{"message":"Overall limit reached. Wait a block."}'
+test -d $tm && res 429 "vsize" application/json '{"message":"Overall vsize limit reached. Wait a block."}'
 
 now=signet257
 rest=bublina.eu.org

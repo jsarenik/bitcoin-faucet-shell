@@ -21,17 +21,11 @@ tm=$fdir/_toomany
 tmr=$fdir/_toomanyr
 test -d $tm && exit 1
 sfs=$fdir/sff-sfs # sff-flag-slowdown
-sfm=$fdir/sff-sfm # max
-sfo=$fdir/sff-sfo # overall
-sfsn=916
-sfsm=2016
-sfso=6079
+sfsn=3016
 newouts=0
 read -r newouts < $fdir/newouts
 test $newouts -gt $sfsn && mkdir -p $sfs || rm -rf $sfs
-test $newouts -gt $sfsm && mkdir -p $sfm || rm -rf $sfm
-test $newouts -gt $sfsm && mkdir -p $tm || rm -rf $tm
-test $newouts -gt $sfso && mkdir -p $sfo || rm -rf $sfo
+test -d $tmr && mkdir -p $tm || rmdir $tm $tmr 2>/dev/null
 
 test "$1" = "-n" && exit
 
