@@ -332,7 +332,6 @@ test "$ancestorcount" = "$mcm" || {
   dothetf $(($mcm-$ancestorcount))
 }
 test "$descendantcount" = "1" || myexit 1 "descendantcount"
-test "$vsize" -lt 98299 || myexit 1 "early TOO BIG vsize $vsize"
 
 value=$(getamount)
 outsum=$(($value))
@@ -374,8 +373,7 @@ dvs=$vsize
 dotx | txcat.sh | mysrt | safecat.sh $shf
 vsizenew=$(vsize.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
-test $vsizenew -le 100000 || mkdir -p $fdir/_toomanyr
-#test $vsizenew -le 100000 || myexit 1 "TOO BIG"
+test $vsizenew -le 100000 || { mkdir -p $fdir/_toomanyr; myexit 1 "TOO BIG"; }
 
 #########################################################
 
