@@ -160,6 +160,10 @@ getamount() {
   grt.sh $depends | drt.sh | jq -r '.vout[0].value' | tr -d .
 }
 
+thousands() {
+  echo $1 | busybox sed -r -e ':L' -e 's=([0-9]+)([0-9]{3})=\1,\2=g' -e 't L'
+}
+
 dotx() {
   hha=$(hex ${hhasum:-0} - 16 | ce.sh)
   echo 0200000001${dce}0000000000fdffffff
@@ -170,7 +174,7 @@ dotx() {
   orl.sh "alt.signetfaucet.com"
   #orl.sh "alt.signetfaucet.com | $newouts payouts | This is a test network. Coins have no value. | v$hashv | Bitcoin since 2009"
   orl.sh "$newouts payouts"
-  orl.sh "of $new sats"
+  orl.sh "of $(thousands $new) sats"
   orl.sh "This is a test network. Coins have no value. | v$hashv"
   orl.sh "Just don't sh*tcoin"
   orl.sh "How many?"
