@@ -354,7 +354,7 @@ find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
   | safeadd.sh $nusff
 
 newouts=$(wc -l < $nusff)
-test "$newouts" = "0" && newouts=1
+test "$newouts" = "0" && myexit 1 "newouts zero"
 echo $newouts | safecat.sh $fdir/newouts
 max=$(cat $l | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
