@@ -175,7 +175,7 @@ dotx() {
   #orl.sh "alt.signetfaucet.com | $newouts payouts | This is a test network. Coins have no value. | v$hashv | Bitcoin since 2009"
   orl.sh "$newouts payouts"
   orl.sh "of $(thousands $new) sats"
-  orl.sh "This is a test network. Coins have no value. | v$hashv"
+  orl.sh "This is a test network. Coins have no value. | Please recycle and send used coins back or catapult them in an all-fee transaction. | v$hashv"
   orl.sh "Just don't sh*tcoin"
   orl.sh "How many?"
   orl.sh "There's only one"
@@ -396,16 +396,21 @@ sats=$(( $base + ($vsizenew+9)/10 ))
   }
 dvs=$sats
 
+  both=$(($sats+$ancestor-$base))
   new=1000
   test $max -gt 25991051601 && new=40000
   test $max -gt 35991051601 && new=80000
   test $max -gt 85991051601 && new=100000
-  test $max -gt 105991051601 && new=$((100000000/$newouts))
-  test $max -gt 115991051601 && new=$((200000000/$newouts))
-  test $max -gt 125991051601 && new=$((1100000000/$newouts))
+  test $max -gt 105991051601 && comp=100000000
+  test $max -gt 115991051601 && comp=200000000
+  test $max -gt 125991051601 && comp=400000000
+  test "$comp" = "" || new=$((($comp-$both)/$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
-  rest=$(($sats+$new*$newouts+480))
-  hhasum=$(($outsum - $rest))
+  rest=$((($new*$newouts)))
+  addrest=480 # for LNA transactions
+  rest=$(($rest+$addrest))
+  hhasum=$(($outsum - $sats - $rest))
+  echo "debug: base $base vsize $vsize vsizenew $vsizenew ancestor $ancestor both $(($sats+$ancestor-$base))" >&2
   echo ${hhasum:-0} | grep -q -- - && myexit 1 "hhasum ${hhasum:-0}"
 
 # needs $new and $nusff
