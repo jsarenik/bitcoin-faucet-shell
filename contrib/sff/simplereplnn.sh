@@ -28,6 +28,7 @@ shf=$fdir/sffhex
 phf=$fdir/sffphf
 pkf=$fdir/sffpkf
 myp=$sdi/wallets
+sfs=$fdir/sff-sfs # sff-flag-slowdown
 net=$(cd $myp; hnet.sh)
 wd=$myp/newnew
 dent=tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4
@@ -42,6 +43,47 @@ ad=bitcoindevs.xyz
 mcm=25 # will be 64 when miner runs clustered mempool
 
 ##########################################################################
+
+echo "Play. Here." | orl.sh | safecat.sh $fdir/cacheorl
+
+cacheorl() {
+  {
+  cat <<-EOF
+	Play. Here.
+	Come to Bitcoin Veterans (on X) at 10 am EST
+	@BitcoinVeterans Every weekday (Mon-Fri) 
+	How come? Read the white-paper. It's just nine pages short. 
+	www.bitcoin.org/bitcoin.pdf 
+	Run a node. Yes, you may start by running a QT GUI first.
+	Maybe even Knots first. I did. Liked the green logo.
+	All good for education.
+	You're not the same as you were yesterday. 
+	nakamotoinstitute.org
+	Learn to not take yourself so seriously. Take it easy. Breathe. Rest.
+	Focus on the process rather than the result.
+	Listen.
+	Enjoy the silence.
+	Don't push yorself.
+	Breathe.
+	Rest.
+	We are all human.
+	Smile.
+	:-)
+	Just don't sh*coin!
+	And finally come to the kitchen
+	Wednesdays at 17:00 UTC
+	kitchen.anyone.eu.org
+	--
+	Current signet details:
+	$(utc.sh)
+	--
+	Current mainnet details:
+	$(cd; utc.sh)
+	EOF
+  } | orl.sh | safecat.sh $fdir/cacheorl
+}
+
+test -d $sfs || cacheorl
 
 mymv() {
   all=$*
@@ -181,7 +223,8 @@ dotx() {
   orl.sh "There's only one"
   orl.sh "Bitcoin since 2009"
   echo f000000000000000 04 51024e73 # LN Anchor
-  orl.sh "Play. Here."
+  cat $fdir/cacheorl
+
   echo f000000000000000 04 51024e73 # LN Anchor
 
   cat $of
