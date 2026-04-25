@@ -201,7 +201,7 @@ gengmep() {
 }
 
 getamount() {
-  grt.sh $depends | drt.sh | jq -r '.vout[0].value' | tr -d .
+  grt.sh $depends | drt.sh | jq -r '.vout[0].value' | tr -d . | sed 's/^0\+//'
 }
 
 thousands() {
@@ -375,29 +375,6 @@ isoldb || {
 dolisto
 test -s $l || myexit 1 "dolisto"
 
-# was: clean-sff.sh
-tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
-txid=${tx%% *}
-test "$txid" = "" && myexit 1 "empty TXID"
-echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
-
-gengmep
-test -s "$gmef" || myexit 1 "gmef missing"
-
-# sets vsize weight time height descendantcount descendantsize
-# ancestorcount ancestorsize wtxid base modified ancestor descendant
-. $gmep
-depends=$(jq -r '.depends[0]' < $gmef)
-dce=$(echo $depends | ce.sh)
-test "$ancestorcount" = "$mcm" || {
-  skipround
-  dothetf $(($mcm-$ancestorcount))
-}
-test "$descendantcount" = "1" || myexit 1 "descendantcount"
-
-value=$(getamount)
-outsum=$(($value))
-
 mkdir -p $fdir/sff-s2
 mkdir -p $fdir/sff-s3
 mkdir -p $sfr
@@ -414,12 +391,34 @@ find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
 newouts=$(wc -l < $nusff)
 echo $newouts | safecat.sh $fdir/newouts
 test "$newouts" = "0" && myexit 1 "newouts zero"
+
 max=$(cat $l | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
   || myexit 1 "unknown max $max"
 test $max -gt 330 || myexit 1 "low max $max"
 new=$(($max/102/$newouts))
 test "$new" -gt 330 || myexit 1 "new $new is too low"
 rest=$(($max-$new*$newouts))
+
+# was: clean-sff.sh
+tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
+txid=${tx%% *}
+test "$txid" = "" && myexit 1 "empty TXID"
+echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
+
+gengmep
+test -s "$gmef" || myexit 1 "gmef missing"
+
+# sets vsize weight time height descendantcount descendantsize
+# ancestorcount ancestorsize wtxid base modified ancestor descendant
+. $gmep
+depends=$(jq -r '.depends[0]' < $gmef)
+value=$(getamount)
+dce=$(echo $depends | ce.sh)
+test "$ancestorcount" = "$mcm" || {
+  skipround
+  dothetf $(($mcm-$ancestorcount))
+}
+test "$descendantcount" = "1" || myexit 1 "descendantcount"
 
 # needs $new and $nusff
 of=$fdir/sff-outs
@@ -469,7 +468,7 @@ dvs=$sats
   rest=$((($new*$newouts)))
   addrest=480 # for LNA transactions
   rest=$(($rest+$addrest))
-  hhasum=$(($outsum - $sats - $rest))
+  hhasum=$(($value - $sats - $rest))
   echo "debug: base $base vsize $vsize vsizenew $vsizenew ancestor $ancestor both $(($sats+$ancestor-$base))" >&2
   echo ${hhasum:-0} | grep -q -- - && myexit 1 "hhasum ${hhasum:-0}"
 
