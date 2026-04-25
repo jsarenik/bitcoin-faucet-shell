@@ -443,13 +443,17 @@ test $vsizenew -le 100000 || { mkdir -p $fdir/_toomanyr; myexit 1 "TOO BIG"; }
 # stage 4
 ############
 
+gmmgen=$(gmm-gen.sh)
+tgt=$(($gmmgen/11))
 sats=$(( $base + ($vsizenew+9)/10 ))
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
+  test "$(($ofeer-$tgt))" -gt 1 || { ofeer=$tgt; sats=$(sats $(($ofeer+1)) $vsizenew); }
   test $feer -lt $ofeer && {
     sats=$(sats $(($ofeer+1)) $vsizenew)
     feer=$(feer $sats $vsizenew)
   }
+echo ofeer $ofeer feer $feer gmm-gen $gmmgen >&2
 dvs=$sats
 
   both=$(($sats+$ancestor-$base))
