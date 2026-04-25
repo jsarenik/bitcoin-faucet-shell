@@ -72,13 +72,15 @@ cacheorl() {
 	Just don't sh*coin!
 	And finally come to the kitchen
 	Wednesdays at 17:00 UTC
-	kitchen.anyone.eu.org
+	https://kitchen.anyone.eu.org
 	--
 	Current signet details:
 	$(utc.sh)
 	--
 	Current mainnet details:
 	$(cd; utc.sh)
+	--
+	random 4 bytes: $(hal random bytes 4)
 	EOF
   } | orl.sh | safecat.sh $fdir/cacheorl
 }
@@ -216,7 +218,7 @@ dotx() {
   orl.sh "alt.signetfaucet.com"
   #orl.sh "alt.signetfaucet.com | $newouts payouts | This is a test network. Coins have no value. | v$hashv | Bitcoin since 2009"
   orl.sh "$newouts payouts"
-  orl.sh "of $(thousands $new) sats"
+  orl.sh "of $(thousands $new) sats each"
   orl.sh "This is a test network. Coins have no value. | Please recycle and send used coins back or catapult them in an all-fee transaction. | v$hashv"
   orl.sh "Just don't sh*tcoin"
   orl.sh "How many?"
