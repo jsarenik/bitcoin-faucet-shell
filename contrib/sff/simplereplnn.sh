@@ -52,6 +52,8 @@ cacheorl() {
 	Play. Here.
 	Come to Bitcoin Veterans (on X) at 10 am EST
 	@BitcoinVeterans Every weekday (Mon-Fri) 
+	But never reuse addresses on a real Bitcoin.
+	This is a faucet and has reasons to do so.
 	How come? Read the white-paper. It's just nine pages short. 
 	www.bitcoin.org/bitcoin.pdf 
 	Run a node. Yes, you may start by running a QT GUI first.
