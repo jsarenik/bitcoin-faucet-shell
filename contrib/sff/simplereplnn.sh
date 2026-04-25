@@ -130,12 +130,12 @@ mylist() {
     | grep -w -e txid -e vout -e amount -e confirmations -e safe \
     | tr -d ' ,"' \
     | cut -d: -f2 \
-    | paste -d " " - - - - -
+    | paste -d " " - - - - - \
+    | sort -rn -k3
 }
 
 doinit() {
-  #mylist | grep -v " 0 [tf][a-z]\+$" | grep " true$" | sort -rn -k3
-  mylist | grep " true$" | sort -rn -k3
+  mylist | grep " true$"
 }
 
 doinito() {
@@ -144,7 +144,7 @@ doinito() {
 }
 
 dolist() {
-  mylist | grep " 0 true$" | sort -rn -k3
+  mylist | grep " 0 true$"
 }
 
 dolisto() {
@@ -180,7 +180,7 @@ isnewb() {
 }
 
 isoldb() {
-  mylist | grep ' 0 true$'
+  mylist | grep -q ' 0 true$'
 }
 
 printouts() {
@@ -249,17 +249,16 @@ sats() {
   echo $out
 }
 
-##########################################################################
-
-# Early checks
-
-## Is bitcoind talking RPC to us (from the wallet dir)?
-cd $myp
-bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
-cd $wd
-
-## are we online?
-ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
+swfc() {
+  # Send With Fee Calculation
+  addr=${1:-$otra}
+  test -s $l || myexit 1 "swfc"
+  feenit=$(awklist-all.sh -d $addr -m "$ad   " < $l \
+    | mktx.sh | crt.sh | mysrt | fee.sh)
+  awklist-all.sh -f $feenit -d $addr -m "$ad   " < $l \
+    | mktx.sh | crt.sh | mysrt | safecat.sh $shf
+  sertl <$shf
+}
 
 ### ############# DO THE $mcm ###################
 ###
@@ -316,14 +315,43 @@ cleanupr() {
   : > $nusff
 }
 
+myminir() {
+  echo Replacing the same >&2
+  : > $errf
+  minirepl.sh 2>$errf >$sfl
+}
+
+skipround() {
+  # quickfix
+  dolisto
+
+  tx=$(cat $l | head -1 | grep .) || myexit 1 "skipround newblock tx"
+  txid=${tx%% *}
+
+  #myminir
+}
+
+##########################################################################
+
+# Early checks
+
+## Is bitcoind talking RPC to us (from the wallet dir)?
+cd $myp
+bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
+cd $wd
+
+## are we online?
+ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
+
 ##############################
 ### from blocknotify-signet.sh
 isoldb || {
-  rmdir $fdir/sffnewblock
+  rmdir $fdir/sffnewblock 2>/dev/null
   mkdir -p $sfr
   mymv $fdir/sff $sfr
 
   doinito
+  test -s $l || myexit 1 "doinito in isoldb"
 
   tx=$(cat $l | head -1 | grep .) || myexit 1 "isoldb newblock tx"
   txid=${tx%% *}
@@ -344,23 +372,8 @@ isoldb || {
 ##############################
 ##############################
 
-myminir() {
-  echo Replacing the same >&2
-  : > $errf
-  minirepl.sh 2>$errf >$sfl
-}
-
-skipround() {
-  # quickfix
-  dolisto
-
-  tx=$(cat $l | head -1 | grep .) || myexit 1 "skipround newblock tx"
-  txid=${tx%% *}
-
-  myminir
-}
-
 dolisto
+test -s $l || myexit 1 "dolisto"
 
 # was: clean-sff.sh
 tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
@@ -425,8 +438,6 @@ echo vsize $vsize vsizenew $vsizenew >&2
 test $vsizenew -le 100000 || { mkdir -p $fdir/_toomanyr; myexit 1 "TOO BIG"; }
 
 #########################################################
-
-dvs=$(( $vsizenew+$base ))
 
 ############
 # stage 4
