@@ -20,12 +20,11 @@ test -r $fdir/sff/$addr && { echo $addr; exit; }
 tm=$fdir/_toomany
 tmr=$fdir/_toomanyr
 sfs=$fdir/sff-sfs # sff-flag-slowdown
-sfsn=3016
+sfsn=2016
 newouts=0
 read -r newouts < $fdir/newouts
 test $newouts -gt $sfsn && mkdir -p $sfs || rm -rf $sfs
 test $newouts -gt $sfsn || rmdir $tm $tmr 2>/dev/null
-test -d $tmr && mkdir -p $tm || rmdir $tm $tmr 2>/dev/null
 test -d $tm && exit 1
 
 test "$1" = "-n" && exit
