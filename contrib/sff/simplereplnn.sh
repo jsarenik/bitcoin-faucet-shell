@@ -126,25 +126,30 @@ myexit() {
 }
 
 mylist() {
-  : > $l
   bch.sh listunspent ${1:-0} \
     | grep -w -e txid -e vout -e amount -e confirmations -e safe \
     | tr -d ' ,"' \
     | cut -d: -f2 \
-    | paste -d " " - - - - - \
-    | safecat.sh $l
-  test -s $l || myexit 1 "mylist"
+    | paste -d " " - - - - -
+}
+
+doinit() {
+  #mylist | grep -v " 0 [tf][a-z]\+$" | grep " true$" | sort -rn -k3
+  mylist | grep " true$" | sort -rn -k3
 }
 
 doinito() {
-  mylist
-  grep " true$" $l | sort -rn -k3
-  #grep -v " 0 [tf][a-z]\+$" | grep " true$" | sort -rn -k3
+  : > $l
+  doinit | safecat.sh $l
+}
+
+dolist() {
+  mylist | grep " 0 true$" | sort -rn -k3
 }
 
 dolisto() {
-  mylist
-  grep " 0 true$" $l | sort -rn -k3
+  : > $l
+  dolist | safecat.sh $l
 }
 
 mysrt() {
@@ -159,8 +164,8 @@ catapultleftovers() {
   list=$tmpc
   lh=${list}-hex
 
-  mylist
-  grep " 0 false$" $l | safecat.sh $list
+  : > $list
+  mylist | grep " 0 false$" | safecat.sh $list
   test -s $list || return
   num=$(wc -l < $list)
 
@@ -171,13 +176,11 @@ catapultleftovers() {
 }
 
 isnewb() {
-  mylist
-  grep ' [^0]+ true$' $l
+  mylist | grep ' [^0]+ true$'
 }
 
 isoldb() {
-  mylist
-  grep ' 0 true$' $l
+  mylist | grep ' 0 true$'
 }
 
 printouts() {
