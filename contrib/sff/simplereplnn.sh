@@ -16,7 +16,6 @@ lock=$fdir/locksff
 mkdir $lock || exit 1
 
 signetfaucet.sh -n
-#gmm-gen.sh is in blocknotify-signet.sh now
 
 l=$fdir/sff-mylist
 errf=$fdir/sff-err
@@ -203,7 +202,8 @@ gengmep() {
 }
 
 getamount() {
-  grt.sh $depends | drt.sh | jq -r '.vout[0].value' | tr -d . | sed 's/^0\+//'
+  grt.sh $depends | drt.sh | jq -r '.vout[0].value' | tr -d . | sed 's/^0\+//' | grep . \
+    || myexit 1 "getamount"
 }
 
 thousands() {
@@ -329,8 +329,8 @@ skipround() {
 
   tx=$(cat $l | head -1 | grep .) || myexit 1 "skipround newblock tx"
   txid=${tx%% *}
-
-  #myminir
+  cleanupr $txid
+  myminir
 }
 
 ##########################################################################
@@ -341,6 +341,7 @@ skipround() {
 cd $myp
 bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 cd $wd
+gmm-gen.sh
 
 ## are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
@@ -420,6 +421,7 @@ test "$ancestorcount" = "$mcm" || {
   skipround
   dothetf $(($mcm-$ancestorcount))
 }
+test $ancestorcount -ge $mcm || myexit 1 "still needs dothetf more"
 test "$descendantcount" = "1" || myexit 1 "descendantcount"
 
 # needs $new and $nusff
@@ -444,8 +446,8 @@ test $vsizenew -le 100000 || { mkdir -p $fdir/_toomanyr; myexit 1 "TOO BIG"; }
 # stage 4
 ############
 
-gmmgen=$(gmm-gen.sh)
-tgt=$(($gmmgen/11))
+gmm=$(gmm.sh)
+tgt=$(($gmm/11))
 sats=$(( $base + ($vsizenew+9)/10 ))
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
