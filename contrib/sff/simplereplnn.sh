@@ -16,8 +16,6 @@ lock=$fdir/locksff
 mkdir $lock || exit 1
 
 signetfaucet.sh -n
-eval $(utc.sh | grep ^best)
-hold=$best
 
 l=$fdir/sff-mylist
 errf=$fdir/sff-err
@@ -271,9 +269,8 @@ swfc() {
 ###
 ### ###########################################
 dothetf() {
-eval $(utc.sh | grep ^best)
-test "$hold" = "$best" || myexit 1 "new block"
 
+test -s $l || dolisto
 feenit=$(awklist-all.sh -d $otra -m "$ad   " < $l \
   | mktx.sh | crt.sh | mysrt | fee.sh)
 echo $feenit > $fdir/feenit
@@ -335,7 +332,7 @@ skipround() {
   tx=$(cat $l | head -1 | grep .) || myexit 1 "skipround newblock tx"
   txid=${tx%% *}
   cleanupr $txid
-  myminir
+  #myminir
 }
 
 ##########################################################################
@@ -424,6 +421,7 @@ value=$(getamount)
 dce=$(echo $depends | ce.sh)
 test "$ancestorcount" = "$mcm" || {
   skipround
+  dolisto
   dothetf $(($mcm-$ancestorcount))
 }
 test $ancestorcount -ge $mcm || myexit 1 "still needs dothetf more"
