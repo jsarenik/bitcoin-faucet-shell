@@ -486,6 +486,7 @@ newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
 cat $nusff | sed "s/^/$newh/" | safecat.sh $of
 
 dotx | txcat.sh | mysrt | safecat.sh $shf
+isoldb || myexit 1 "new block just before the end"
 sertl <$shf
 ret=$?
 echo ret $ret
