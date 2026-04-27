@@ -269,7 +269,7 @@ swfc() {
 ###
 ### ###########################################
 dothetf() {
-#isoldb || myexit 1 "isoldb in dothetf"
+isoldb || myexit 1 "isoldb in dothetf"
 
 feenit=$(awklist-all.sh -d $otra -m "$ad   " < $l \
   | mktx.sh | crt.sh | mysrt | fee.sh)
@@ -294,6 +294,7 @@ do
     :
   done
   }
+  isoldb || myexit 1 "isoldb in dothetf l2"
   fee=$(awklist-all.sh -d $otra -m "$ad $i" < $l \
     | mktx.sh | crt.sh | mysrt | fee.sh)
   echo $fee > $fdir/fee
