@@ -123,6 +123,7 @@ myexit() {
 
   echo ${2:-"SUCCESS $ret"} >&2
   rmdir $lock 2>/dev/null
+  test -s $errf && cat $errf
   exit $ret
 }
 
