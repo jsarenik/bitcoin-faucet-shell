@@ -16,6 +16,8 @@ lock=$fdir/locksff
 mkdir $lock || exit 1
 
 signetfaucet.sh -n
+eval $(utc.sh | grep ^best)
+hold=$best
 
 l=$fdir/sff-mylist
 errf=$fdir/sff-err
@@ -269,7 +271,8 @@ swfc() {
 ###
 ### ###########################################
 dothetf() {
-isoldb || myexit 1 "isoldb in dothetf"
+eval $(utc.sh | grep ^best)
+test "$hold" = "$best" || myexit 1 "new block"
 
 feenit=$(awklist-all.sh -d $otra -m "$ad   " < $l \
   | mktx.sh | crt.sh | mysrt | fee.sh)
