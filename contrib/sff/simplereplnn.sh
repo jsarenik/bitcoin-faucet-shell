@@ -240,7 +240,7 @@ feer() {
   # Fee-rate $abs_sats_fee $divisor_vsize
   mysats=$1
   mydiv=$2
-  fr=$(( (100*$mysats+$mydiv-1)/$mydiv ))
+  fr=$(( (1000*$mysats+$mydiv-1)/$mydiv ))
   echo $fr
 }
 
@@ -248,19 +248,8 @@ sats() {
   # Absolute_sats_fee $feer $divisor_vsize
   myfeer=$1
   mydiv=$2
-  out=$(( (($myfeer*$mydiv)+99)/100 ))
+  out=$(( (($myfeer*$mydiv)+999)/1000 ))
   echo $out
-}
-
-swfc() {
-  # Send With Fee Calculation
-  addr=${1:-$otra}
-  test -s $l || myexit 1 "swfc"
-  feenit=$(awklist-all.sh -d $addr -m "$ad   " < $l \
-    | mktx.sh | crt.sh | mysrt | fee.sh)
-  awklist-all.sh -f $feenit -d $addr -m "$ad   " < $l \
-    | mktx.sh | crt.sh | mysrt | safecat.sh $shf
-  sertl <$shf
 }
 
 ### ############# DO THE $mcm ###################
@@ -269,42 +258,7 @@ swfc() {
 ###
 ### ###########################################
 dothetf() {
-
-test -s $l || dolisto
-feenit=$(awklist-all.sh -d $otra -m "$ad   " < $l \
-  | mktx.sh | crt.sh | mysrt | fee.sh)
-echo $feenit > $fdir/feenit
-awklist-all.sh -f $feenit -d $otra -m "$ad   " < $l \
-  | mktx.sh | crt.sh | mysrt | safecat.sh $shf
-sertl <$shf
-
-  test "$1" -gt "1" && {
-
-lpr=$fdir/l123p
-rm -rf $lpr
-: > $lpr
-dolisto
-for i in $(seq -w 02 ${1:-$mcm})
-do
-  test -s "$lpr" && {
-  until
-    dolisto
-    ! cmp $l $lpr
-  do
-    :
-  done
-  }
-  isoldb || myexit 1 "isoldb in dothetf l2"
-  fee=$(awklist-all.sh -d $otra -m "$ad $i" < $l \
-    | mktx.sh | crt.sh | mysrt | fee.sh)
-  echo $fee > $fdir/fee
-  awklist-all.sh -f $fee -d $otra -m "$ad $i" < $l \
-    | mktx.sh | crt.sh | mysrt | safecat.sh $shf
-  sertl <$shf
-  grep -q . $sfl || break
-  cp $l $lpr
-done
-  }
+  while 25new.sh $otra; do : ; done
 }
 
 cleanupr() {
@@ -384,26 +338,6 @@ mkdir -p $fdir/sff-s2
 mkdir -p $fdir/sff-s3
 mkdir -p $sfr
 
-ls -1 $fdir/sff/ | grep -q . || { ####
-  find $sfr -type f 2>/dev/null | head -n $((((98000-$vsize-51)/52))) \
-    | xargs mv -t $fdir/sff/ 2>/dev/null
-} # ls above
-
-find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
-  | xargs cat \
-  | safeadd.sh $nusff
-
-newouts=$(wc -l < $nusff)
-echo $newouts | safecat.sh $fdir/newouts
-test "$newouts" = "0" && myexit 1 "newouts zero"
-
-max=$(cat $l | sum.sh | tr -d . | sed 's/^0\+//' | grep '^[0-9]\+$') \
-  || myexit 1 "unknown max $max"
-test $max -gt 330 || myexit 1 "low max $max"
-new=$(($max/102/$newouts))
-test "$new" -gt 330 || myexit 1 "new $new is too low"
-rest=$(($max-$new*$newouts))
-
 # was: clean-sff.sh
 tx=$(cat $l | head -1 | grep .) || myexit 1 "EARLY newblock tx"
 txid=${tx%% *}
@@ -427,6 +361,32 @@ test "$ancestorcount" = "$mcm" || {
 test $ancestorcount -ge $mcm || myexit 1 "still needs dothetf more"
 test "$descendantcount" = "1" || myexit 1 "descendantcount"
 
+ls -1 $fdir/sff/ | grep -q . || { ####
+find $sfr -type f 2>/dev/null | head -n $(( (100000-$vsize)/510 )) \
+    | xargs mv -t $fdir/sff/ 2>/dev/null
+} # ls above
+
+find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
+  | xargs cat \
+  | safeadd.sh $nusff
+
+newouts=$(wc -l < $nusff)
+echo $newouts | safecat.sh $fdir/newouts
+#test "$newouts" = "0" && myexit 1 "newouts zero"
+test "$newouts" -lt "112" && {
+  echo 22 51207160b81728928041c1e339dfa8faeeae44225c143d1c77fd5ca339416a4a7e3a \
+    | safeadd.sh $nusff
+  newouts=$(wc -l < $nusff)
+  echo $newouts | safecat.sh $fdir/newouts
+}
+
+max=$(cat $l | sums.sh) \
+  || myexit 1 "unknown max $max"
+test $max -gt 330 || myexit 1 "low max $max"
+new=$(($max/102/$newouts))
+test "$new" -gt 330 || myexit 1 "new $new is too low"
+rest=$(($max-$new*$newouts))
+
 # needs $new and $nusff
 of=$fdir/sff-outs
 newh=$(hex $new - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
@@ -441,7 +401,14 @@ dvs=$vsize
 dotx | txcat.sh | mysrt | safecat.sh $shf
 vsizenew=$(vsize.sh < $shf | grep .) || myexit 1 "missing vsizenew"
 echo vsize $vsize vsizenew $vsizenew >&2
-test $vsizenew -le 100000 || { mkdir -p $fdir/_toomanyr; myexit 1 "TOO BIG"; }
+if
+  test $vsizenew -le 100000
+then
+  rmdir $fdir/_toomanyr
+else
+  myminir
+  mkdir -p $fdir/_toomanyr; myexit 1 "TOO BIG"
+fi
 
 #########################################################
 
@@ -450,11 +417,13 @@ test $vsizenew -le 100000 || { mkdir -p $fdir/_toomanyr; myexit 1 "TOO BIG"; }
 ############
 
 gmm=$(gmm.sh)
-tgt=$(($gmm/11))
+tgt=$(($gmm*9))
 sats=$(( $base + ($vsizenew+9)/10 ))
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
-  test "$(($ofeer-$tgt))" -gt 1 || { ofeer=$tgt; sats=$(sats $(($ofeer+1)) $vsizenew); }
+  test "$gmm" = "100" || {
+    test "$(($ofeer-$tgt))" -gt 1 || { ofeer=$tgt; sats=$(sats $(($ofeer+1)) $vsizenew); }
+  }
   test $feer -lt $ofeer && {
     sats=$(sats $(($ofeer+1)) $vsizenew)
     feer=$(feer $sats $vsizenew)

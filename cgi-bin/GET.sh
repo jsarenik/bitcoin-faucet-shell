@@ -21,7 +21,10 @@ res() {
   exit
 }
 
-test -d $tm && res 429 "vsize" application/json '{"message":"Overall vsize limit reached. Wait a block."}'
+test -d $tm && {
+  read -r newouts < $fdir/newouts
+  res 429 "vsize" application/json '''{"message":"Overall vsize limit reached. Wait a block or more. There are this many in the queue: '$newouts'"}'''
+}
 
 now=signet257
 rest=bublina.eu.org
