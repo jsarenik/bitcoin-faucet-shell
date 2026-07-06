@@ -82,6 +82,8 @@ cacheorl() {
 	$(cd; utc.sh)
 	--
 	random 4 bytes: $(hal random bytes 4)
+	--
+	$(cat /tmp/wall)
 	EOF
   } | orl.sh | safecat.sh $fdir/cacheorl
 }
