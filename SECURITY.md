@@ -16,3 +16,8 @@ inside your head and the interpretation uses all
 your memories and fantasies. Just watch out and
 contrary to what anyone can tell you, learn to
 moderate yourself.
+# Security Policy
+
+# Bitcoin
+
+Read the SECURITY.md file in Bitcoin's repository.
