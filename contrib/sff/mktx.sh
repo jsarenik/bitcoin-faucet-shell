@@ -12,11 +12,12 @@
 # out
 #  addr,amount
 
+#test "$1" = "-v" && { tver=$2; shift 2; }
 net=$(hnet.sh)
 height=1
 #test "$net" = "signet" || . /dev/shm/UpdateTip-$net
 echo $PWD | grep -q chaincode || . /dev/shm/UpdateTip-$net
-tmp=$(mktemp)
+tmp=$(mktemp) || exit 1
 if
   test -n "$1" && test -d $1
 then
@@ -60,4 +61,5 @@ echo
 echo $height
 #$(($RANDOM%12345))
 echo true
-rm $tmp
+#echo ${tver:-2}
+rm -f ${tmp}*

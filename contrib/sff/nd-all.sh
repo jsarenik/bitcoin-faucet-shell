@@ -15,6 +15,12 @@ echon() {
 echom() {
   echo -n " $next"
 }
+echomm() {
+  echo -n "  $next"
+}
+echommm() {
+  echo -n "   $next"
+}
 mydd() {
   next=$(busybox dd bs=2 count=${1:-1} 2>/dev/null)
   ##many=$((2*${1:-1}))
@@ -90,7 +96,7 @@ echo " #O-0..$((0x$nextd-1))"
 for i in $(seq 0 $((0x$nextd-1)))
 do
   mydd 8
-  echom
+  echomm
   mydd; scs; echom
   test "$next" = "00" || { mydd $((0x$nextd)); echom; }
   echo " #O-$i"
@@ -105,7 +111,7 @@ echo " #W-0..$((0x$inputs-1))"
 for i in $(seq 0 $(($inputs-1)))
 do
   #echo "# witness for input $i"
-  mydd; scs; echom
+  mydd; scs; echommm
   for y in $(seq $((0x$nextd)))
   do
     mydd; scs; echom

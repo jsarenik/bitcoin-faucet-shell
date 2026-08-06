@@ -28,5 +28,5 @@ test $lend -gt $((0xffff)) && {
   leno="fe$(printf "%08x" $(($lend+6)) | ce.sh)"
 }
 
-echo 0000000000000000 $leno 6a$len
+printf "0000000000000000 $leno 6a$len "
 test "$myraw" = "1" && grep . < $msgf || xxd -p < $msgf

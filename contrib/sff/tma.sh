@@ -10,5 +10,5 @@ printf "["
 do
 echo "\"$txhex\""
 done | paste -s -d, | tr -d '\n'; echo ']'
-printf "0" # maxfeerate
+##printf "0" # maxfeerate
 } | bch.sh -stdin testmempoolaccept

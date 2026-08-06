@@ -1,11 +1,15 @@
 #!/bin/sh
 tmp=$(mktemp /tmp/tmp25new-XXXXXX)
+cd ~/.bitcoin/signet/wallets/newnew
 trap "rm $tmp" EXIT INT QUIT
 list.sh | grep " true$" | safecat.sh $tmp
 sum=$(sums.sh < $tmp)
+#addr=$1
+#test "$addr" = "" && test -r a && read -r addr < a
 addr=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
 
-gmm=$(gmm.sh)
+gmm=$(gmm-gen.sh)
+test "$gmm" = "100" || gmm=1000
 ad=bitcoindevs.xyz
 
 gentx() {
@@ -22,6 +26,8 @@ gentx() {
 
 sendit() {
   gentx $(gentx | txcat.sh | srt.sh | fee.sh -o) "$1" "$addr" | txcat.sh | srt.sh | safecat.sh $tmp
+  #msert.sh < $tmp
+  #>/dev/null 2>&1
   sert.sh < $tmp
 }
 

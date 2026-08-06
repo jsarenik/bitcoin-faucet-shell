@@ -12,20 +12,28 @@ echom() {
 }
 mydd() {
   many=$((2*${1:-1}))
-  index=$((2*${2:-0}))
+  index=$((2*${2:-0}+${prevmany:-0}))
   next=${tx:$index:$many}
-  tx=${tx:$many}
+  prevmany=$((${prevmany:-0}+$many))
+  #tx=${tx:$many}
 }
+
+#mydd() {
+#  many=$((2*${1:-1}))
+#  index=$((2*${2:-0}))
+#  next=${tx:$index:$many}
+#  tx=${tx:$many}
+#}
 scs() {
   test $((0x$next)) -lt 253 && return
   test $((0x$next)) -eq 253 && {
-    echom; res=""; mydd; res=$next; mydd; next=$next$res
+    echom; res=""; printf fd; mydd; res=$next; mydd; next=$next$res
   }
   test $((0x$next)) -eq 254 && {
-    echom; mydd 4; next=$(echo $next | ce.sh)
+    echom; mydd 4; printf fe; next=$(echo $next | ce.sh)
   }
   test $((0x$next)) -eq 255 && {
-    echom; mydd 8; next=$(echo $next | ce.sh)
+    echom; mydd 8; printf ff; next=$(echo $next | ce.sh)
   }
 }
 

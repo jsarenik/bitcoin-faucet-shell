@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# takes list.sh on input, see simplereplnn.sh for example use
-
 net=$(hnet.sh)
 faucet=tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4
 feerate=1000
@@ -12,8 +10,12 @@ test "$1" = "-d" && { addrout=$2; shift 2; }
 test "$1" = "-o" && { addrout=$2; shift 2; }
 test "$1" = "-f" && { fee=$2; shift 2; }
 test "$1" = "-fm" && { feerate=1000; shift; }
+message="on signet we learn"
+message="please consider rebasing Inquisition to v29.0 and mine zero outputs on signet"
 message="everything's fine | On signet we learn."
-#message="ZhouTonged"
+test "$(date +%w)" = "5" && message="שבת שלום"
+test "$net" = "main" && message="strike.me"
+test "$net" = "main" && message="cfpages-limits.pages.dev"
 test "$net" = "main" && message="Bitcoin Army #pardonsamourai"
 
 test "$1" = "-m" && { message=$2; shift 2; }

@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # Adds my address to sff
+exit 1
 
 #ls /tmp/sff | grep -q . && exit
 test "$1" = "-f" \
@@ -13,6 +14,7 @@ cat \
   addresses-legacy-spk \
   | shuf | head -${1:-1} | while read addr size spk rest;
 do
+  echo $spk >&2
   echo "$size $spk" > /tmp/sff/$addr
 echo $addr
 done

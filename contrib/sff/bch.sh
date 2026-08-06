@@ -3,6 +3,8 @@
 test -d "$1" && { cd "$1"; shift; }
 test -d .bitcoin && cd .bitcoin
 ls | grep -q . || exit 1
+#test -d $HOME/tcmalloc \
+#  && export LD_PRELOAD=$HOME/tcmalloc/lib64/libtcmalloc_minimal.so
 
 # Handling of inside-the-wallet-dir cases
 test -r wallet.dat && {
@@ -33,6 +35,6 @@ test "${chain%${chain#liquid}}" = "liquid" && cmd=elements-cli
 add=""
 test "$1" = "-k" && exec pkill -f "$cmd -datadir=${ddir:-$PWD}"
 test "$1" = "-g" && exec pgrep -f "$cmd -datadir=${ddir:-$PWD}"
-test "$1" = "-t" && add="-rpcclienttimeout=0"
+test "$1" = "-t" && { add="-rpcclienttimeout=0"; shift; }
 
 exec $cmd $add -datadir=${ddir:-$PWD} -chain=${chain:-main} $w "$@"

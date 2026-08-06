@@ -105,7 +105,9 @@ sertl() {
   : > $sfl
   {
   cat
-  echo 0.21
+  echo 0.00010000
+#      1.00000000
+#        12345678
   } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
       2>$errf >$sfl
 }
@@ -299,7 +301,6 @@ skipround() {
 cd $myp
 bch.sh echo hello | grep -q . || myexit 1 "early bitcoin-cli echo hello"
 cd $wd
-gmm-gen.sh
 
 ## are we online?
 ping -qc1 1.1.1.1 2>/dev/null >&2 || myexit 1 offline
@@ -375,12 +376,12 @@ find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
 newouts=$(wc -l < $nusff)
 echo $newouts | safecat.sh $fdir/newouts
 #test "$newouts" = "0" && myexit 1 "newouts zero"
-test "$newouts" -lt "112" && {
-  echo 22 51207160b81728928041c1e339dfa8faeeae44225c143d1c77fd5ca339416a4a7e3a \
-    | safeadd.sh $nusff
-  newouts=$(wc -l < $nusff)
-  echo $newouts | safecat.sh $fdir/newouts
-}
+#test "$newouts" -lt "0" && {
+#  echo 22 51207160b81728928041c1e339dfa8faeeae44225c143d1c77fd5ca339416a4a7e3a \
+#    | safeadd.sh $nusff
+#  newouts=$(wc -l < $nusff)
+#  echo $newouts | safecat.sh $fdir/newouts
+#}
 
 max=$(cat $l | sums.sh) \
   || myexit 1 "unknown max $max"
@@ -418,12 +419,14 @@ fi
 # stage 4
 ############
 
-gmm=$(gmm.sh)
-tgt=$(($gmm*9))
 sats=$(( $base + ($vsizenew+9)/10 ))
+gmm=$(gmm-gen.sh $sats $vsizenew)
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test "$gmm" = "100" || {
+    #tgt=$(($(nextmed-safe.sh 0 $vsizenew)*2))
+    tgt=$(($(gmm-gen.sh $sats $vsizenew)*2))
+    #|| tgt=$(($gmm*3))
     test "$(($ofeer-$tgt))" -gt 1 || { ofeer=$tgt; sats=$(sats $(($ofeer+1)) $vsizenew); }
   }
   test $feer -lt $ofeer && {

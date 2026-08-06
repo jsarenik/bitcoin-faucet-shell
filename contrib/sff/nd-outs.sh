@@ -12,9 +12,10 @@ echom() {
 }
 mydd() {
   many=$((2*${1:-1}))
-  index=$((2*${2:-0}))
+  index=$((2*${2:-0}+${prevmany:-0}))
   next=${tx:$index:$many}
-  tx=${tx:$many}
+  prevmany=$((${prevmany:-0}+$many))
+  #tx=${tx:$many}
 }
 scs() {
   test $((0x$next)) -lt 253 || {
