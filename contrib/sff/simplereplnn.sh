@@ -403,11 +403,11 @@ dvs=$vsize
 
 dotx | txcat.sh | mysrt | safecat.sh $shf
 vsizenew=$(vsize.sh < $shf | grep .) || myexit 1 "missing vsizenew"
-echo vsize $vsize vsizenew $vsizenew >&2
+newfee=$(fee.sh < $shf)
 if
   test $vsizenew -le 100000
 then
-  rmdir $fdir/_toomanyr
+  rmdir $fdir/_toomanyr 2>/dev/null
 else
   myminir
   mkdir -p $fdir/_toomanyr; myexit 1 "TOO BIG"
@@ -419,24 +419,26 @@ fi
 # stage 4
 ############
 
+ancestorso=$(($ancestor-$descendant))
+newancf=$(($ancestorso+$newfee))
+newancs=$(($ancestorsize-$vsize+vsizenew))
+
 sats=$(( $base + ($vsizenew+9)/10 ))
 gmm=$(gmm-gen.sh $sats $vsizenew)
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test "$gmm" = "100" || {
-    #tgt=$(($(nextmed-safe.sh 0 $vsizenew)*2))
-    tgt=$(($(gmm-gen.sh $sats $vsizenew)*2))
-    #|| tgt=$(($gmm*3))
+    tgt=$(($(gmm-gen.sh $ancestor $ancestorsize)*2))
+    #tgt=$(($(gmm-gen.sh $newancf $newancs)*2))
     test "$(($ofeer-$tgt))" -gt 1 || { ofeer=$tgt; sats=$(sats $(($ofeer+1)) $vsizenew); }
   }
   test $feer -lt $ofeer && {
     sats=$(sats $(($ofeer+1)) $vsizenew)
     feer=$(feer $sats $vsizenew)
   }
-echo ofeer $ofeer feer $feer gmm-gen $gmmgen >&2
 dvs=$sats
 
-  both=$(($sats+$ancestor-$base))
+  both=$(($sats+$ancestorso))
   new=1000
   test $max -gt 25991051601 && new=40000
   test $max -gt 35991051601 && new=80000
@@ -450,7 +452,6 @@ dvs=$sats
   addrest=480 # for LNA transactions
   rest=$(($rest+$addrest))
   hhasum=$(($value - $sats - $rest))
-  echo "debug: base $base vsize $vsize vsizenew $vsizenew ancestor $ancestor both $(($sats+$ancestor-$base))" >&2
   echo ${hhasum:-0} | grep -q -- - && myexit 1 "hhasum ${hhasum:-0}"
 
 # needs $new and $nusff
