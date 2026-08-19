@@ -428,8 +428,8 @@ gmm=$(gmm-gen.sh $sats $vsizenew)
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test "$gmm" = "100" || {
-    tgt=$(($(gmm-gen.sh $ancestor $ancestorsize)*2))
-    #tgt=$(($(gmm-gen.sh $newancf $newancs)*2))
+    tgt=$(($(gmm-gen.sh $ancestor $ancestorsize)*3))
+    #tgt=$(($(gmm-gen.sh $newancf $newancs)*3))
     test "$(($ofeer-$tgt))" -gt 1 || { ofeer=$tgt; sats=$(sats $(($ofeer+1)) $vsizenew); }
   }
   test $feer -lt $ofeer && {
