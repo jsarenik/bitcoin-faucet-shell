@@ -8,6 +8,7 @@ test "$conf" = "" || . $conf
 fdir=${fdir:-/tmp}
 sdi=${sdi:-$HOME/.bitcoin/signet}
 myp=$sdi/wallets
+nusff=$fdir/nosff
 
 faucetaddr=tb1pupx8xare6jwl87nu058lc4ckqrrd3ugd9q6czxz9my8c49s085pq54ayff 
 faucetaddr=tb1p4tp4l6glyr2gs94neqcpr5gha7344nfyznfkc8szkreflscsdkgqsdent4
@@ -40,7 +41,9 @@ echo $addr | grep -Eq '^[0-9a-f]+$' && {
     || exit 1
   kl=$(printf "%02x" $((${#addr}/2)) )
   klp=$(printf "%02x" $((0x$kl+2)) )
-  echo "$klp ${kl}${addr}ac" | safecat.sh $fdir/sffrest/$addr
+  line="$klp ${kl}${addr}ac"
+  grep -qF "$line" $nusff && exit 1
+  echo "$line" | safecat.sh $fdir/sffrest/$addr
   echo $addr
   exit 0
 }
@@ -50,8 +53,11 @@ cd $myp/ae
 spk=$(hh.sh address inspect ${addr} \
   | grep . \
   | grep -m1 '^    "hex": ' \
-  | cut -d: -f2 | tr -d ' ",' | grep .) \
-  && { echo "$(hex $((${#spk}/2)) - 2) $spk" | nicecat.sh $fdir/sffrest/$addr \
+  | cut -d: -f2 | tr -d ' ",' | grep .) || exit 1
+line=$(echo "$(hex $((${#spk}/2)) - 2) $spk")
+grep -qF "$line" $nusff && exit 1
+
+{ echo "$(hex $((${#spk}/2)) - 2) $spk" | nicecat.sh $fdir/sffrest/$addr \
   | grep -q . && echo $addr; }
 
 # Just a historical lock, make sure it's not there
