@@ -105,7 +105,7 @@ sertl() {
   : > $sfl
   {
   cat
-  echo 0.00010000
+  echo 0.00110000
 #      1.00000000
 #        12345678
   } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
@@ -424,14 +424,14 @@ newancf=$(($ancestorso+$newfee))
 newancs=$(($ancestorsize-$vsize+vsizenew))
 
 sats=$(( $base + ($vsizenew+9)/10 ))
-gmm=$(gmm-gen.sh $sats $vsizenew)
+gmm=$(gmm-genm.sh $ancestor $ancestorsize)
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test "$gmm" = "100" || {
-    tgt=$(($(gmm-gen.sh $ancestor $ancestorsize)*3))
-    #tgt=$(($(gmm-gen.sh $newancf $newancs)*3))
+    tgt=$(($gmm*3))
     test "$(($ofeer-$tgt))" -gt 1 || { ofeer=$tgt; sats=$(sats $(($ofeer+1)) $vsizenew); }
   }
+  test "$gmm" -gt "100000" && myexit 1 gmm_big
   test $feer -lt $ofeer && {
     sats=$(sats $(($ofeer+1)) $vsizenew)
     feer=$(feer $sats $vsizenew)
