@@ -34,7 +34,7 @@ cat $tmp \
 #cat $tmp >&2
 
 {
-# vsize same as usage
+# vsize same as bytes
 bytes=$vsize
 test $bytes -gt 3996000 \
   || test "$net" = "signet" -a $bytes -gt $((1000000/5)) && {
