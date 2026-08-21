@@ -54,12 +54,13 @@ test "$xff" = "$HTTP_CF_CONNECTING_IP" \
 WHERE=${WHERE:-/tmp/faucet}
 # Set the file name used for rate-limiting.
 LIMIT=$WHERE/.limit/${xip%:*:*:*:*:*}
+test -d $fdir/_toomany && {
+  rm -rf $WHERE/.limit
+  res 429 "Slow down" application/json '{"message":"Please slow down"}'
+}
 mkdir -p ${LIMIT%/*}
 ! mkdir $LIMIT 2>/dev/null && {
   echo $xip 429 >&2
-  res 429 "Slow down" application/json '{"message":"Please slow down"}'
-}
-test -d $fdir/_toomany && {
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
 
@@ -127,7 +128,7 @@ cd ${WALLETDIR:-"$HOME/.bitcoin/signet/wallets/newnew"}
 restofline=$(signetfaucet.sh $address | grep .) \
 || {
   #grep -qw ancestors /tmp/sf && touch $limit
-  res 400 "Something wrong" text/html "Something went wrong"
+  res 400 "Something wrong" text/html "Something went wrong; may be a re-used output (address)"
 } && {
   res 200 OK text/html "Random payment will be sent to $restofline"
 } # restofline
