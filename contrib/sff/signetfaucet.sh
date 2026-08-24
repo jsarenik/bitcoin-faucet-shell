@@ -31,9 +31,6 @@ test -d $tm && exit 1
 
 test "$1" = "-n" && exit
 
-grep -qF "$addr" $myp/addresses-* \
-  && exit 1
-
 # P2PK
 echo $addr | grep -Eq '^[0-9a-f]+$' && {
   echo $addr | grep -Eq '^[0-9a-f]{66}$' \
@@ -42,7 +39,6 @@ echo $addr | grep -Eq '^[0-9a-f]+$' && {
   kl=$(printf "%02x" $((${#addr}/2)) )
   klp=$(printf "%02x" $((0x$kl+2)) )
   line="$klp ${kl}${addr}ac"
-  grep -qF "$line" $nusff && exit 1
   echo "$line" | safecat.sh $fdir/sffrest/$addr
   echo $addr
   exit 0
@@ -55,10 +51,9 @@ spk=$(hh.sh address inspect ${addr} \
   | grep -m1 '^    "hex": ' \
   | cut -d: -f2 | tr -d ' ",' | grep .) || exit 1
 line=$(echo "$(hex $((${#spk}/2)) - 2) $spk")
-grep -qF "$line" $nusff && exit 1
 
-{ echo "$(hex $((${#spk}/2)) - 2) $spk" | nicecat.sh $fdir/sffrest/$addr \
-  | grep -q . && echo $addr; }
+echo "$line" | nicecat.sh $fdir/sffrest/$addr \
+  | grep -q . && echo $addr
 
 # Just a historical lock, make sure it's not there
 rmdir $fdir/signetfaucet 2>/dev/null || true

@@ -269,9 +269,18 @@ cleanupr() {
   intx=$1
 
   : > $fdir/sffgt
-  bch.sh gettransaction $intx | jq -r '.details[].address' \
-    | safecat.sh $fdir/sffgt
-  rm -rf $fdir/sff-s3/0*
+
+  bch.sh gettransaction $intx \
+    | safecat.sh $fdir/sffgt-all
+  hex=$fdir/sffgt-hex
+  jq -r .hex < $fdir/sffgt-all | safecat.sh $hex
+  grep -oE "434104[0-9a-f]{128}ac" < $hex | sed 's/^4341//;s/ac$//' \
+    | safeadd.sh $fdir/sffgt
+  grep -oE "23210[23][0-9a-f]{64}ac" < $hex | sed 's/^2321//;s/ac$//' \
+    | safeadd.sh $fdir/sffgt
+  jq -r '.details[].address' < $fdir/sffgt-all \
+    | uniq \
+    | safeadd.sh $fdir/sffgt
   mymv $fdir/sff-s2 $fdir/sff-s3 $sfr
   cat $fdir/sffgt | (cd $sfr; xargs rm -rf)
   : > $nusff
@@ -371,6 +380,7 @@ find $sfr -type f 2>/dev/null | head -n $(( (100000-$vsize)/510 )) \
 
 find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
   | xargs cat \
+  | sort -u \
   | safeadd.sh $nusff
 
 newouts=$(wc -l < $nusff)
