@@ -9,7 +9,7 @@ sum=$(sums.sh < $tmp)
 addr=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
 
 gmm=$(gmm-genm.sh)
-test "$gmm" = "100" || gmm=$(($gmm*2))
+test "$gmm" = "100" || gmm=$(($gmm*3))
 ad=bitcoindevs.xyz
 
 gentx() {

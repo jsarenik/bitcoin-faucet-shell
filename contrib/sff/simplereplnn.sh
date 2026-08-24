@@ -105,7 +105,7 @@ sertl() {
   : > $sfl
   {
   cat
-  echo 0.00110000
+  echo 0.00210000
 #      1.00000000
 #        12345678
   } | bch.sh -rpcclienttimeout=9 -stdin sendrawtransaction \
@@ -265,6 +265,17 @@ dothetf() {
   while 25new.sh $otra; do : ; done
 }
 
+clusterfix() {
+  cd $wd
+  a=$(list.sh | sort -rnk3 | head -1 | cut -d " " -f1)
+  grt.sh $a | nd-all.sh \
+    | sed '/#O-0$/s/^  ..../  0000/' \
+    | safecat.sh $fdir/clusterfix
+
+  txcat.sh $fdir/clusterfix | srt.sh | sert.sh
+  myexit 1 "clusterfix"
+}
+
 cleanupr() {
   intx=$1
 
@@ -370,7 +381,10 @@ test "$ancestorcount" = "$mcm" || {
   dolisto
   dothetf $(($mcm-$ancestorcount))
 }
-test $ancestorcount -ge $mcm || myexit 1 "still needs dothetf more"
+test $ancestorcount -ge $mcm || {
+  clusterfix
+  #myexit 1 "still needs dothetf more"
+}
 test "$descendantcount" = "1" || myexit 1 "descendantcount"
 
 ls -1 $fdir/sff/ | grep -q . || { ####
@@ -441,7 +455,7 @@ gmm=$(gmm-genm.sh $ancestor $ancestorsize)
     tgt=$(($gmm*3))
     test "$(($ofeer-$tgt))" -gt 1 || { ofeer=$tgt; sats=$(sats $(($ofeer+1)) $vsizenew); }
   }
-  test "$gmm" -gt "100000" && myexit 1 gmm_big
+  #test "$gmm" -gt "100000" && myexit 1 gmm_big
   test $feer -lt $ofeer && {
     sats=$(sats $(($ofeer+1)) $vsizenew)
     feer=$(feer $sats $vsizenew)
@@ -455,7 +469,8 @@ dvs=$sats
   test $max -gt 85991051601 && new=100000
   test $max -gt 105991051601 && comp=100000000
   test $max -gt 115991051601 && comp=200000000
-  test $max -gt 125991051601 && comp=400000000
+  test $max -gt 125991051601 && comp=275000000
+  test $max -gt 145991051601 && comp=400000000
   test "$comp" = "" || new=$((($comp-$both)/$newouts))
   test "$new" -gt 330 || myexit 1 "at the end: new $new is too low"
   rest=$((($new*$newouts)))
