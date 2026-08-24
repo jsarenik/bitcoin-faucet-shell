@@ -56,6 +56,7 @@ WHERE=${WHERE:-/tmp/faucet}
 LIMIT=$WHERE/.limit/${xip%:*:*:*:*:*}
 test -d $fdir/_toomany && {
   rm -rf $WHERE/.limit
+  mkdir -p $WHERE/.limit
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
 mkdir -p ${LIMIT%/*}
