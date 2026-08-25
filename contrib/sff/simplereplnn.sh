@@ -166,7 +166,7 @@ mysrt() {
 }
 
 catapultleftovers() {
-  tmpc=$(mktemp /dev/shm/catapultleft-$net-XXXXXX) || exit 1
+  tmpc=$(mktemp /dev/shm/catapultleft-$net-XXXXXX) || myexit 1 "catapultleftovers"
   list=$tmpc
   lh=${list}-hex
 
