@@ -3,23 +3,15 @@
 test -d "$1" && { cd "$1"; shift; }
 test -d .bitcoin && cd .bitcoin
 ls | grep -q . || exit 1
-#test -d $HOME/tcmalloc \
-#  && export LD_PRELOAD=$HOME/tcmalloc/lib64/libtcmalloc_minimal.so
 
 # Handling of inside-the-wallet-dir cases
 test -r wallet.dat && {
   mypwd=$PWD
   test -L $PWD && mypwd=$(readlink $PWD)
   w="-rpcwallet=${mypwd##*/}"
+  test "${mypwd%${mypwd#/}}" = "/" || cd ..
 }
 cd ${PWD%%/wallets*}
-
-test -L $PWD && {
-  mypwd=$(readlink $PWD)
-  #echo $mypwd | grep -q "^/" || cd ..
-  test "${mypwd%${mypwd#/}}" = "/" || cd ..
-  cd $mypwd
-}
 
 cmd=bitcoin-cli
 
@@ -29,12 +21,14 @@ test -r blocks || cd ~/.bitcoin
 c="${PWD##*/}"; chain=${c%net3}
 echo $chain | grep -qE '^(signet|test|testnet4|regtest|liquid)' \
 	&& ddir=${PWD%/*} || chain=""
+chain=${chain:-main}
+test -d /tmp/bdsd-$chain && exit 1
 
 test "${chain%${chain#liquid}}" = "liquid" && cmd=elements-cli
 
 add=""
-test "$1" = "-k" && exec pkill -f "$cmd -datadir=${ddir:-$PWD}"
+test "$1" = "-k" && { exec pkill -f "$cmd -datadir=${ddir:-$PWD}"; }
 test "$1" = "-g" && exec pgrep -f "$cmd -datadir=${ddir:-$PWD}"
 test "$1" = "-t" && { add="-rpcclienttimeout=0"; shift; }
 
-exec $cmd $add -datadir=${ddir:-$PWD} -chain=${chain:-main} $w "$@"
+exec $cmd $add -datadir=${ddir:-$PWD} -chain=$chain $w "$@"
