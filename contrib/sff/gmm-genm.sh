@@ -16,10 +16,10 @@ if
   timeout 1 curl -sSL "https://mempool.space${add}/api/mempool" > $tmp
 then
   rmdir $gmifl 2>/dev/null
-  grep -qi error $tmp && exec gen-gmm.sh $feesm $vsizem
+  grep -qi error $tmp && exec gmm-gen.sh $feesm $vsizem
 else
   rmdir $gmifl 2>/dev/null
-  exec gen-gmm.sh $feesm $vsizem
+  exec gmm-gen.sh $feesm $vsizem
 fi
 
 cat $tmp | tr ',:' '\n=' | head -3 > $tmp-a

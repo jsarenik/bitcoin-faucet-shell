@@ -262,6 +262,7 @@ sats() {
 ###
 ### ###########################################
 dothetf() {
+  gmm-genm.sh
   while 25new.sh $otra; do : ; done
 }
 
