@@ -256,6 +256,60 @@ sats() {
   echo $out
 }
 
+gentx() {
+  fee=${1:-0}
+  acn=${2:-"  "}
+  add=$addr
+  mkrawh.sh < $tmp
+  echo 02
+  hex $(($sum-(($fee*$gmm+999)/1000))) - 16 | ce.sh
+  genofa.sh $add
+  orl.sh "$ad $acn"
+  echo 00000000
+}
+
+sendit() {
+  gentx $(gentx | txcat.sh | srt.sh | fee.sh -o) "$1" "$addr" | txcat.sh | srt.sh | safecat.sh $tmp
+  #msert.sh < $tmp
+  #>/dev/null 2>&1
+  sert.sh < $tmp
+}
+
+getroot() {
+  a=${1:-$(gme.sh $txid | jq -r '.depends[]')}
+  while
+    test "$a" != ""
+  do
+    a=$(gme.sh $a | jq -r '.depends[]')
+    test "$a" != "" && echo $a | safecat.sh $fdir/getroott
+  done
+  cat $fdir/getroott | nicecat.sh $fdir/getroot
+}
+
+25new() {
+  tmp=$(mktemp /tmp/tmp25new-XXXXXX)
+  cd $wd
+  list.sh | grep " true$" | safecat.sh $tmp
+  sum=$(sums.sh < $tmp)
+  #addr=$1
+  #test "$addr" = "" && test -r a && read -r addr < a
+  addr=tb1pfp672fs37lpjx08gvva8nwh2t048vr8rdvl5jvytv4de9sgp6yrq60ywpv
+
+  gmm=$(gmm.sh)
+  test "$gmm" = "100" || gmm=$(($gmm*3))
+  ad=bitcoindevs.xyz
+
+  txid=$(list.sh | awk '{print $1}' | head -1)
+  ac=$(gme.sh $txid | jq -r .ancestorcount | grep .)
+  test "$ac" = "" || ac=$(($ac+1))
+  test "$ac" = "1" && getroot $txid
+
+  sendit $ac | safecat.sh $tmp
+
+  grep -E '^[0-9a-f]{64}$' $tmp
+  grep too-large-cluster $tmp && myexit 1 too-large-cluster
+}
+
 ### ############# DO THE $mcm ###################
 ###
 ### do the chain of $mcm-in-mempool transactions
