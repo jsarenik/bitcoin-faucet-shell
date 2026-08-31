@@ -21,7 +21,7 @@ test -r $fdir/sff/$addr && { echo $addr; exit; }
 tm=$fdir/_toomany
 tmr=$fdir/_toomanyr
 sfs=$fdir/sff-sfs # sff-flag-slowdown
-sfsn=2016
+sfsn=128
 newouts=0
 read -r newouts < $fdir/newouts
 test $newouts -gt $sfsn && mkdir -p $sfs || rm -rf $sfs

@@ -34,7 +34,7 @@ gen-sfb.sh >/dev/null
 #ash nohup ~/bin/simplereplnn.sh </dev/null >/dev/null 2>&1
 
 #signetmagic.sh
-rebroadcast-all.sh
+nohup rebroadcast-all.sh </dev/null >&0 2>&0 &
 
 rmdir $L
 true

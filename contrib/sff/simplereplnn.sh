@@ -88,8 +88,6 @@ cacheorl() {
   } | orl.sh | safecat.sh $fdir/cacheorl
 }
 
-test -d $sfs || cacheorl
-
 mymv() {
   all=$*
   last=${all##* }
@@ -316,7 +314,7 @@ getroot() {
 ###
 ### ###########################################
 dothetf() {
-  gmm-genm.sh
+  gmm-gen.sh
   while 25new.sh $otra; do : ; done
 }
 
@@ -328,7 +326,6 @@ clusterfix() {
     | safecat.sh $fdir/clusterfix
 
   txcat.sh $fdir/clusterfix | srt.sh | sert.sh
-  myexit 1 "clusterfix"
 }
 
 cleanupr() {
@@ -438,6 +435,7 @@ test "$ancestorcount" = "$mcm" || {
 }
 test $ancestorcount -ge $mcm || {
   clusterfix
+  myexit 1 "clusterfix"
   #myexit 1 "still needs dothetf more"
 }
 test "$descendantcount" = "1" || myexit 1 "descendantcount"
@@ -449,18 +447,13 @@ find $sfr -type f 2>/dev/null | head -n $(( (100000-$vsize)/510 )) \
 
 find $fdir/sff/ -mindepth 1 -type f 2>/dev/null \
   | xargs cat \
-  | sort -u \
   | safeadd.sh $nusff
 
+sort -u $nusff | safecat.sh $nusff
+
 newouts=$(wc -l < $nusff)
+test "${numouts:-0}" -gt 2016 || cacheorl
 echo $newouts | safecat.sh $fdir/newouts
-#test "$newouts" = "0" && myexit 1 "newouts zero"
-#test "$newouts" -lt "0" && {
-#  echo 22 51207160b81728928041c1e339dfa8faeeae44225c143d1c77fd5ca339416a4a7e3a \
-#    | safeadd.sh $nusff
-#  newouts=$(wc -l < $nusff)
-#  echo $newouts | safecat.sh $fdir/newouts
-#}
 
 max=$(cat $l | sums.sh) \
   || myexit 1 "unknown max $max"
@@ -482,15 +475,16 @@ dvs=$vsize
 
 dotx | txcat.sh | mysrt | safecat.sh $shf
 vsizenew=$(vsize.sh < $shf | grep .) || myexit 1 "missing vsizenew"
-newfee=$(fee.sh < $shf)
 if
   test $vsizenew -le 100000
 then
   rmdir $fdir/_toomanyr 2>/dev/null
 else
-  myminir
+  clusterfix
+  #myminir
   mkdir -p $fdir/_toomanyr; myexit 1 "TOO BIG"
 fi
+newfee=$(fee.sh < $shf)
 
 #########################################################
 
@@ -503,11 +497,11 @@ newancf=$(($ancestorso+$newfee))
 newancs=$(($ancestorsize-$vsize+vsizenew))
 
 sats=$(( $base + ($vsizenew+9)/10 ))
-gmm=$(gmm-genm.sh $ancestor $ancestorsize)
+gmm=$(gmm-gen.sh $ancestor $ancestorsize)
   ofeer=$(feer $base $vsize | grep .) || myexit 1 "ofeer $ofeer vsize $vsize"
   feer=$(feer $sats $vsizenew | grep .) || myexit 1 "feer $feer"
   test "$gmm" = "100" || {
-    tgt=$(($gmm*3))
+    tgt=$(($gmm*9))
     test "$(($ofeer-$tgt))" -gt 1 || { ofeer=$tgt; sats=$(sats $(($ofeer+1)) $vsizenew); }
   }
   #test "$gmm" -gt "100000" && myexit 1 gmm_big
@@ -544,6 +538,11 @@ sertl <$shf
 ret=$?
 echo ret $ret
 
-test "$ret" != "0" && { myminir; ret=$?; }
+test "$ret" != "0" && {
+  clusterfix
+  myexit 1 "clusterfix-end"
+  #myminir
+  ret=$?
+}
 
 myexit $ret "finn"
