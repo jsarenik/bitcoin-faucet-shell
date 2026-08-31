@@ -26,17 +26,15 @@ GitHub issues, or via email.
 
 See also `git log`, about.html and https://github.com/jsarenik/bitcoin-faucet-shell/issues/4.
 
-### API
+### API (defunct now)
 
-The original REST API is following:
+The original REST API was following:
 
     https://signetfaucet.com/claim/addr/amount/captcha
 
-API access is disabled as of 2025-08-19
+API access was disabled as of 2025-08-19
 
 Busybox is returning 404 error on non-existent directories
-so it has to be used with Caddy2 to get a backward-compatible
+so it had to be used with Caddy2 to get a backward-compatible
 API. See in-repo `Caddyfile.txt` for an example on how to set
 up the redirects properly.
-
-See `contrib/getcoins.sh` for an example script using wget.
