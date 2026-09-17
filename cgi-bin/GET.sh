@@ -8,6 +8,7 @@ myp=$sdi/wallets
 
 sfs=$fdir/sff-sfs
 tm=$fdir/_toomany
+LIMIT=/nonexistente
 
 res() {
   cat <<-EOF
@@ -45,9 +46,8 @@ test ${#cfts} -gt 512 || {
 }
 
 xff=${HTTP_X_FORWARDED_FOR%%,*}
-test "$xff" = "$HTTP_CF_CONNECTING_IP" \
-  && xip=${xff:-"$REMOTE_ADDR"} \
-  || res 429 "unknown address"
+test "$xff" = "$HTTP_CF_CONNECTING_IP" || res 429 "unknown address"
+xip=$xff
 
 # Set the directory where the rate-limiting data is stored.
 # It can be overriden by a global inherited environment variable.
@@ -61,7 +61,7 @@ test -d $fdir/_toomany && {
 }
 mkdir -p ${LIMIT%/*}
 ! mkdir $LIMIT 2>/dev/null && {
-  echo $xip 429 >&2
+  #echo $xip 429 >&2
   res 429 "Slow down" application/json '{"message":"Please slow down"}'
 }
 
