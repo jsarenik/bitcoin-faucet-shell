@@ -1,21 +1,21 @@
 #!/bin/sh
 
 lock=/tmp/mmg
-mkdir $lock || exit 1
+mkdir "$lock" || exit 1
 
 myexit() {
-  rmdir $lock 2>/dev/null
-  exit $1
+    rmdir "$lock" 2>/dev/null
+    exit "$1"
 }
 
 HOME=/home/nsm
-. $HOME/.profile
+. "$HOME/.profile"
 export TZ=UTC
 d=/dev/shm
-read -r ver < $d/half/uname
+read -r ver < "$d/half/uname"
 
 {
-cat <<EOF
+    cat <<EOF
 # $ver
 # /dev/shm and /tmp are tmpfs
 # as user, nsm here:
@@ -26,40 +26,38 @@ cat <<EOF
 # everything else here that follows
 # is run as an unprivileged user
 EOF
-set -x
-date -u
-bitcoind -version | head -1
-bitcoin-cli echo hello | grep . || myexit 1
-mountpoint $HOME/.bitcoin/mempool.dat.new || myexit 1
+    set -x
+    date -u
+    bitcoind -version | head -1
+    bitcoin-cli echo hello | grep . || myexit 1
+    mountpoint "$HOME/.bitcoin/mempool.dat.new" || myexit 1
 
-bitcoin-cli getmempoolinfo | nicecat.sh /tmp/gmi-main.json
+    bitcoin-cli getmempoolinfo | nicecat.sh /tmp/gmi-main.json
 
-: following is getrawmempool, just shortened
-grm.sh | safecat.sh /dev/shm/mymempool.txt
-#time sh -c "bitcoin-cli savemempool 2>/dev/null"
-: Following non-zero exit is intended.
-: On bitcoind side it looks like this:
-:   Failed to dump mempool: Rename failed. Continuing anyway.
-time bitcoin-cli savemempool
+    : following is getrawmempool, just shortened
+    grm.sh | safecat.sh /dev/shm/mymempool.txt
 
-f=$d/mempool.dat.new
-t=$d/mempool.dat.tmp
-cp $f $t
-#ln -f $d/mempool.copy.old $d/mempool.copy.old2
-#ln -f $d/mempool.copy $d/mempool.copy.old
-: UNIX fixes this, file descriptor stays
-: i n memory when used even after file was
-: successfully unlinked from filesystem
-: GNU is Not Unix anyway
-mv $t $d/mempool.copy
-ln -s $d/mempool.copy $d/mempool.copy.dat
+    : Following non-zero exit is intended.
+    : On bitcoind side it looks like this:
+    :   Failed to dump mempool: Rename failed. Continuing anyway.
+    time bitcoin-cli savemempool
 
-cd $d
-ls -ilh mempool.copy mempool.dat.new
-cd $HOME/web/ln
-ls -l mymempool*
+    f="$d/mempool.dat.new"
 
-date -u
-} 2>&1 | nicecat.sh $d/mymempool.log
+    : Leverage safecat to make a clean, atomic copy of the mempool dump
+    cat "$f" | safecat.sh "$d/mempool.copy"
 
-myexit
+    : Safe symlink update without crashing or throwing an error if it exists
+    if test ! -e "$d/mempool.copy.dat"; then
+        ln -s "$d/mempool.copy" "$d/mempool.copy.dat"
+    fi
+
+    cd "$d"
+    ls -ilh mempool.copy mempool.dat.new
+    cd "$HOME/web/ln"
+    ls -l mymempool*
+
+    date -u
+} 2>&1 | nicecat.sh "$d/mymempool.log"
+
+myexit 0
