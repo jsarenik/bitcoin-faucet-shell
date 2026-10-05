@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="1.2.4"
+VERSION="1.2.5"
 DEFAULT_REMOTE_HOST="singer"
 
 # Extract just the filename from $0 for clean usage printing
@@ -40,7 +40,6 @@ if test "$1" = "-R"; then
     fi
 
     # Find where this running script lives so we can read it
-    # If invoked as just "safecat.sh", assume it is in the PATH or current directory
     SCRIPT_PATH="$0"
     if test ! -f "$SCRIPT_PATH"; then
         SCRIPT_PATH=$(which "$0" 2>/dev/null)
@@ -54,7 +53,7 @@ if test "$1" = "-R"; then
     echo "Atomically deploying script to remote host: $REMOTE_HOST..."
 
     # Securely stream the local script content into the remote safecat instance
-    cat "$SCRIPT_PATH" | ssh "$REMOTE_HOST" "safecat.sh bin/safecat.sh"
+    cat "$SCRIPT_PATH" | ssh "$REMOTE_HOST" "bin/safecat.sh bin/safecat.sh"
     exit $?
 fi
 
