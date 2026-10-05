@@ -6,7 +6,7 @@ cd ~/.bitcoin/signet
 
 net=$(hnet.sh)
 #ut.sh $net
-ut.sh signet
+ut.sh $1 signet
 . /dev/shm/UpdateTip-$net
 
 rm -rf wallets/wosh-default/*last* /tmp/faucet/signetlimit /tmp/signetfaucet
