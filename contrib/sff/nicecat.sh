@@ -1,20 +1,20 @@
 #!/bin/sh
 
-VERSION="1.1.0"
+VERSION="1.1.1"
 DEFAULT_REMOTE_HOST="singer"
 
 # Extract just the filename from $0 for clean usage printing
 SCRIPT_NAME="${0##*/}"
 
 # 1. Handle Version Flags
-if test "$1" = "-v" || test "$1" = "-V" || test "$1" = "--version"; then
+if [ "$1" = "-v" ] || [ "$1" = "-V" ] || [ "$1" = "--version" ]; then
     echo "nicecat version $VERSION"
     exit 0
 fi
 
 # 2. Check for Help Flags or Missing Arguments
-if test -z "$1" || test "$1" = "-h" || test "$1" = "--help" || test "$1" = "--usage"; then
-    if test -z "$1"; then
+if [ -z "$1" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "--usage" ]; then
+    if [ -z "$1" ]; then
         exec >&2
     fi
 
@@ -23,15 +23,15 @@ if test -z "$1" || test "$1" = "-h" || test "$1" = "--help" || test "$1" = "--us
     echo "  Remote update:      $SCRIPT_NAME -R [ssh_host]  (default: $DEFAULT_REMOTE_HOST)"
     echo "  Version check:      $SCRIPT_NAME -V"
 
-    if test -z "$1"; then
+    if [ -z "$1" ]; then
         exit 1
     fi
     exit 0
 fi
 
 # 3. Handle Remote Deployment Flag (-R)
-if test "$1" = "-R"; then
-    if test -n "$2"; then
+if [ "$1" = "-R" ]; then
+    if [ -n "$2" ]; then
         REMOTE_HOST="$2"
     else
         REMOTE_HOST="$DEFAULT_REMOTE_HOST"
@@ -39,11 +39,11 @@ if test "$1" = "-R"; then
 
     # Find where this running script lives so we can read it
     SCRIPT_PATH="$0"
-    if test ! -f "$SCRIPT_PATH"; then
+    if [ ! -f "$SCRIPT_PATH" ]; then
         SCRIPT_PATH=$(which "$0" 2>/dev/null)
     fi
 
-    if test -z "$SCRIPT_PATH" || test ! -f "$SCRIPT_PATH"; then
+    if [ -z "$SCRIPT_PATH" ] || [ ! -f "$SCRIPT_PATH" ]; then
         echo "Error: Could not determine the local script path for streaming." >&2
         exit 1
     fi
