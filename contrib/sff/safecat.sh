@@ -1,21 +1,21 @@
 #!/bin/sh
 
-VERSION="1.2.5"
+VERSION="1.2.6"
 DEFAULT_REMOTE_HOST="singer"
 
 # Extract just the filename from $0 for clean usage printing
 SCRIPT_NAME="${0##*/}"
 
 # 1. Handle Version Flags
-if test "$1" = "-v" || test "$1" = "-V" || test "$1" = "--version"; then
+if [ "$1" = "-v" ] || [ "$1" = "-V" ] || [ "$1" = "--version" ]; then
     echo "safecat version $VERSION"
     exit 0
 fi
 
 # 2. Check for Help Flags or Missing Arguments
-if test -z "$1" || test "$1" = "-h" || test "$1" = "--help" || test "$1" = "--usage"; then
+if [ -z "$1" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "--usage" ]; then
     # Set output channel: stderr (2) if no arguments, stdout (1) if explicitly requested help
-    if test -z "$1"; then
+    if [ -z "$1" ]; then
         exec >&2
     fi
 
@@ -24,16 +24,16 @@ if test -z "$1" || test "$1" = "-h" || test "$1" = "--help" || test "$1" = "--us
     echo "  Remote update: $SCRIPT_NAME -R [ssh_host]  (default: $DEFAULT_REMOTE_HOST)"
     echo "  Version check: $SCRIPT_NAME -V"
 
-    if test -z "$1"; then
+    if [ -z "$1" ]; then
         exit 1
     fi
     exit 0
 fi
 
 # 3. Handle Remote Deployment Flag (-R)
-if test "$1" = "-R"; then
+if [ "$1" = "-R" ]; then
     # Look at the next argument for a custom host; otherwise use the default
-    if test -n "$2"; then
+    if [ -n "$2" ]; then
         REMOTE_HOST="$2"
     else
         REMOTE_HOST="$DEFAULT_REMOTE_HOST"
@@ -41,11 +41,11 @@ if test "$1" = "-R"; then
 
     # Find where this running script lives so we can read it
     SCRIPT_PATH="$0"
-    if test ! -f "$SCRIPT_PATH"; then
+    if [ ! -f "$SCRIPT_PATH" ]; then
         SCRIPT_PATH=$(which "$0" 2>/dev/null)
     fi
 
-    if test -z "$SCRIPT_PATH" || test ! -f "$SCRIPT_PATH"; then
+    if [ -z "$SCRIPT_PATH" ] || [ ! -f "$SCRIPT_PATH" ]; then
         echo "Error: Could not determine the local script path for streaming." >&2
         exit 1
     fi
@@ -63,18 +63,18 @@ TARGET="$1"
 TARGET_DIR="${TARGET%/*}"
 
 # Fallback: if no slash was found, target is in the current directory
-if test "$TARGET_DIR" = "$TARGET"; then
+if [ "$TARGET_DIR" = "$TARGET" ]; then
     TARGET_DIR="."
 fi
 
 # Ensure the target directory is actually writable before proceeding
-if test ! -w "$TARGET_DIR"; then
+if [ ! -w "$TARGET_DIR" ]; then
     echo "Error: Directory '$TARGET_DIR' is not writable." >&2
     exit 1
 fi
 
 # Determine permissions dynamically across Linux & OpenBSD
-if test -e "$TARGET"; then
+if [ -e "$TARGET" ]; then
     # Auto-detect stat flavor to get the octal permissions cleanly
     if stat --help >/dev/null 2>&1; then
         # GNU / Linux stat
@@ -90,13 +90,13 @@ fi
 
 # Create the temp file in the SAME directory using OpenBSD/POSIX compatible syntax
 tmp=$(mktemp "$TARGET_DIR/tmp-safecat.XXXXXX")
-if test $? -ne 0; then
+if [ $? -ne 0 ]; then
     echo "Error: Failed to create temporary file." >&2
     exit 1
 fi
 
 # Catch unexpected exits or interruptions and clean up the temp file
-trap 'test -f "$tmp" && rm -f "$tmp"' EXIT INT TERM
+trap '[ -f "$tmp" ] && rm -f "$tmp"' EXIT INT TERM
 
 # Read stdin into the temp file
 cat > "$tmp"
