@@ -1,63 +1,77 @@
 #!/bin/sh
 
-VERSION="1.2.6"
+VERSION="1.3.0"
 DEFAULT_REMOTE_HOST="singer"
 
 # Extract just the filename from $0 for clean usage printing
 SCRIPT_NAME="${0##*/}"
 
-# 1. Handle Version Flags
-if [ "$1" = "-v" ] || [ "$1" = "-V" ] || [ "$1" = "--version" ]; then
-    echo "safecat version $VERSION"
-    exit 0
-fi
+# Main routing based on the first argument
+case "$1" in
+    -*)
+        # 1. First-level dash check: Route known option flags
+        case "$1" in
+            -v|-V|--version)
+                echo "safecat version $VERSION"
+                exit 0
+                ;;
+            -h|--help|--usage)
+                echo "Usage:"
+                echo "  Local update:  $SCRIPT_NAME <target_file>"
+                echo "  Remote update: $SCRIPT_NAME -R [ssh_host]  (default: $DEFAULT_REMOTE_HOST)"
+                echo "  Version check: $SCRIPT_NAME -V"
+                exit 0
+                ;;
+            -R)
+                # Handle Remote Deployment Flag (-R)
+                if [ -n "$2" ]; then
+                    REMOTE_HOST="$2"
+                else
+                    REMOTE_HOST="$DEFAULT_REMOTE_HOST"
+                fi
 
-# 2. Check for Help Flags or Missing Arguments
-if [ -z "$1" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "--usage" ]; then
-    # Set output channel: stderr (2) if no arguments, stdout (1) if explicitly requested help
-    if [ -z "$1" ]; then
+                # Find where this running script lives so we can read it
+                SCRIPT_PATH="$0"
+                if [ ! -f "$SCRIPT_PATH" ]; then
+                    SCRIPT_PATH=$(which "$0" 2>/dev/null)
+                fi
+
+                if [ -z "$SCRIPT_PATH" ] || [ ! -f "$SCRIPT_PATH" ]; then
+                    echo "Error: Could not determine the local script path for streaming." >&2
+                    exit 1
+                fi
+
+                echo "Atomically deploying script to remote host: $REMOTE_HOST..."
+
+                # Securely stream the local script content into the remote safecat instance
+                cat "$SCRIPT_PATH" | ssh "$REMOTE_HOST" "bin/safecat.sh bin/safecat.sh"
+                exit $?
+                ;;
+            *)
+                echo "Error: Unknown option '$1'" >&2
+                echo "Use '$SCRIPT_NAME --help' for usage info." >&2
+                exit 1
+                ;;
+        esac
+        ;;
+    "")
+        # 2. Missing Argument Handling (Emulates your original logic when $1 is empty)
         exec >&2
-    fi
-
-    echo "Usage:"
-    echo "  Local update:  $SCRIPT_NAME <target_file>"
-    echo "  Remote update: $SCRIPT_NAME -R [ssh_host]  (default: $DEFAULT_REMOTE_HOST)"
-    echo "  Version check: $SCRIPT_NAME -V"
-
-    if [ -z "$1" ]; then
+        echo "Usage:"
+        echo "  Local update:  $SCRIPT_NAME <target_file>"
+        echo "  Remote update: $SCRIPT_NAME -R [ssh_host]  (default: $DEFAULT_REMOTE_HOST)"
+        echo "  Version check: $SCRIPT_NAME -V"
         exit 1
-    fi
-    exit 0
-fi
+        ;;
+    *)
+        # 3. Path falls through here directly if first letter is NOT a dash (-)
+        TARGET="$1"
+        ;;
+esac
 
-# 3. Handle Remote Deployment Flag (-R)
-if [ "$1" = "-R" ]; then
-    # Look at the next argument for a custom host; otherwise use the default
-    if [ -n "$2" ]; then
-        REMOTE_HOST="$2"
-    else
-        REMOTE_HOST="$DEFAULT_REMOTE_HOST"
-    fi
-
-    # Find where this running script lives so we can read it
-    SCRIPT_PATH="$0"
-    if [ ! -f "$SCRIPT_PATH" ]; then
-        SCRIPT_PATH=$(which "$0" 2>/dev/null)
-    fi
-
-    if [ -z "$SCRIPT_PATH" ] || [ ! -f "$SCRIPT_PATH" ]; then
-        echo "Error: Could not determine the local script path for streaming." >&2
-        exit 1
-    fi
-
-    echo "Atomically deploying script to remote host: $REMOTE_HOST..."
-
-    # Securely stream the local script content into the remote safecat instance
-    cat "$SCRIPT_PATH" | ssh "$REMOTE_HOST" "bin/safecat.sh bin/safecat.sh"
-    exit $?
-fi
-
-TARGET="$1"
+# ==============================================================================
+# Atomic File Writing Logic (Completely skipped if $1 started with a dash)
+# ==============================================================================
 
 # Extract directory using POSIX parameter expansion
 TARGET_DIR="${TARGET%/*}"
