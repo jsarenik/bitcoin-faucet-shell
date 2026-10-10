@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="1.4.0"
+VERSION="1.4.1"
 DEFAULT_REMOTE_HOST="singer"
 
 # Extract just the filename from $0 for clean usage printing
@@ -86,13 +86,13 @@ while [ -h "$TARGET" ]; do
 
     # Read the direct destination of the current symlink
     LINK_TARGET=$(readlink "$TARGET")
-    
+
     case "$LINK_TARGET" in
-        /*) 
+        /*)
             # Absolute target: assign directly
-            TARGET="$LINK_TARGET" 
+            TARGET="$LINK_TARGET"
             ;;
-        *)  
+        *)
             # Relative target: resolve relative to the current link's directory context
             LINK_DIR="${TARGET%/*}"
             if [ "$LINK_DIR" = "$TARGET" ]; then
@@ -101,7 +101,7 @@ while [ -h "$TARGET" ]; do
             TARGET="$LINK_DIR/$LINK_TARGET"
             ;;
     esac
-    
+
     DEPTH=$((DEPTH + 1))
 done
 
