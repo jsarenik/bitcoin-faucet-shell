@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="1.4.2"
+VERSION="1.5.0"
 DEFAULT_REMOTE_HOST="singer"
 
 # Extract just the filename from $0 for clean usage printing
@@ -8,16 +8,21 @@ SCRIPT_NAME="${0##*/}"
 
 # Main routing based on the first argument
 case "$1" in
+    --)
+        # Explicit end-of-options marker: Shift and treat next argument as target
+        shift
+        TARGET="$1"
+        ;;
     -*)
         # 1. First-level dash check: Route known option flags
         case "$1" in
-            -v*|-V|--version)
+            -v|-V|--version)
                 echo "safecat version $VERSION"
                 exit 0
                 ;;
             -h|--help|--usage)
                 echo "Usage:"
-                echo "  Local update:  $SCRIPT_NAME <target_file>"
+                echo "  Local update:  $SCRIPT_NAME [options] [--] <target_file>"
                 echo "  Remote update: $SCRIPT_NAME -R [ssh_host]  (default: $DEFAULT_REMOTE_HOST)"
                 echo "  Version check: $SCRIPT_NAME -V"
                 exit 0
@@ -58,7 +63,7 @@ case "$1" in
         # 2. Missing Argument Handling (Emulates original logic when $1 is empty)
         exec >&2
         echo "Usage:"
-        echo "  Local update:  $SCRIPT_NAME <target_file>"
+        echo "  Local update:  $SCRIPT_NAME [options] [--] <target_file>"
         echo "  Remote update: $SCRIPT_NAME -R [ssh_host]  (default: $DEFAULT_REMOTE_HOST)"
         echo "  Version check: $SCRIPT_NAME -V"
         exit 1
@@ -69,8 +74,14 @@ case "$1" in
         ;;
 esac
 
+# Validate that we actually have a target destination after option parsing
+if [ -z "$TARGET" ]; then
+    echo "Error: Missing target file parameter." >&2
+    exit 1
+fi
+
 # ==============================================================================
-# Atomic File Writing Logic (Completely skipped if $1 started with a dash)
+# Atomic File Writing Logic (Completely skipped if $1 started with an option dash)
 # ==============================================================================
 
 # Recursive symlink resolution loop (POSIX compliant)
