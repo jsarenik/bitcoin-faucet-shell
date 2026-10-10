@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="1.4.1"
+VERSION="1.4.2"
 DEFAULT_REMOTE_HOST="singer"
 
 # Extract just the filename from $0 for clean usage printing
@@ -11,7 +11,7 @@ case "$1" in
     -*)
         # 1. First-level dash check: Route known option flags
         case "$1" in
-            -v|-V|--version)
+            -v*|-V|--version)
                 echo "safecat version $VERSION"
                 exit 0
                 ;;
