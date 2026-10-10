@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="1.3.0"
+VERSION="1.4.0"
 DEFAULT_REMOTE_HOST="singer"
 
 # Extract just the filename from $0 for clean usage printing
@@ -55,7 +55,7 @@ case "$1" in
         esac
         ;;
     "")
-        # 2. Missing Argument Handling (Emulates your original logic when $1 is empty)
+        # 2. Missing Argument Handling (Emulates original logic when $1 is empty)
         exec >&2
         echo "Usage:"
         echo "  Local update:  $SCRIPT_NAME <target_file>"
@@ -72,6 +72,38 @@ esac
 # ==============================================================================
 # Atomic File Writing Logic (Completely skipped if $1 started with a dash)
 # ==============================================================================
+
+# Recursive symlink resolution loop (POSIX compliant)
+# Tracks depth to fail gracefully if there is a circular reference loop
+DEPTH=0
+MAX_DEPTH=20
+
+while [ -h "$TARGET" ]; do
+    if [ "$DEPTH" -ge "$MAX_DEPTH" ]; then
+        echo "Error: Symlink loop detected or depth exceeded $MAX_DEPTH paths." >&2
+        exit 1
+    fi
+
+    # Read the direct destination of the current symlink
+    LINK_TARGET=$(readlink "$TARGET")
+    
+    case "$LINK_TARGET" in
+        /*) 
+            # Absolute target: assign directly
+            TARGET="$LINK_TARGET" 
+            ;;
+        *)  
+            # Relative target: resolve relative to the current link's directory context
+            LINK_DIR="${TARGET%/*}"
+            if [ "$LINK_DIR" = "$TARGET" ]; then
+                LINK_DIR="."
+            fi
+            TARGET="$LINK_DIR/$LINK_TARGET"
+            ;;
+    esac
+    
+    DEPTH=$((DEPTH + 1))
+done
 
 # Extract directory using POSIX parameter expansion
 TARGET_DIR="${TARGET%/*}"
