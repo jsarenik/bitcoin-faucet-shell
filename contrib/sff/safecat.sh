@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="1.6.1"
+VERSION="1.6.2"
 DEFAULT_REMOTE_HOST="singer"
 
 SCRIPT_NAME="${0##*/}"
@@ -59,7 +59,7 @@ while [ $# -gt 0 ]; do
             fi
 
             echo "Atomically deploying to remote: $REMOTE_HOST..."
-            
+
             # Pass append flag to remote side if toggled locally
             REMOTE_ARGS="bin/safecat.sh"
             if [ "$APPEND_MODE" -eq 1 ]; then
