@@ -17,7 +17,7 @@ busybox find $WHERE/.limit -mindepth 1 -type d -delete
 throwspam.sh
 
 ########################### lock ###########################
-L=/tmp/supertail-signet
+L=/tmp/supertail-signet-new
 mkdir $L 2>/dev/null || exit 1
 
 #$HOME/bin/blocknotify.sh $1 -t
@@ -31,7 +31,7 @@ gen-sfb.sh >/dev/null
 
 #while 25new.sh; do : ; done
 #ash ~/bin/simplereplnn.sh
-#ash nohup ~/bin/simplereplnn.sh </dev/null >/dev/null 2>&1
+ash nohup ~/bin/simplereplnn.sh </dev/null >/dev/null 2>&1
 
 #signetmagic.sh
 nohup rebroadcast-all.sh </dev/null >&0 2>&0 &

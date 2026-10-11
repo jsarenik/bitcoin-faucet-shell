@@ -13,7 +13,9 @@ test -r $balf || echo 0 > $balf
 
 # lock file, used also by refreshsignetwallets.sh
 lock=$fdir/locksff
-mkdir $lock || exit 1
+until mkdir $lock
+do echo sleeping 5; sleep 5
+done
 
 . $HOME/.profile
 mkdir -p /dev/shm/wallets-signet/lnanchor
