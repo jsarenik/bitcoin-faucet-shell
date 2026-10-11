@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="1.6.3"
+VERSION="1.6.4"
 DEFAULT_REMOTE_HOST="singer"
 
 SCRIPT_NAME="${0##*/}"
@@ -31,7 +31,7 @@ while [ $# -gt 0 ]; do
             APPEND_MODE=1
             shift
             ;;
-        -v*|-V|--version)
+        -v*|-V*|--v*|--V*)
             echo "safecat version $VERSION"
             exit 0
             ;;
