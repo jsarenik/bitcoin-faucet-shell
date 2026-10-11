@@ -152,20 +152,19 @@ if [ -e "$TARGET" ]; then
     if stat --help >/dev/null 2>&1; then
         # GNU / Linux stat
         PERMS=$(stat -c "%a" "$TARGET")
-        [ "$IS_ROOT" -eq 1 ] && OWNER=$(stat -c "%u" "$TARGET")
-        [ "$IS_ROOT" -eq 1 ] && GROUP=$(stat -c "%g" "$TARGET")
     else
         # OpenBSD / BSD stat
         PERMS=$(stat -f "%OLp" "$TARGET")
-        [ "$IS_ROOT" -eq 1 ] && OWNER=$(stat -f "%u" "$TARGET")
-        [ "$IS_ROOT" -eq 1 ] && GROUP=$(stat -f "%g" "$TARGET")
     fi
+    [ "$IS_ROOT" -eq 1 ] && OWNER=$(stat -c "%u" "$TARGET")
+    [ "$IS_ROOT" -eq 1 ] && GROUP=$(stat -c "%g" "$TARGET")
 else
     # Fallback permissions if creating a brand new file
     PERMS="644"
 fi
 
 # Create the temp file in the SAME directory
+# using OpenBSD/POSIX compatible syntax
 tmp=$(mktemp "$TARGET_DIR/tmp-safecat.XXXXXX")
 if [ $? -ne 0 ] || [ -z "$tmp" ]; then
     echo "Error: Failed to create temporary file." >&2
