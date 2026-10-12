@@ -1,0 +1,9 @@
+Inspired by Jeff Marrison's HeavyThing (2ton.com.au)
+here is an AI-assisted rewrite of safecat.sh into
+fasm, both AMD64 and ARM64. Hoping you find it interesting.
+
+Also an AI-assisted C source which was inspired by Len Budney's
+safecat. Apologies for reusing the name in slightly modified
+usage.
+
+aperezdc/safecat on GitHub
