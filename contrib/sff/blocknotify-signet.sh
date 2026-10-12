@@ -9,7 +9,7 @@ net=$(hnet.sh)
 ut.sh $1 signet
 . /dev/shm/UpdateTip-$net
 
-rm -rf wallets/wosh-default/*last* /tmp/faucet/signetlimit /tmp/signetfaucet
+rm -rf wallets/wosh-default/*last* /tmp/faucet/signetlimit /tmp/signetfaucet /tmp/_toomanyr /tmp/_toomanyd
 WHERE=/tmp/faucet
 busybox find $WHERE/.limit -mindepth 1 -type d -delete
 

@@ -9,8 +9,11 @@ hashv="$(sha256sum "$0" | cut -b 59-64)"
 fdir="${fdir:-/tmp}"
 sdi="${sdi:-$HOME/.bitcoin/signet}"
 
+test -d "$fdir/_toomanyr" && exit 1
+test -d "$fdir/_toomanyd" && exit 1
+
 # Maximum transaction fee threshold configuration (derived dynamically)
-maxsats="${maxsats:-2210000}"
+maxsats="${maxsats:-12210000}"
 maxfeebtc=$(printf "%d.%08d" $((maxsats / 100000000)) $((maxsats % 100000000)))
 
 lock="$fdir/locksff"
@@ -121,7 +124,13 @@ myexit() {
 
   echo "${2:-"SUCCESS $ret"}" >&2
   rmdir "$lock" 2>/dev/null
-  [ -s "$errf" ] && cat "$errf"
+  [ -s "$errf" ] && {
+    grep -q "insufficient fee, rejecting replacement" "$errf" \
+      && mkdir -p "$fdir/_toomanyd"
+    grep -q "replacement-failed, insufficient feerate: does not improve feerate diagram" "$errf" \
+      && mkdir -p "$fdir/_toomanyd"
+    cat "$errf"
+  }
   exit "$ret"
 }
 
@@ -192,10 +201,8 @@ gengmep() {
   : > "$gmep"
   : > "$gmef"
   gme.sh "$txid" | safecat.sh "$gmef"
-  tr -d '{} \t",.' < "$gmef" \
-    | sed '/^depends/,$d' \
-    | sed '/^fees/d; $d' | tr : = \
-    | sed 's/=0\+/=/' \
+  busybox sed '/"depends"/,$d; /"fees"/d; $d; s/[{} \t",.]//g; s/:/=/g; s/=0\+/=/; /^$/d' \
+    "$gmef" \
     | safecat.sh "$gmep"
 }
 
@@ -287,7 +294,7 @@ getroot() {
   [ "$gmm" = "100" ] || gmm=$(( gmm * 3 ))
   ad="bitcoindevs.xyz"
 
-  txid=$(list.sh | awk '{print $1}' | head -1)
+  txid=$(list.sh | awk '{print $1}' | head -n 1)
   ac=$(gme.sh "$txid" | jq -r .ancestorcount | grep .)
   [ "$ac" = "" ] || ac=$(( ac + 1 ))
   [ "$ac" = "1" ] && getroot "$txid"
@@ -305,11 +312,12 @@ getroot() {
 dothetf() {
   gmm-gen.sh
   while 25new.sh "$otra"; do : ; done
+  rm -rf "$fdir/_toomanyr"
 }
 
 clusterfix() {
   cd "$wd" || exit 1
-  a=$(list.sh | sort -rnk3 | head -1 | cut -d " " -f1)
+  a=$(list.sh | sort -rnk3 | head -n 1 | cut -d " " -f1)
   grt.sh "$a" | nd-all.sh \
     | sed '/#O-0$/s/^  ..../  0000/' \
     | safecat.sh "$fdir/clusterfix"
@@ -333,7 +341,7 @@ cleanupr() {
     | uniq \
     | safeadd.sh "$fdir/sffgt"
   mymv "$fdir/sff-s2" "$fdir/sff-s3" "$sfr"
-  cat "$fdir/sffgt" | (cd "$sfr" && xargs rm -rf)
+  (cd "$sfr" && xargs rm -rf) < "$fdir/sffgt"
   : > "$nusff"
 }
 
@@ -345,7 +353,7 @@ myminir() {
 
 skipround() {
   dolisto
-  tx=$(cat "$l" | head -1 | grep .) || myexit 1 "skipround newblock tx"
+  tx=$(head -n 1 "$l" | grep .) || myexit 1 "skipround newblock tx"
   txid="${tx%% *}"
   cleanupr "$txid"
 }
@@ -364,7 +372,7 @@ isoldb || {
   doinito
   [ -s "$l" ] || myexit 1 "doinito in isoldb"
 
-  tx=$(cat "$l" | head -1 | grep .) || myexit 1 "isoldb newblock tx"
+  tx=$(head -n 1 "$l" | grep .) || myexit 1 "isoldb newblock tx"
   txid="${tx%% *}"
 
   cleanupr "$txid"
@@ -383,7 +391,7 @@ dolisto
 
 mkdir -p "$fdir/sff-s2" "$fdir/sff-s3" "$sfr"
 
-tx=$(cat "$l" | head -1 | grep .) || myexit 1 "EARLY newblock tx"
+tx=$(head -n 1 "$l" | grep .) || myexit 1 "EARLY newblock tx"
 txid="${tx%% *}"
 [ "$txid" = "" ] && myexit 1 "empty TXID"
 echo "$txid" | grep -E '[0-9a-f]{64}' || myexit 1 "strange TXID"
@@ -421,7 +429,7 @@ newouts=$(wc -l < "$nusff")
 [ "${numouts:-0}" -gt 2016 ] || cacheorl
 echo "$newouts" | safecat.sh "$fdir/newouts"
 
-max=$(cat "$l" | sums.sh) || myexit 1 "unknown max $max"
+max=$(sums.sh < "$l" ) || myexit 1 "unknown max $max"
 [ "$max" -gt 330 ] || myexit 1 "low max $max"
 new=$(( max / 102 / newouts ))
 [ "$new" -gt 330 ] || myexit 1 "new $new is too low"
@@ -429,7 +437,7 @@ rest=$(( max - new * newouts ))
 
 of="$fdir/sff-outs"
 newh=$(hex "$new" - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
-cat "$nusff" | sed "s/^/$newh/" | safecat.sh "$of"
+sed "s/^/$newh/" < "$nusff" | safecat.sh "$of"
 
 dvs="$vsize"
 
@@ -498,7 +506,7 @@ hhasum=$(( value - sats - rest ))
 echo "${hhasum:-0}" | grep -q -- - && myexit 1 "hhasum ${hhasum:-0}"
 
 newh=$(hex "$new" - 16 | ce.sh | grep .) || myexit 1 "newh $newh"
-cat "$nusff" | sed "s/^/$newh/" | safecat.sh "$of"
+sed "s/^/$newh/" < "$nusff" | safecat.sh "$of"
 
 dotx | txcat.sh | mysrt | safecat.sh "$shf"
 isoldb || myexit 1 "new block just before the end"
