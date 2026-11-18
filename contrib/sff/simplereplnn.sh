@@ -47,6 +47,7 @@ ad="bitcoindevs.xyz"
 mcm=25
 
 echo "Play. Here." | orl.sh | safecat.sh "$fdir/cacheorl"
+test -s /tmp/wall || echo "This is /tmp/wall" > /tmp/wall
 
 cacheorl() {
   {
