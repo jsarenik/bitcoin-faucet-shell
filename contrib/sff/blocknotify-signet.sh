@@ -36,5 +36,10 @@ ash nohup ~/bin/simplereplnn.sh </dev/null >/dev/null 2>&1
 #signetmagic.sh
 nohup rebroadcast-all.sh </dev/null >&0 2>&0 &
 
+cd ~/.bitcoin/signet/wallets
+signetcatapultlna.sh
+( cd wallets/optrue; sh spend.sh )
+( cd wallets/ddeployment; sh spend.sh )
+
 rmdir $L
 true

@@ -1,5 +1,6 @@
 #!/bin/sh
 
+exit
 #walletnotify-main.sh
 txid=$1
 wall=$2
