@@ -57,9 +57,12 @@ myim "combo($uncom)"
 # $dt is set in $tkf
 A=$(sed 's/"timestamp".*$/"timestamp":"now",/' $dt | jq -rc .descriptors)
 bch.sh importdescriptors $A
+
 utf=/dev/shm/UpdateTip-signet
 test -r $utf && . $utf || height=$(gbc.sh)
 bch.sh rescanblockchain $(($height-60))
+
+###rescan-pruned.sh
 sleep 1
 
 cd ..
