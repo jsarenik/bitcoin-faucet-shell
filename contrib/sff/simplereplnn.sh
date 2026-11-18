@@ -53,7 +53,9 @@ cacheorl() {
   {
   cat <<-EOF
 	Play. Here.
-	Come to Bitcoin Veterans (on X) at 10 am EST
+	Come to Bitcoin Veterans (on X) at 10 am Eastern
+	(US Time zone: according to season either EST or EDT)
+	(EDT from Sun>=8 Mar to Sun>=1 Nov, EST otherwise)
 	@BitcoinVeterans Every weekday (Mon-Fri) 
 	But never reuse addresses on a real Bitcoin.
 	This is a faucet and has reasons to do so.
