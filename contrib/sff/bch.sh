@@ -2,7 +2,6 @@
 
 test -d "$1" && { cd "$1" || exit 1; shift; }
 test -d .bitcoin && { cd .bitcoin || exit 1; }
-ls -A | grep -q . || exit 1
 
 # Handle calls invoked from inside a wallet directory
 test -r wallet.dat && {
@@ -14,10 +13,10 @@ test -r wallet.dat && {
         *) cd .. || exit 1 ;;
     esac
 }
-cd "${PWD%/wallets*}" || exit 1
-ADD=$(printf '%s\n' "$PWD" | md5sum | cut -b-7)
+cd "${PWD%/wallets*}"
+ADD=${#PWD}${PWD##*/}
 test "$1" = "-i" && {
-    printf '%s\n' "$ADD"
+    echo "$ADD"
     exit 0
 }
 
